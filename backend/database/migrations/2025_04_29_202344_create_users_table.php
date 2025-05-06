@@ -14,6 +14,11 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger("telegram_id");
+
+            $table->string("username")->nullable();
+            $table->string("fullname");
+
             $table->unsignedBigInteger("city_id")->nullable();
             $table->index("city_id");
             $table->foreign("city_id")->references("id")->on("cities");

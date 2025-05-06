@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Picture extends Model
+class AdminCookie extends Model
 {
-    protected $guarded = false;
+    //
 }

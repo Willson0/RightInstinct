@@ -43,3 +43,70 @@ export function toLink (query, id = null) {
     if (id) router.push({ query: { s: query, id: id }});
     else router.push({ query: { s: query }});
 }
+
+export function levenshtein(a, b) {
+    const matrix = [];
+
+    for(let i = 0; i <= b.length; i++){
+        matrix[i] = [i];
+    }
+    for(let j = 0; j <= a.length; j++){
+        matrix[0][j] = j;
+    }
+    for(let i = 1; i <= b.length; i++){
+        for(let j = 1; j <= a.length; j++){
+            if(b.charAt(i-1) === a.charAt(j-1)){
+                matrix[i][j] = matrix[i-1][j-1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i-1][j-1] + 1, // заменить
+                    matrix[i][j-1] + 1,   // вставить
+                    matrix[i-1][j] + 1    // удалить
+                );
+            }
+        }
+    }
+    return matrix[b.length][a.length];
+}
+
+export function utcToLocalTime(utcString) {
+    const date = new Date(utcString);
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}`;
+}
+
+export function showOverlay (cl) {
+    document.body.style.overflow = "hidden";
+
+    let el = document.querySelector(`.overlay.${cl}`);
+    el.style.display = "";
+    el.style.transform = "translateY(100%)";
+
+    let background = document.querySelector(`.background.${cl}`);
+    background.style.display = "";
+    background.style.opacity = 0;
+
+    requestAnimationFrame(() => {
+        el.style.transform = "";
+        background.style.opacity = "";
+    });
+}
+export function hideOverlay (cl) {
+    let el = document.querySelector(`.overlay.${cl}`);
+    el.style.transform = "translateY(100%)";
+
+    let background = document.querySelector(`.background.${cl}`);
+    background.style.opacity = 0;
+
+    setTimeout(() => {
+        el.style.transform = "";
+        background.style.opacity = "";
+        background.style.display = "none";
+
+        el.style.display = "none";
+        document.body.style.overflow = "";
+    }, 200);
+}

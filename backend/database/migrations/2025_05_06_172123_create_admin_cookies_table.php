@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pictures', function (Blueprint $table) {
+        Schema::create('admin_cookies', function (Blueprint $table) {
             $table->id();
 
-            $table->string("type");
-            $table->unsignedBigInteger("object_id");
-            $table->string("url");
+            $table->unsignedBigInteger("user_id");
+            $table->index("user_id");
+            $table->foreign("user_id")->references("id")->on("admins")->onDelete("cascade");
+
+            $table->string("cookie");
 
             $table->timestamps();
         });
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pictures');
+        Schema::dropIfExists('admin_cookies');
     }
 };

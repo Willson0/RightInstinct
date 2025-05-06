@@ -3,7 +3,17 @@ import {toLink} from "@/utils.js";
 
 export default {
     name: "ChatView",
-    methods: {toLink}
+    methods: {toLink},
+    data () {
+        return {
+            query: "",
+        }
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
+    }
 }
 </script>
 
@@ -11,19 +21,23 @@ export default {
     <div class="chat margin-all">
         <div class="chat_search">
             <img src="/search.svg" alt="">
-            <input type="text" placeholder="Найти...">
+            <input v-model="query" type="text" placeholder="Найти...">
         </div>
         <div class="chat_main">
-            <div @click="toLink('dialog', 2)" v-for="el in 10">
+            <div @click="toLink('dialog', 2)" v-for="dialog in user.chat?.filter(c => c.user.fullname.toLowerCase().includes(query.toLowerCase()) )">
                 <img src="/avatar_1.png" alt="">
                 <div>
                     <div class="chat_main_dialog_header">
-                        <div class="chat_main_dialog_header_title">Константин</div>
-                        <div class="chat_main_dialog_header_new"><div>2</div></div>
+                        <div class="chat_main_dialog_header_title">{{ dialog.user.fullname }}</div>
+                        <div class="chat_main_dialog_header_new" v-if="dialog.unreaded">
+                            <div>{{ dialog.unreaded }}</div>
+                        </div>
                     </div>
                     <div class="chat_main_dialog_message">
-                        <div class="chat_main_dialog_message_last">Вы: Lorem ipsum dolor sit amet, consetetur sadipsci</div>
-                        <img src="/checked.svg" alt="" class="chat_main_dialog_message_checked">
+                        <div class="chat_main_dialog_message_last">
+                            {{ !dialog.from_last_message ? 'Вы: ' : '' }}{{ dialog.last_message }}
+                        </div>
+                        <img v-if="dialog.checked" src="/checked.svg" alt="" class="chat_main_dialog_message_checked">
                     </div>
                 </div>
             </div>

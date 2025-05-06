@@ -1,4 +1,8 @@
 <script>
+import axios from "axios";
+import config from "@/config.json"
+import {notify, toLink} from "@/utils.js";
+
 export default {
     name: "StorePost",
     data () {
@@ -13,6 +17,8 @@ export default {
             rewards: "",
             age: "",
             description: "",
+            isLoading: false,
+            data: [],
         }
     },
     async mounted () {
@@ -22,6 +28,10 @@ export default {
                 document.querySelectorAll(".store_input_select_list").forEach(el => {
                     el.classList.remove("active");
                 })
+        });
+
+        await axios.get(config.backend + "data").then((response) => {
+            this.data = response.data;
         });
     },
     methods: {
@@ -60,6 +70,39 @@ export default {
         },
         async deleteImage (ev) {
             this.photos.shift();
+        },
+        async sendData () {
+            let fd = new FormData();
+            fd.append("initData", window.Telegram.WebApp.initData);
+            fd.append("title", this.title);
+            fd.append("age", this.age);
+            fd.append("gender", this.gender);
+            fd.append("breed_id", this.breed);
+            fd.append("city_id", this.city);
+            fd.append("price", this.price);
+            fd.append("category_id", this.category);
+            fd.append("description", this.description);
+            fd.append("rewards", this.rewards);
+
+            let index = 0;
+            for (let img of this.photos) {
+                fd.append(`pictures[${index}]`, img.file);
+                index ++;
+            }
+
+            await axios.post(config.backend + "post/", fd)
+            .then((response) => {
+                notify("Пост успешно создан!");
+                setTimeout(() => {
+                    toLink('home');
+                }, 2000);
+            }).catch((error) => {
+                if (error.response) {
+                    return alert (`An error occurred: ${error.message}`);
+                }
+            }).finally(() => {
+                this.isLoading = false;
+            })
         }
     }
 }
@@ -102,22 +145,13 @@ export default {
             <div @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
                     <div v-if="!breed">Порода</div>
-                    <div v-else>{{ breed }}</div>
+                    <div v-else>{{ data.breeds.find(el => el.id === breed).name }}</div>
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
             </div>
             <div class="store_input_select_list">
-                <div @click="breed = 'Спаниель'; hideList($event)">
-                    <div>Спаниель</div>
-                </div>
-                <div @click="breed = 'Немецкая овчарка'; hideList($event)">
-                    <div>Немецкая овчарка</div>
-                </div>
-                <div @click="breed = 'Шпиц'; hideList($event)">
-                    <div>Шпиц</div>
-                </div>
-                <div @click="breed = 'Хаски'; hideList($event)">
-                    <div>Хаски</div>
+                <div v-for="br in data.breeds" @click="breed = br.id; hideList($event)">
+                    <div>{{ br.name }}</div>
                 </div>
             </div>
         </div>
@@ -125,22 +159,13 @@ export default {
             <div @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
                     <div v-if="!city">Город</div>
-                    <div v-else>{{ city }}</div>
+                    <div v-else>{{ data.cities.find(el => el.id === city).name }}</div>
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
             </div>
             <div class="store_input_select_list">
-                <div @click="city = 'Екатеринбург'; hideList($event)">
-                    <div>Екатеринбург</div>
-                </div>
-                <div @click="city = 'Челябинск'; hideList($event)">
-                    <div>Челябинск</div>
-                </div>
-                <div @click="city = 'Магнитогорск'; hideList($event)">
-                    <div>Магнитогорск</div>
-                </div>
-                <div @click="city = 'Крым'; hideList($event)">
-                    <div>Крым</div>
+                <div v-for="ct in data.cities" @click="city = ct.id; hideList($event)">
+                    <div>{{ ct.name }}</div>
                 </div>
             </div>
         </div>
@@ -150,16 +175,13 @@ export default {
                 <div @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
                         <div v-if="!category">Категория</div>
-                        <div v-else>{{category}}</div>
+                        <div v-else>{{data.categories.find(el => el.id === category).name}}</div>
                         <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                     </div>
                 </div>
                 <div class="store_input_select_list">
-                    <div @click="category = 'Вязка'; hideList($event)">
-                        <div>Вязка</div>
-                    </div>
-                    <div @click="category = 'Продажа'; hideList($event)">
-                        <div>Продажа</div>
+                    <div v-for="catg in data.categories" @click="category = catg.id; hideList($event)">
+                        <div>{{ catg.name }}</div>
                     </div>
                 </div>
             </div>
@@ -198,8 +220,8 @@ export default {
         <input v-model="rewards" type="text" placeholder="Титулы и награды">
         <button class="store_button button" :class="
             photos.length !== 0 && price && rewards && category && city && breed && gender !== null && title && age
-            && description ? 'active' : ''
-        ">Сохранить</button>
+            && description && !isLoading ? 'active' : ''
+        " @click="sendData">Сохранить</button>
     </div>
 </template>
 
