@@ -28,7 +28,7 @@ class PostController extends Controller
         foreach ($pictures as $picture) {
             $time = time();
             $url = "post/image_$time" . $index . "." . $picture->extension();
-            Storage::disk("public")->putFileAs("post", $picture, "image_$time." . $picture->extension());
+            Storage::disk("public")->putFileAs("post", $picture, "image_$time" . $index . "." . $picture->extension());
 
             Picture::create([
                 "type" => "post",
