@@ -18,4 +18,8 @@ class DataController extends Controller
 
         return response()->json($data);
     }
+
+    public function category (Request $request) {
+        return response()->json(Category::all());
+    }
 }

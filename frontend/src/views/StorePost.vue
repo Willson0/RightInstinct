@@ -72,6 +72,8 @@ export default {
             this.photos.shift();
         },
         async sendData () {
+            if (this.isLoading) return;
+
             let fd = new FormData();
             fd.append("initData", window.Telegram.WebApp.initData);
             fd.append("title", this.title);
@@ -90,6 +92,7 @@ export default {
                 index ++;
             }
 
+            this.isLoading = true;
             await axios.post(config.backend + "post/", fd)
             .then((response) => {
                 notify("Пост успешно создан!");

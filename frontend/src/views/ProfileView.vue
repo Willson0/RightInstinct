@@ -72,14 +72,14 @@ export default {
         },
         async changeCity () {
             if (this.isLoading) return;
-            if (this.city === this.user.city.name) return;
+            if (this.city === this.user.city?.name) return;
 
             let minDistance = Infinity;
             let closestCity = null;
 
             for(const city of this.data.cities){
                 const dist = levenshtein(city.name.toLowerCase(), this.city.toLowerCase());
-                if(dist < minDistance){
+                if (dist < minDistance) {
                     minDistance = dist;
                     closestCity = city.id;
                 }
@@ -114,11 +114,6 @@ export default {
             return window.Telegram.WebApp.initDataUnsafe.user?.photo_url
         }
     },
-    watch: {
-        user () {
-            this.city = this.user.city.name;
-        }
-    }
 }
 </script>
 
@@ -162,7 +157,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <button @click="showOverlay('settings')">
+            <button @click="showOverlay('settings');  city = user.city?.name ?? ''">
                 <img src="/like.svg" alt="">
             </button>
         </div>

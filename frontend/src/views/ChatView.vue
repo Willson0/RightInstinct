@@ -24,8 +24,8 @@ export default {
             <input v-model="query" type="text" placeholder="Найти...">
         </div>
         <div class="chat_main">
-            <div @click="toLink('dialog', 2)" v-for="dialog in user.chat?.filter(c => c.user.fullname.toLowerCase().includes(query.toLowerCase()) )">
-                <img src="/avatar_1.png" alt="">
+            <div @click="toLink('dialog', dialog.user.id)" v-for="dialog in user.chat?.filter(c => c.user.fullname.toLowerCase().includes(query.toLowerCase()) )">
+                <img :src="dialog.user.avatar" alt="">
                 <div>
                     <div class="chat_main_dialog_header">
                         <div class="chat_main_dialog_header_title">{{ dialog.user.fullname }}</div>

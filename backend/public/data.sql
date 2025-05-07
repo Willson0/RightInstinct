@@ -1,3 +1,6 @@
+INSERT INTO `categories` (`name`) VALUES
+('Натаска'), ('Вязка'), ('Дрессировка'), ('Передержка');
+
 INSERT INTO `cities` (`id`, `name`) VALUES
 (1, 'Майкоп'),
 (2, 'Горно-Алтайск'),

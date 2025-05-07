@@ -23,22 +23,11 @@ export default {
 </script>
 
 <template>
-    <div style="display:none" @click="hideOverlay('settings')" class="background postOverlay"></div>
-    <div style="display:none" class="overlay postOverlay">
-        <div @click="hideOverlay('settings')"  class="overlay_button"><div></div></div>
-        <div class="profile_settings_main">
-            <div class="profile_settings_main_title">Объявление (in progress)</div>
-            <div class="profile_settings_main_el">
-                <div class="profile_settings_mail_el_title">Пользователь</div>
-                <button @click="toLink('dialog', selectedId)"><img src="/edit.svg" alt=""></button>
-            </div>
-        </div>
-    </div>
     <div class="home">
         <div v-if="user.feed?.posts?.length !== 0" class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Объявления</h1>
-                <div class="button green-bgc">
+                <div @click="toLink('posts')" class="button green-bgc">
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
@@ -46,8 +35,7 @@ export default {
                 Продажа, покупка собак, щенки, предложения вязки, анонсы помёта
             </div>
             <div class="home_block_posts_container">
-                <post-block @click="showOverlay('postOverlay'); selectedId = post.user_id" :title="post.title" :type="post.category.name" :city="post.city.name"
-                    :price="post.price" :rating="post.rating" v-for="post in user.feed?.posts"/>
+                <post-block :object="post" v-for="post in user.feed?.posts"/>
             </div>
             <div @click="toLink('store_post')" class="home_block_button green-bgc button margin-side">
                 <div>

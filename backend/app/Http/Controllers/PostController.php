@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\PostStoreRequest;
+use App\Http\utils;
 use App\Models\Picture;
 use App\Models\Post;
 use App\Models\User;
@@ -36,5 +37,19 @@ class PostController extends Controller
         }
 
         return response()->json($post);
+    }
+
+    public function destroy (Post $post, Request $request) {
+        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+
+        if ($post->user_id !== $user->id) abort (409);
+
+        $post->delete();
+        return response()->json($post);
+    }
+
+    public function index (Request $request) {
+        $data = utils::index(Post::class, $request);
+        return response()->json($data);
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
     protected $guarded = false;
+    protected $hidden = ["telegram_id"];
 
     public function city () {
         return $this->belongsTo(City::class);

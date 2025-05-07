@@ -21,6 +21,7 @@ class AuthController extends Controller
                 "username" => $request["initData"]["user"]["username"] ?? null,
                 "notification" => false,
                 "rating" => 0,
+                "avatar" => $request["initData"]["user"]["photo_url"],
             ]);
         }
         $user->city;
@@ -68,7 +69,7 @@ class AuthController extends Controller
         $user["chat"] = $dialogs;
 
         $feed = [];
-        $feed["posts"] = Post::limit(10)->with("city")->with("category")->get();
+        $feed["posts"] = Post::limit(10)->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
         $feed["services"] = Service::limit(10)->with("city")->get();
         $feed["popular"] = null;
         $feed["events"] = Event::limit(10)->with("city")->get();
@@ -76,7 +77,7 @@ class AuthController extends Controller
         $user["feed"] = $feed;
 
         $my = [];
-        $my["posts"] = $user->posts;
+        $my["posts"] = $user->posts()->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
         $my["services"] = $user->services;
         $my["events"] = $user->events;
 
@@ -90,6 +91,6 @@ class AuthController extends Controller
         $data = $request->validated();
 
         $user->update($data);
-        return response()->json($user);
+        return $this->profile($request);
     }
 }

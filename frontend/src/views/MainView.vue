@@ -11,10 +11,20 @@ import MySubscriptionsView from "@/views/MySubscriptionsView.vue";
 import MyEventsView from "@/views/MyEventsView.vue";
 import axios from 'axios';
 import config from "@/config.json"
+import MyPostsView from "@/views/MyPostsView.vue";
+import PostsView from "@/views/PostsView.vue";
 
 export default {
     name: "MainView",
+    data () {
+        return {
+            queryHistory: [],
+            isGoingBack: false,
+        }
+    },
     components: {
+        PostsView,
+        MyPostsView,
         MyEventsView,
         MySubscriptionsView,
         NotificationsView, DialogView, ChatView, ProfileView, StoreService, StorePost, NavComponent, HomeView},
@@ -30,11 +40,39 @@ export default {
                 return alert (`An error occurred: ${error.message}`);
             }
         });
+
+        window.Telegram.WebApp.BackButton.onClick(() => this.backByQuery());
     },
     watch: {
         $route(to, from) {
             clearInterval(this.$store.state.interval);
             this.$store.dispatch("updateInterval", null);
+        },
+        '$route.query' (to, from) {
+            if (this.isGoingBack === true) {
+                this.isGoingBack = false;
+                return;
+            }
+
+            this.queryHistory.push(from);
+            console.log(this.queryHistory);
+
+            window.Telegram.WebApp.BackButton.show();
+        }
+    },
+    methods: {
+        backByQuery() {
+            console.log(this.queryHistory);
+            if (this.queryHistory.length > 0) {
+                this.isGoingBack = true;
+
+                const prevQuery = this.queryHistory.pop();
+                this.$router.push({ query: prevQuery });
+
+                if (this.queryHistory.length === 0) window.Telegram.WebApp.BackButton.hide();
+            } else {
+                this.$router.push({ query: {s: 'home'} });
+            }
         }
     }
 }
@@ -52,6 +90,8 @@ export default {
         <notifications-view v-if="$route.query.s === 'notifications'" />
         <my-subscriptions-view v-if="$route.query.s === 'mysubscriptions'" />
         <my-events-view v-if="$route.query.s === 'myevents'" />
+        <my-posts-view v-if="$route.query.s === 'myposts'" />
+        <posts-view v-if="$route.query.s === 'posts'" />
     </nav-component>
 <!--    123-->
 </template>

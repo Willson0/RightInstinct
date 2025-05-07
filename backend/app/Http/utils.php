@@ -5,6 +5,7 @@ namespace App\Http;
 
 use App\Models\Admin;
 use App\Models\AdminCookie;
+use App\Models\Post;
 use App\Models\User;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
 use Illuminate\Support\Facades\Cookie;
@@ -162,13 +163,14 @@ class utils
         if ($request->has("limit")) $limit = $request->limit;
 
         $query = $class::take($limit);
+        if ($class === Post::class) $query = Post::limit($limit)->orderBy("created_at", "desc")->with("pictures")
+            ->with("breed")->with("user")->with("city")->with("category");
 
         if ($request->has("sort")) $query->orderby("id", $request->sort);
         if ($request->has('datesort')) $query->orderby('id', $request->datesort);
         if ($request->has('offset')) $query->offset($request->offset);
         if ($request->has('namesort')) $query->orderby('title', $request->namesort);
-        if ($request->has('blocked')) $query->whereNotNull("blocked_at");
-        if ($request->has("ip")) $query->where("ip", $request->ip);
+        if ($request->has("category")) $query->where("category_id", $request->category);
         if ($request->has("user")) {
             $userids = User::where("id", $request->user)
                 ->orWhere("name", "like", "%$request->user%")
@@ -187,10 +189,10 @@ class utils
         $countpage = ceil($query->count()/$limit);
         if ($request->has('page') and $limit) $query->skip(($request->page - 1) * $limit);
 
-        $response["data"] = $query->get();
-        $response["count"] = $countpage;
+//        $response["data"] = $query->get();
+//        $response["count"] = $countpage;
 
-        return $response;
+        return $query->get();
     }
 
     static function sendAdmin ($message) {

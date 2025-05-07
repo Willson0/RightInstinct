@@ -13,12 +13,15 @@ Route::group(["prefix" => "api"], function () {
         Route::post("update", [AuthController::class, 'update']);
     });
 
+    Route::get("/post", [PostController::class, 'index']);
     Route::group(["prefix" => "post", "middleware" => CheckTelegram::class], function () {
         Route::post("/", [PostController::class, 'store']);
+        Route::post("/{post}/delete", [PostController::class, 'destroy']);
     });
 
     Route::group(["prefix" => "data"], function () {
         Route::get("/", [DataController::class, 'index']);
+        Route::get("/category", [DataController::class, 'category']);
     });
 
     Route::group(["prefix" => "chat", "middleware" => CheckTelegram::class], function () {
