@@ -24,9 +24,10 @@ class PostController extends Controller
 
         $post = Post::create($validated);
 
+        $index = 0;
         foreach ($pictures as $picture) {
             $time = time();
-            $url = "post/image_$time." . $picture->extension();
+            $url = "post/image_$time" . $index . "." . $picture->extension();
             Storage::disk("public")->putFileAs("post", $picture, "image_$time." . $picture->extension());
 
             Picture::create([
@@ -34,6 +35,7 @@ class PostController extends Controller
                 "object_id" => $post->id,
                 "url" => $url,
             ]);
+            $index++;
         }
 
         return response()->json($post);
