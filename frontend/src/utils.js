@@ -110,3 +110,17 @@ export function hideOverlay (cl) {
         document.body.style.overflow = "";
     }, 200);
 }
+
+export async function openList (event) {
+    let select = event.target.closest(".store_input_select_container");
+    document.querySelectorAll(".store_input_select_list").forEach(el => {
+        if (el !== select.querySelector(".store_input_select_list"))
+            el.classList.remove("active");
+    })
+
+    select.querySelector(".store_input_select_list").classList.toggle("active");
+}
+export async function hideList (event) {
+    let el = event.target.closest(".store_input_select_container");
+    el.querySelector(".store_input_select_list").classList.remove("active");
+}

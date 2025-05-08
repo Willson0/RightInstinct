@@ -28,4 +28,6 @@ Route::group(["prefix" => "api"], function () {
         Route::post("/{companion}", [ChatController::class, 'show']);
         Route::post("/{companion}/send", [ChatController::class, 'send']);
     });
+
+    Route::get("/user/{user}", [AuthController::class, 'show']);
 });

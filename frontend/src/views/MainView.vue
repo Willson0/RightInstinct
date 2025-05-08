@@ -13,6 +13,7 @@ import axios from 'axios';
 import config from "@/config.json"
 import MyPostsView from "@/views/MyPostsView.vue";
 import PostsView from "@/views/PostsView.vue";
+import UserView from "@/views/UserView.vue"
 
 export default {
     name: "MainView",
@@ -26,7 +27,7 @@ export default {
         PostsView,
         MyPostsView,
         MyEventsView,
-        MySubscriptionsView,
+        MySubscriptionsView, UserView,
         NotificationsView, DialogView, ChatView, ProfileView, StoreService, StorePost, NavComponent, HomeView},
     async mounted () {
         if (!this.$route.query.s) this.$router.push({ query: { s: 'home' }});
@@ -92,6 +93,7 @@ export default {
         <my-events-view v-if="$route.query.s === 'myevents'" />
         <my-posts-view v-if="$route.query.s === 'myposts'" />
         <posts-view v-if="$route.query.s === 'posts'" />
+        <user-view v-if="$route.query.s === 'user'" />
     </nav-component>
 <!--    123-->
 </template>

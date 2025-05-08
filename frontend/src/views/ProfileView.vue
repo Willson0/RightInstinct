@@ -112,6 +112,9 @@ export default {
         },
         avatar () {
             return window.Telegram.WebApp.initDataUnsafe.user?.photo_url
+        },
+        subLength () {
+            return this.user.subscriptions.length;
         }
     },
 }
@@ -172,15 +175,15 @@ export default {
                 <div>{{ name }}</div>
                 <button @click="toLink(link)"><img src="/arrow.svg" alt=""></button>
             </div>
-<!--            <div>-->
-<!--                <div>Мои подписки</div>-->
-<!--                <div @click="toLink('mysubscriptions')" class="profile_subscribers">-->
-<!--                    <div style="left: 0px;"><div>12+</div></div>-->
-<!--                    <img style="left: 7px;" src="/avatar_3.png" alt="">-->
-<!--                    <img style="left: 14px;" src="/avatar_2.png" alt="">-->
-<!--                    <img style="left: 21px;" src="/avatar_1.png" alt="">-->
-<!--                </div>-->
-<!--            </div>-->
+            <div v-if="user.subscriptions">
+                <div>Мои подписки</div>
+                <div @click="toLink('mysubscriptions')" class="profile_subscribers">
+                    <div v-if="subLength > 3" :style="`left: 0px;`"><div>{{ subLength-3 }}+</div></div>
+                    <img v-if="subLength > 2" :style="`left: ${(subLength-1)*7 > 7 ? 7 : (subLength-1)*7}px;`" :src="user.subscriptions[2].url" alt="">
+                    <img v-if="subLength > 1" :style="`left: ${(subLength-1)*7 > 14 ? 14 : (subLength-1)*7}px;`" :src="user.subscriptions[1].url" alt="">
+                    <img :style="`left: ${(subLength-1)*7 > 21 ? 21 : (subLength-1)*7}px;`" :src="user.subscriptions[0].url" alt="">
+                </div>
+            </div>
         </div>
     </div>
 </template>

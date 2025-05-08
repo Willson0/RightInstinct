@@ -26,6 +26,11 @@ class AuthController extends Controller
         }
         $user->city;
         $user->notifications;
+        $user->subscriptions = $user->subscriptions()->with("user_subscription")->get();
+
+        foreach ($user->subscriptions as $us) {
+            $us->user_subscription->city;
+        }
 
         $userId = $user->id;
         $dialogQuery = Message::selectRaw('
@@ -92,5 +97,13 @@ class AuthController extends Controller
 
         $user->update($data);
         return $this->profile($request);
+    }
+
+     public function show (User $user, Request $request) {
+        $user->city;
+        $user->posts;
+        $user->services;
+
+        return response()->json($user);
     }
 }

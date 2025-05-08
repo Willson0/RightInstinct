@@ -93,7 +93,7 @@ export default {
                 <img src="/star.svg" alt="">
                 <div>{{ object.rewards }}</div>
             </div>
-            <div class="postOverlay_main_user">
+            <div @click="toLink('user', object.user.id)" class="postOverlay_main_user">
                 <img :src="object.user.avatar" alt="">
                 <div>
                     <h4>Хозяин</h4>

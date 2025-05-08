@@ -24,6 +24,7 @@ export default {
         this.$store.dispatch("updateInterval", this.interval);
     },
     methods: {
+        toLink,
         utcToLocalTime,
         async fetchData () {
             await axios.post(config.backend + "chat/" + this.$route.query.id, {
@@ -73,7 +74,7 @@ export default {
 
 <template>
     <div class="dialog">
-        <div class="dialog_header">
+        <div class="dialog_header" @click="toLink('user', data?.companion.id)">
             <div>
                 <img src="/avatar_1.png" alt="">
                 <div>{{ data?.companion.fullname }}</div>

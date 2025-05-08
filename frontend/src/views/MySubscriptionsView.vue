@@ -1,9 +1,16 @@
 <script>
 import UserBlock from "@/components/UserBlock.vue";
+import {toLink} from "@/utils.js";
 
 export default {
     name: "MySubscriptionsView",
-    components: {UserBlock}
+    methods: {toLink},
+    components: {UserBlock},
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
+    },
 }
 </script>
 
@@ -11,8 +18,8 @@ export default {
     <div class="mysubscriptions margin-all">
         <h1>Мои подписки</h1>
         <div class="mysubscriptions_main">
-            <div v-for="el in 10">
-                <UserBlock name="Василий" city="Москва" rating="4,6" avatar="/avatar_1.png" />
+            <div v-for="us in user.subscriptions">
+                <UserBlock :user="us.user_subscription" />
             </div>
         </div>
     </div>

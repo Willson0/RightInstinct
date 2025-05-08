@@ -2,22 +2,24 @@
 import axios from "axios";
 import config from "@/config.json";
 import PostBlock from "@/components/PostBlock.vue";
+import {hideList, openList} from "@/utils.js";
 
 export default {
     name: "PostsView",
     components: {PostBlock},
     data () {
         return {
-            categories: null,
+            data: {},
             feed: [],
             selectedCategory: null,
             isLoading: false,
             isFull: false,
+            filter: {},
         }
     },
     async mounted () {
-        await axios.get(config.backend + "data/category").then((response) => {
-            this.categories = response.data;
+        await axios.get(config.backend + "data").then((response) => {
+            this.data = response.data;
         });
         await axios.get(config.backend + "post").then((response) => {
             this.feed = response.data;
@@ -30,6 +32,8 @@ export default {
         })
     },
     methods: {
+        openList,
+        hideList,
         async fetchData () {
             if (this.isLoading) return;
             this.isLoading = true;
@@ -50,12 +54,126 @@ export default {
             this.feed = [];
 
             await this.fetchData();
+        },
+        async showFilter () {
+            this.$refs.filter.style.display='';
+        },
+        async hideFilter () {
+            this.$refs.filter.style.display='none';
         }
     }
 }
 </script>
 
 <template>
+    <div ref="filter" style="display:none" class="filter">
+        <h2>Фильтровать</h2>
+        <div class="filter_container">
+            <div style="z-index:11" class="store_input_select_container">
+                <div ref="breed" @click="openList" class="store_input_select">
+                    <div class="store_input_select_main">
+                        <div v-if="!filter.breed">Порода</div>
+                        <div v-else>{{ data.breeds.find(el => el.id === filter.breed).name }}</div>
+                        <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                    </div>
+                </div>
+                <div class="store_input_select_list">
+                    <div v-for="br in data.breeds" @click="filter.breed = br.id; hideList($event)">
+                        <div>{{ br.name }}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="z-index:10" class="store_input_container">
+                <div class="store_input_select_container">
+                    <div ref="gender" @click="openList" class="store_input_select">
+                        <div class="store_input_select_main">
+                            <div v-if="filter.gender == null">Пол</div>
+                            <div v-else-if="filter.gender === 0">
+                                <img src="/female.svg" alt="">
+                                <div>Сука</div>
+                            </div>
+                            <div v-else-if="filter.gender === 1">
+                                <img src="/male.svg" alt="">
+                                <div>Кобель</div>
+                            </div>
+                            <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                        </div>
+                    </div>
+                    <div class="store_input_select_list">
+                        <div @click="filter.gender = 0; hideList($event)">
+                            <img src="/female.svg" alt="">
+                            <div>Сука</div>
+                        </div>
+                        <div @click="filter.gender = 1; hideList($event)">
+                            <img src="/male.svg" alt="">
+                            <div>Кобель</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="store_input_select_container">
+                    <div ref="category" class="store_input_select_container">
+                        <div @click="openList" class="store_input_select">
+                            <div class="store_input_select_main">
+                                <div v-if="!filter.category">Категория</div>
+                                <div v-else>{{data.categories.find(el => el.id === filter.category).name}}</div>
+                                <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                            </div>
+                        </div>
+                        <div class="store_input_select_list">
+                            <div v-for="catg in data.categories" @click="filter.category = catg.id; hideList($event)">
+                                <div>{{ catg.name }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="z-index:5" class="store_input_select_container">
+                <div ref="city" @click="openList" class="store_input_select">
+                    <div class="store_input_select_main">
+                        <div v-if="!filter.city">Город</div>
+                        <div v-else>{{ data.cities.find(el => el.id === filter.city).name }}</div>
+                        <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                    </div>
+                </div>
+                <div class="store_input_select_list">
+                    <div v-for="ct in data.cities" @click="filter.city = ct.id; hideList($event)">
+                        <div>{{ ct.name }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="filter_age">
+            <div class="filter_age_title">Возраст</div>
+            <div class="filter_age_input">
+                <div class="filter_age_input_active_line">
+                    <div class="filter_age_input_active_line_circle"></div>
+                    <div class="filter_age_input_active_line_circle"></div>
+                </div>
+                <div class="filter_age_input_line"></div>
+            </div>
+            <div class="filter_age_sign">
+                <div>0</div>
+                <div>10 лет</div>
+            </div>
+        </div>
+        <div style="z-index:4" class="store_input_container">
+            <input ref="price" v-model="filter.price_from" type="number" placeholder="от">
+            <input ref="price" v-model="filter.price_to" type="number" placeholder="до">
+        </div>
+        <div class="filter_checkbox_container">
+            <div @click="filter.rating = !filter.rating ?? true"  class="filter_checkbox">
+                <img v-if="filter.rating" src="/check.svg" alt="">
+            </div>
+            <div @click="filter.rating = !filter.rating ?? true" class="filter_checkbox_text">Рейтинг выше 4</div>
+        </div>
+        <div class="filter_checkbox_container">
+            <div @click="filter.isNew = !filter.isNew ?? true"  class="filter_checkbox">
+                <img v-if="filter.isNew" src="/check.svg" alt="">
+            </div>
+            <div @click="filter.isNew = !filter.isNew ?? true" class="filter_checkbox_text">Сначала новые</div>
+        </div>
+        <button @click="hideFilter" class="button">Применить</button>
+    </div>
     <div class="posts">
         <h1 class="margin-all">Объявления</h1>
         <div class="posts_search_container margin-side">
@@ -63,10 +181,10 @@ export default {
                 <img src="/search.svg" alt="">
                 <input type="text" placeholder="Найти...">
             </div>
-            <button><img src="/filter.svg" alt=""></button>
+            <button @click="showFilter"><img src="/filter.svg" alt=""></button>
         </div>
         <div class="posts_categories">
-            <h4 @click="changeCategory(category.id)" v-for="category in categories"
+            <h4 @click="changeCategory(category.id)" v-for="category in data.categories"
                 :class="selectedCategory === category.id ? 'active' : ''">
                 {{ category.name }}
             </h4>

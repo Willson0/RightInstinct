@@ -72,6 +72,23 @@ export default {
             this.photos.shift();
         },
         async sendData () {
+            Object.values(this.$refs).forEach(el => el.style.border = "");
+            let rules = [
+                [this.age < 1, "Возраст не может быть меньше 1 месяца!", "age"],
+                [this.age > 360, "Возраст не может быть больше 360 месяцев!", "age"],
+                [this.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
+                [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+            ];
+            let isError = false;
+            for (let rule of rules) {
+                if (rule[0]) {
+                    notify(rule[1], 1);
+                    this.$refs[rule[2]].style.border = "1px solid #DD1117";
+                    isError = true;
+                }
+            }
+            if (isError) return;
+
             if (this.isLoading) return;
 
             let fd = new FormData();
@@ -116,9 +133,9 @@ export default {
         <h1 class="store_title">Добавить объявление</h1>
         <input v-model="title" class="store_input" type="text" placeholder="Название">
         <div style="z-index:10" class="store_input_container">
-            <input v-model="age" type="text" placeholder="Возраст">
-            <div ref="genderSelect" class="store_input_select_container">
-                <div @click="openList" class="store_input_select">
+            <input ref="age" v-model="age" type="number" placeholder="Возраст (мес)">
+            <div class="store_input_select_container">
+                <div ref="gender" @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
                         <div v-if="gender === null">Пол</div>
                         <div v-else-if="gender === 0">
@@ -144,8 +161,8 @@ export default {
                 </div>
             </div>
         </div>
-        <div style="z-index:9" ref="breedSelect" class="store_input_select_container">
-            <div @click="openList" class="store_input_select">
+        <div style="z-index:9" class="store_input_select_container">
+            <div ref="breed" @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
                     <div v-if="!breed">Порода</div>
                     <div v-else>{{ data.breeds.find(el => el.id === breed).name }}</div>
@@ -159,7 +176,7 @@ export default {
             </div>
         </div>
         <div style="z-index:8" class="store_input_select_container">
-            <div @click="openList" class="store_input_select">
+            <div ref="city" @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
                     <div v-if="!city">Город</div>
                     <div v-else>{{ data.cities.find(el => el.id === city).name }}</div>
@@ -173,8 +190,8 @@ export default {
             </div>
         </div>
         <div style="z-index:7" class="store_input_container">
-            <input v-model="price" type="number" placeholder="Цена, ₽">
-            <div ref="genderSelect" class="store_input_select_container">
+            <input ref="price" v-model="price" type="number" placeholder="Цена, ₽">
+            <div ref="category" class="store_input_select_container">
                 <div @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
                         <div v-if="!category">Категория</div>
@@ -219,8 +236,8 @@ export default {
             </label>
         </div>
         <input @input="addImage" id="image" type="file" style="display:none;" accept="image/*">
-        <textarea placeholder="Описание" rows="2" v-model="description" class="input"></textarea>
-        <input v-model="rewards" type="text" placeholder="Титулы и награды">
+        <textarea ref="description" placeholder="Описание" rows="2" v-model="description" class="input"></textarea>
+        <input ref="rewards" v-model="rewards" type="text" placeholder="Титулы и награды">
         <button class="store_button button" :class="
             photos.length !== 0 && price && rewards && category && city && breed && gender !== null && title && age
             && description && !isLoading ? 'active' : ''
