@@ -175,13 +175,13 @@ export default {
                 <div>{{ name }}</div>
                 <button @click="toLink(link)"><img src="/arrow.svg" alt=""></button>
             </div>
-            <div v-if="user.subscriptions">
+            <div v-if="user.subscriptions.length !== 0">
                 <div>Мои подписки</div>
                 <div @click="toLink('mysubscriptions')" class="profile_subscribers">
                     <div v-if="subLength > 3" :style="`left: 0px;`"><div>{{ subLength-3 }}+</div></div>
                     <img v-if="subLength > 2" :style="`left: ${(subLength-1)*7 > 7 ? 7 : (subLength-1)*7}px;`" :src="user.subscriptions[2].url" alt="">
                     <img v-if="subLength > 1" :style="`left: ${(subLength-1)*7 > 14 ? 14 : (subLength-1)*7}px;`" :src="user.subscriptions[1].url" alt="">
-                    <img :style="`left: ${(subLength-1)*7 > 21 ? 21 : (subLength-1)*7}px;`" :src="user.subscriptions[0].url" alt="">
+                    <img :style="`left: ${(subLength-1)*7 > 21 ? 21 : (subLength-1)*7}px;`" :src="user.subscriptions[0]?.url" alt="">
                 </div>
             </div>
         </div>
