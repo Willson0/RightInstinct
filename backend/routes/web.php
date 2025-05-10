@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\FavouriteController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Middleware\CheckTelegram;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +31,16 @@ Route::group(["prefix" => "api"], function () {
         Route::post("/{companion}/send", [ChatController::class, 'send']);
     });
 
-    Route::get("/user/{user}", [AuthController::class, 'show']);
+    Route::post("/user/{user}", [AuthController::class, 'show'])->middleware(CheckTelegram::class);
+
+    Route::group(["prefix" => "subscription", "middleware" => CheckTelegram::class], function () {
+        Route::post("/subscribe", [SubscriptionController::class, 'subscribe']);
+        Route::post("/unsubscribe", [SubscriptionController::class, 'unsubscribe']);
+    });
+
+    Route::group(["prefix" => "favourite", "middleware" => CheckTelegram::class], function () {
+        Route::post("/", [FavouriteController::class, 'store']);
+        Route::post("/delete", [FavouriteController::class, 'destroy']);
+        Route::post("/index", [FavouriteController::class, 'index']);
+    });
 });

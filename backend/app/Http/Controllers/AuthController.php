@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\AuthStoreRequest;
 use App\Models\Event;
+use App\Models\Favourite;
 use App\Models\Message;
 use App\Models\Post;
 use App\Models\Service;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -71,6 +73,12 @@ class AuthController extends Controller
             ];
         }
 
+        $favourites = Favourite::where('user_id', $userId)->get();
+
+        $user["favourites"] = $favourites->groupBy('type')->map(function($items) {
+            return $items->pluck('object_id')->toArray();
+        })->toArray();
+
         $user["chat"] = $dialogs;
 
         $feed = [];
@@ -92,7 +100,7 @@ class AuthController extends Controller
     }
 
     public function update (AuthStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->first();
+        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $data = $request->validated();
 
         $user->update($data);
@@ -100,9 +108,15 @@ class AuthController extends Controller
     }
 
      public function show (User $user, Request $request) {
+        $sender = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+
         $user->city;
-        $user->posts;
+        $user->posts = $user->posts()->with("pictures")->with("breed")->with("city")->with("category")->get();
         $user->services;
+
+        if (Subscription::where("user_id", $sender->id)->where("user_subscription_id", $user->id)->exists())
+            $user->isSubscribe = true;
+        else $user->isSubscribe = false;
 
         return response()->json($user);
     }

@@ -15,6 +15,8 @@ export default {
             isLoading: false,
             isFull: false,
             filter: {},
+            percentMoved: 100,
+            offset: 0,
         }
     },
     async mounted () {
@@ -41,6 +43,7 @@ export default {
 
             let query = config.backend + "post?offset=" + this.feed.length;
             if (this.selectedCategory) query += "&category=" + this.selectedCategory;
+            if (this.filter.search) query += "&s=" + this.filter.search;
 
             await axios.get(query).then((response) => {
                 if (response.data.length === 0) return this.isFull = true;
@@ -60,7 +63,50 @@ export default {
         },
         async hideFilter () {
             this.$refs.filter.style.display='none';
-        }
+        },
+        onMouseDown(e) {
+            this.dragging = true;
+            this.circle = this.$refs.circle;
+            this.offsetX = e.clientX - this.circle.offsetLeft;
+            document.addEventListener('mousemove', this.onMouseMove);
+            document.addEventListener('mouseup', this.onMouseUp);
+            document.body.style.userSelect = 'none';
+        },
+        onMouseDownLeft(e) {
+            this.dragging = true;
+            this.circle = this.$refs.circle;
+            this.offsetX = e.clientX - this.circle.offsetLeft;
+            document.addEventListener('mousemove', this.onMouseMoveLeft);
+            document.addEventListener('mouseup', this.onMouseUp);
+            document.body.style.userSelect = 'none';
+        },
+        onMouseMoveLeft (e) {
+            if (!this.dragging) return;
+            const parentRect = this.$refs.parent.getBoundingClientRect();
+            let maxLeft = this.$refs.parent.clientWidth;
+
+            let newLeft = e.clientX - this.offsetX + this.circle.clientWidth;
+            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+
+            this.offset = (newLeft / maxLeft) * 100;
+        },
+        onMouseMove(e) {
+            if (!this.dragging) return;
+            const parentRect = this.$refs.parent.getBoundingClientRect();
+            let maxLeft = this.$refs.parent.clientWidth;
+
+            let newLeft = e.clientX - this.offsetX + this.circle.clientWidth;
+            newLeft = Math.max(this.offset, Math.min(newLeft, maxLeft));
+
+            this.percentMoved = (newLeft / maxLeft) * 100;
+        },
+        onMouseUp() {
+            this.dragging = false;
+            document.removeEventListener('mousemove', this.onMouseMove);
+            document.removeEventListener('mousemove', this.onMouseMoveLeft);
+            document.removeEventListener('mouseup', this.onMouseUp);
+            document.body.style.userSelect = '';
+        },
     }
 }
 </script>
@@ -144,14 +190,18 @@ export default {
         </div>
         <div class="filter_age">
             <div class="filter_age_title">Возраст</div>
-            <div class="filter_age_input">
-                <div class="filter_age_input_active_line">
-                    <div class="filter_age_input_active_line_circle"></div>
-                    <div class="filter_age_input_active_line_circle"></div>
+            <div ref="parent" class="filter_age_input">
+                <div class="filter_age_input_active_line" :style="{ width: percentMoved + '%'}">
+                    <div class="filter_age_input_active_line" :style="{ width: offset + '%', color: 'grey'}">
+                        <div ref="circle" @mousedown="onMouseDownLeft" class="filter_age_input_active_line_circle"></div>
+                    </div>
+                    <div ref="circle" @mousedown="onMouseDown"
+                         class="filter_age_input_active_line_circle"></div>
                 </div>
                 <div class="filter_age_input_line"></div>
             </div>
             <div class="filter_age_sign">
+                {{percentMoved.toFixed(1)}}
                 <div>0</div>
                 <div>10 лет</div>
             </div>
@@ -179,7 +229,7 @@ export default {
         <div class="posts_search_container margin-side">
             <div class="posts_search">
                 <img src="/search.svg" alt="">
-                <input type="text" placeholder="Найти...">
+                <input v-model="filter.search" @blur="fetchData(); isFull = false; feed = []" type="text" placeholder="Найти...">
             </div>
             <button @click="showFilter"><img src="/filter.svg" alt=""></button>
         </div>

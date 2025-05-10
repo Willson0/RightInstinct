@@ -14,6 +14,7 @@ import config from "@/config.json"
 import MyPostsView from "@/views/MyPostsView.vue";
 import PostsView from "@/views/PostsView.vue";
 import UserView from "@/views/UserView.vue"
+import FavouriteView from "@/views/FavouriteView.vue"
 
 export default {
     name: "MainView",
@@ -24,11 +25,13 @@ export default {
         }
     },
     components: {
-        PostsView,
-        MyPostsView,
-        MyEventsView,
+        FavouriteView,
+        PostsView, ChatView, HomeView,
+        MyPostsView, StorePost, NavComponent,
+        MyEventsView, ProfileView, StoreService,
         MySubscriptionsView, UserView,
-        NotificationsView, DialogView, ChatView, ProfileView, StoreService, StorePost, NavComponent, HomeView},
+        NotificationsView, DialogView,
+    },
     async mounted () {
         if (!this.$route.query.s) this.$router.push({ query: { s: 'home' }});
 
@@ -94,6 +97,7 @@ export default {
         <my-posts-view v-if="$route.query.s === 'myposts'" />
         <posts-view v-if="$route.query.s === 'posts'" />
         <user-view v-if="$route.query.s === 'user'" />
+        <favourite-view v-if="$route.query.s === 'favourite'" />
     </nav-component>
 <!--    123-->
 </template>

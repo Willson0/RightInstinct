@@ -3,17 +3,21 @@ import UserBlock from "@/components/UserBlock.vue";
 import config from "@/config.json";
 import axios from "axios"
 import PostBlock from "@/components/PostBlock.vue";
+import {notify} from "@/utils.js";
 
 export default {
     name: "UserView.vue",
     components: {PostBlock, UserBlock},
     data () {
         return {
-            us: null,
+            us: {},
+            isLoading: false,
         }
     },
     async mounted () {
-        await axios.get(config.backend + "user/" + this.$route.query.id).then((response) => {
+        await axios.post(config.backend + "user/" + this.$route.query.id, {
+            "initData": window.Telegram.WebApp.initData,
+        }).then((response) => {
             this.us = response.data;
         }).catch((error) => {
             if (error.response)
@@ -21,31 +25,52 @@ export default {
         })
     },
     methods: {
-        async subscribe () {
+        async subscribe (status = 1) {
+            if (this.isLoading) return;
 
-        }
+            this.isLoading = true;
+            await axios.post(config.backend + "subscription/" + (status ? 'subscribe' : 'unsubscribe'), {
+                "initData": window.Telegram.WebApp.initData,
+                "user_subscription_id": this.us.id,
+            }).then((response) => {
+                this.us.isSubscribe = !this.us.isSubscribe;
+                notify(`Вы успешно ${status ? "подписались" : "отписались"} на ${this.us.fullname}!`);
+
+                axios.post(config.backend + "auth/profile", {
+                    "initData": window.Telegram.WebApp.initData,
+                }).then((resp) => {
+                    this.$store.dispatch("updateUser", resp.data);
+                })
+            }).catch((error) => {
+                if (error.response)
+                    notify(error.message, 1);
+            }).finally(() => {
+                this.isLoading = false;
+            })
+        },
     }
 }
 </script>
 
 <template>
-    <div class="user margin-all">
+    <div class="user_index margin-all">
         <user-block v-if="us" :user="us" />
-        <div v-if="us?.posts?.length !== 0" class="user_posts">
+        <div v-if="us.posts && us.posts?.length !== 0" class="user_posts">
             <h2>Объявления</h2>
             <div>
-                <post-block v-for="post in us?.posts" :object="post" />
+                <post-block :clickable="false" v-for="post in us.posts" :object="post" />
             </div>
         </div>
         <div v-if="us?.services?.length !== 0" class="user_services">
             <h2>Услуги</h2>
             <div>
-                <post-block v-for="post in us?.services" :object="post" />
+                <post-block :clickable="false" v-for="post in us?.services" :object="post" />
             </div>
         </div>
         <div class="user_buttons">
-            <button class="button">Подписаться</button>
-            <button><img src="/like.svg" alt=""></button>
+            <button v-if="us.isSubscribe" class="button" @click="subscribe(0)">Отписаться</button>
+            <button v-else class="button" @click="subscribe(1)">Подписаться</button>
+            <button><img style="width: 32px; height: 32px;" src="/like.svg" alt=""></button>
             <button><img src="/share.svg" alt=""></button>
         </div>
         <a href="https://t.me/wilflw" class="postOverlay_main_complain">Пожаловаться</a>

@@ -1,4 +1,6 @@
 import router from "@/router.js";
+import config from "@/config.json";
+import axios from "axios";
 
 export function notify (text, error) {
     let notifyContainer = document.querySelector(".notification_container");
@@ -40,6 +42,8 @@ export function notify (text, error) {
 }
 
 export function toLink (query, id = null) {
+    document.body.style.overflow = "";
+
     if (id) router.push({ query: { s: query, id: id }});
     else router.push({ query: { s: query }});
 }
@@ -123,4 +127,29 @@ export async function openList (event) {
 export async function hideList (event) {
     let el = event.target.closest(".store_input_select_container");
     el.querySelector(".store_input_select_list").classList.remove("active");
+}
+
+export function favourite (action, type, id, isLoading, user) {
+    if (isLoading.status) return;
+
+    isLoading.status = true;
+    axios.post(config.backend + "favourite" + (action ? '' : '/delete'), {
+        initData: window.Telegram.WebApp.initData,
+        type: type,
+        object_id: id,
+    }).then((response) => {
+        if (action) {
+            notify("Успешно добавлено в избранное!");
+            user.favourites[type].push(id);
+        } else {
+            notify("Успешно удалено из избранного!");
+            user.favourites[type] = user.favourites[type].filter(el => el !== id);
+        }
+        this.$store.dispatch("updateUser", user);
+    }).catch((error) => {
+        if (error.response)
+            notify(error.message, 1);
+    }).finally(() => {
+        isLoading.status = false;
+    })
 }

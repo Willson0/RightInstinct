@@ -2,24 +2,8 @@
 export default {
     name: "EventBlock",
     props: {
-        title: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            required: true,
-        },
-        image: {
-            type: String,
-            required: true,
-        },
-        location: {
-            type: String,
-            required: true,
-        },
-        date: {
-            type: String,
+        event: {
+            type: Object,
             required: true
         }
     }
@@ -28,18 +12,18 @@ export default {
 
 <template>
     <div class="event">
-        <img :src="image" alt="">
+        <img :src="event.pictures[0].url" alt="">
         <div class="event_info">
-            <h4>{{ title }}</h4>
-            <div class="event_description sign">{{ description }}</div>
+            <h4>{{ event.title }}</h4>
+            <div class="event_description sign">{{ event.description }}</div>
         </div>
         <div class="event_location">
             <img src="/location.svg" alt="">
-            <div class="sign">{{ location }}</div>
+            <div class="sign">{{ event.city.name }}</div>
         </div>
         <div class="event_calendar">
             <img src="/calendar.svg" alt="">
-            <div class="sign">{{ date }}</div>
+            <div class="sign">{{ event.date }}</div>
         </div>
     </div>
 </template>

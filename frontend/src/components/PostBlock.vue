@@ -1,10 +1,11 @@
 <script>
-import {hideOverlay, showOverlay, toLink} from "@/utils.js";
+import {favourite, hideOverlay, showOverlay, toLink} from "@/utils.js";
 import config from "@/config.json";
 
 export default {
     name: "PostBlock",
     methods: {
+        favourite,
         toLink,
         showOverlay (cl) {
             this.overlay = true;
@@ -47,7 +48,8 @@ export default {
         return {
             selectedID: null,
             overlay: false,
-            config: config
+            config: config,
+            isLoading: {status: false},
         }
     },
     props: {
@@ -55,11 +57,22 @@ export default {
             type: Object,
             required: true
         },
+        clickable: {
+            type: Boolean,
+            default: true
+        },
+        type: {
+            type: String,
+            default: "post",
+        },
     },
     computed: {
         beautifullyPrice () {
             return this.object.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-        }
+        },
+        user () {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -110,7 +123,7 @@ export default {
             <a href="https://t.me/wilflw" class="postOverlay_main_complain">Пожаловаться</a>
         </div>
     </div>
-    <div @click="showOverlay('postOverlay')" class="block_post">
+    <div @click="clickable ? showOverlay('postOverlay') : ''" class="block_post">
         <div class="block_post_img">
             <img :src="config.storage + object.pictures[0]?.url" alt="">
             <div class="green-bgc">
@@ -132,8 +145,10 @@ export default {
                     {{ beautifullyPrice }} ₽
                 </div>
             </div>
-            <div class="button">
-                <img src="/like.svg" alt="">
+            <div class="button" @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">
+                <img v-if="user?.favourites[type]?.includes(object.id)"
+                     src="/like_active.svg" style="width:24px; height: 24px;" alt="">
+                <img v-else src="/like.svg" alt="">
             </div>
         </div>
     </div>
