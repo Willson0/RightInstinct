@@ -1,9 +1,11 @@
 <script>
 import {favourite, hideOverlay, showOverlay, toLink} from "@/utils.js";
 import config from "@/config.json";
+import RatingBlock from "@/components/RatingBlock.vue";
 
 export default {
     name: "PostBlock",
+    components: {RatingBlock},
     methods: {
         favourite,
         toLink,
@@ -126,10 +128,7 @@ export default {
     <div @click="clickable ? showOverlay('postOverlay') : ''" class="block_post">
         <div class="block_post_img">
             <img :src="config.storage + object.pictures[0]?.url" alt="">
-            <div class="green-bgc">
-                <img src="/star.svg" alt="">
-                <div class="grey-light">{{ object.rating }}</div>
-            </div>
+            <rating-block :id="object.id" :rating="object.rating" :type="type"/>
         </div>
         <div class="block_post_info">
             <div class="sign">{{ object.title }}</div>

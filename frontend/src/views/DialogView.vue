@@ -76,7 +76,7 @@ export default {
     <div class="dialog">
         <div class="dialog_header" @click="toLink('user', data?.companion.id)">
             <div>
-                <img src="/avatar_1.png" alt="">
+                <img :src="data?.companion.avatar" alt="">
                 <div>{{ data?.companion.fullname }}</div>
             </div>
         </div>

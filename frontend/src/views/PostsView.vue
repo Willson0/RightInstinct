@@ -44,11 +44,14 @@ export default {
             let query = config.backend + "post?offset=" + this.feed.length;
             if (this.selectedCategory) query += "&category=" + this.selectedCategory;
             if (this.filter.search) query += "&s=" + this.filter.search;
+            for (let keyFilter in this.filter)
+                query += `&${keyFilter}=` + this.filter[keyFilter];
 
             await axios.get(query).then((response) => {
                 if (response.data.length === 0) return this.isFull = true;
                 this.feed = this.feed.concat(response.data);
             }).finally(() => {
+                this.hideFilter();
                 this.isLoading = false;
             })
         },
@@ -222,14 +225,14 @@ export default {
             </div>
             <div @click="filter.isNew = !filter.isNew ?? true" class="filter_checkbox_text">Сначала новые</div>
         </div>
-        <button @click="hideFilter" class="button">Применить</button>
+        <button @click="isFull = false; feed = []; fetchData()" class="button">Применить</button>
     </div>
     <div class="posts">
         <h1 class="margin-all">Объявления</h1>
         <div class="posts_search_container margin-side">
             <div class="posts_search">
                 <img src="/search.svg" alt="">
-                <input v-model="filter.search" @blur="fetchData(); isFull = false; feed = []" type="text" placeholder="Найти...">
+                <input v-model="filter.search" @blur="isFull = false; feed = []; fetchData();" type="text" placeholder="Найти...">
             </div>
             <button @click="showFilter"><img src="/filter.svg" alt=""></button>
         </div>

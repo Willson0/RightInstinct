@@ -171,26 +171,17 @@ class utils
         if ($request->has('offset')) $query->offset($request->offset);
         if ($request->has('namesort')) $query->orderby('title', $request->namesort);
         if ($request->has("category")) $query->where("category_id", $request->category);
-        if ($request->has("user")) {
-            $userids = User::where("id", $request->user)
-                ->orWhere("name", "like", "%$request->user%")
-                ->orWhere("surname", "like", "%$request->user%")
-                ->orWhere("username", "like", "%$request->user%")
-                ->pluck("id");
-            $query->whereIn("user_id", $userids);
-        }
+        if ($request->has("breed")) $query->where("breed_id", $request->breed);
+        if ($request->has("gender")) $query->where("gender", $request->gender);
+        if ($request->has("city")) $query->where("city_id", $request->city);
+        if ($request->has("price_from") AND $request->has("price_to"))
+            $query->whereBetween("price", $request->price_from, $request->price_to);
+        if ($request->has("rating") AND ($request->rating === "true")) $query->where("rating", ">=", 4);
+        if ($request->has("isNew") AND ($request->isNew === "true")) $query->orderBy("created_at", "desc");
+            else $query->orderBy("created_at", "asc");
         if ($request->has("s")) {
-            if ($class === User::class)
-                $query->where("telegram_id", "like", "%$request->s%")
-                    ->orWhere("fullname", "like", "%$request->s%")
-                    ->orWhere("username", "like", "%$request->s%");
-            else $query->where("title", "like", "%$request->s%");
+            $query->where("title", "like", "%$request->s%");
         }
-        $countpage = ceil($query->count()/$limit);
-        if ($request->has('page') and $limit) $query->skip(($request->page - 1) * $limit);
-
-//        $response["data"] = $query->get();
-//        $response["count"] = $countpage;
 
         return $query->get();
     }
