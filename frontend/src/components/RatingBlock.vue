@@ -1,9 +1,12 @@
 <script>
+import config from "@/config.json";
+import axios from "axios";
 export default {
     name: "RatingBlock",
     data () {
         return {
             overlay: false,
+            isLoading: false,
         }
     },
     methods: {
@@ -44,7 +47,27 @@ export default {
             }, 200);
         },
         async rate (rating) {
+            if (this.isLoading) return;
 
+            this.isLoading = true;
+            await axios.post(config.backend + "rating/rate", {
+                initData: window.Telegram.WebApp.initData,
+                type: this.type,
+                object_id: this.id,
+                rating: rating,
+            }).then((response) => {
+                axios.post(config.backend + "auth/profile", {
+                    "initData": window.Telegram.WebApp.initData,
+                }).then((response) => {
+                    this.$store.dispatch("updateUser", response.data);
+                })
+            }).catch((error) => {
+                if (error.response) {
+                    return alert (`An error occurred: ${error.message}`);
+                }
+            }).finally(() => {
+                this.isLoading = false;
+            });
         },
         nothing () {},
     },
@@ -61,19 +84,29 @@ export default {
             type: Number,
             required: true,
         },
+    },
+    computed: {
+        user () {
+            return this.$store.state.user;
+        },
+        ratingNow () {
+            if (!Array.isArray(this.user?.reviews[this.type])) this.user.reviews[this.type] = [];
+            return this.user?.reviews[this.type].find(el => el.id === this.id)?.rating ?? 0;
+        }
     }
 }
 </script>
 
 <template>
     <div>
-        <div style="display:none" @click.stop="hideOverlay('ratingOverlay')" class="background ratingOverlay"></div>
-        <div @click.stop="nothing" style="display:none" class="overlay ratingOverlay">
+        <div v-if="overlay" style="display:none" @click.stop="hideOverlay('ratingOverlay')" class="background ratingOverlay"></div>
+        <div v-if="overlay" @click.stop="nothing" style="display:none" class="overlay ratingOverlay">
             <div @click.stop="hideOverlay('ratingOverlay')" class="overlay_button"><div></div></div>
             <div @click.stop="nothing" class="ratingOverlay_main">
                 <div class="ratingOverlay_main_title">Оценить</div>
                 <div class="ratingOverlay_main_stars">
-                    <img @click.stop="rate(star)" v-for="star in 5" src="/star.svg" alt="">
+                    <img @click.stop="rate(star)" v-for="star in ratingNow" src="/star.svg" alt="">
+                    <img @click.stop="rate(star + ratingNow)" v-for="star in (5 - ratingNow)" src="/star_disabled.svg" alt="">
                 </div>
             </div>
         </div>

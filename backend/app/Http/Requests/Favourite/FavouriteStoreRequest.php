@@ -23,7 +23,7 @@ class FavouriteStoreRequest extends FormRequest
     {
         return [
             "type" => "required|string|in:post,service,event,user",
-            "object_id" => "required|integer"
+            "object_id" => "required|integer",
         ];
     }
 }

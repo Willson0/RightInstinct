@@ -105,7 +105,7 @@ export default {
                 </div>
             </div>
         </div>
-        <div @click="toLink('store_post')" class="home_block_button green-bgc button">
+        <div @click="toLink('store')" class="home_block_button green-bgc button">
             <div>
                 <img src="/plus.svg" alt="">
                 <div class="button">Добавить объявление</div>

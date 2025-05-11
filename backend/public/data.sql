@@ -1,4 +1,7 @@
 INSERT INTO `categories` (`name`) VALUES
+('Продажа');
+
+INSERT INTO `service_types` (`name`) VALUES
 ('Натаска'), ('Вязка'), ('Дрессировка'), ('Передержка');
 
 INSERT INTO `cities` (`id`, `name`) VALUES

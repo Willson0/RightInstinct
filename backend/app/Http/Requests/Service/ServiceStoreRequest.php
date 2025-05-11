@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Rating;
+namespace App\Http\Requests\Service;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RatingRateRequest extends FormRequest
+class ServiceStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,13 @@ class RatingRateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "type" => "required|string|in:post,service,event,user",
-            "object_id" => "required|integer",
-            "rating" => "required|numeric|min:0|max:5",
+            "title" => "required|string",
+            "description" => "required|string",
+            "city_id" => "required|integer|exists:cities,id",
+            "type_id" => "required|integer|exists:service_types,id",
+            "price" => "required|integer|min:0",
+            "pictures" => "required|array|min:1",
+            "pictures.*" => "required|file"
         ];
     }
 }

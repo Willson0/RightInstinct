@@ -3,8 +3,11 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavouriteController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Middleware\CheckTelegram;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +22,18 @@ Route::group(["prefix" => "api"], function () {
     Route::group(["prefix" => "post", "middleware" => CheckTelegram::class], function () {
         Route::post("/", [PostController::class, 'store']);
         Route::post("/{post}/delete", [PostController::class, 'destroy']);
+    });
+
+    Route::get("/service", [ServiceController::class, 'index']);
+    Route::group(["prefix" => "service", "middleware" => CheckTelegram::class], function () {
+        Route::post("/", [ServiceController::class, 'store']);
+        Route::post("/{service}/delete", [ServiceController::class, 'destroy']);
+    });
+
+    Route::get("/event", [EventController::class, 'index']);
+    Route::group(["prefix" => "event", "middleware" => CheckTelegram::class], function () {
+        Route::post("/", [EventController::class, 'store']);
+        Route::post("/{event}/delete", [EventController::class, 'destroy']);
     });
 
     Route::group(["prefix" => "data"], function () {
@@ -42,5 +57,9 @@ Route::group(["prefix" => "api"], function () {
         Route::post("/", [FavouriteController::class, 'store']);
         Route::post("/delete", [FavouriteController::class, 'destroy']);
         Route::post("/index", [FavouriteController::class, 'index']);
+    });
+
+    Route::group(["prefix" => "rating", "middleware" => CheckTelegram::class], function () {
+        Route::post("/rate", [RatingController::class, 'rate']);
     });
 });

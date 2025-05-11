@@ -1,11 +1,12 @@
 <script>
 import PostBlock from "@/components/PostBlock.vue";
 import {hideOverlay, showOverlay, toLink} from "@/utils.js";
+import EventBlock from "@/components/EventBlock.vue";
 
 export default {
     name: "HomeView",
     methods: {showOverlay, hideOverlay, toLink},
-    components: {PostBlock},
+    components: {EventBlock, PostBlock},
     async mounted () {
         window.Telegram.WebApp.disableVerticalSwipes();
     },
@@ -24,7 +25,7 @@ export default {
 
 <template>
     <div class="home">
-        <div v-if="user.feed?.posts?.length !== 0" class="home_block">
+        <div class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Объявления</h1>
                 <div @click="toLink('posts')" class="button green-bgc">
@@ -34,10 +35,10 @@ export default {
             <div class="home_block_description grey margin-side">
                 Продажа, покупка собак, щенки, предложения вязки, анонсы помёта
             </div>
-            <div class="home_block_posts_container">
+            <div v-if="user.feed?.posts?.length !== 0" class="home_block_posts_container">
                 <post-block :object="post" v-for="post in user.feed?.posts"/>
             </div>
-            <div @click="toLink('store_post')" class="home_block_button green-bgc button margin-side">
+            <div @click="toLink('store', 'post')" class="home_block_button green-bgc button margin-side">
                 <div>
                     <img src="/plus.svg" alt="">
                     <div class="button">Добавить</div>
@@ -52,31 +53,30 @@ export default {
                 </div>
             </div>
             <div v-if="user.feed?.services?.length !== 0" class="home_block_posts_container">
-                <post-block :title="service.title" :type="service.category.name" :city="service.city.name"
-                    :price="service.price" :rating="service.rating" v-for="service in user.feed?.services"/>
+                <post-block :object="service" type="service" v-for="service in user.feed?.services"/>
             </div>
-            <div @click="toLink('store_service')" class="home_block_button green-bgc button margin-side">
+            <div @click="toLink('store', 'service')" class="home_block_button green-bgc button margin-side">
                 <div>
                     <img src="/plus.svg" alt="">
                     <div class="button">Добавить</div>
                 </div>
             </div>
         </div>
-        <div v-if="user.feed?.popular?.length !== 0 && user.feed?.popular !== null" class="home_block">
-            <div class="home_block_header margin-side">
-                <h1>Популярное</h1>
-            </div>
-            <div class="home_block_posts_container">
-                <post-block :title="popular.title" :type="popular.category.name" :city="popular.city.name"
-                            :price="popular.price" :rating="popular.rating" v-for="popular in user.feed?.popular"/>
-            </div>
-            <div class="home_block_button green-bgc button margin-side">
-                <div>
-                    <img src="/plus.svg" alt="">
-                    <div class="button">Добавить</div>
-                </div>
-            </div>
-        </div>
+<!--        <div v-if="user.feed?.popular?.length !== 0 && user.feed?.popular !== null" class="home_block">-->
+<!--            <div class="home_block_header margin-side">-->
+<!--                <h1>Популярное</h1>-->
+<!--            </div>-->
+<!--            <div class="home_block_posts_container">-->
+<!--                <post-block :title="popular.title" :type="popular.category.name" :city="popular.city.name"-->
+<!--                            :price="popular.price" :rating="popular.rating" v-for="popular in user.feed?.popular"/>-->
+<!--            </div>-->
+<!--            <div class="home_block_button green-bgc button margin-side">-->
+<!--                <div>-->
+<!--                    <img src="/plus.svg" alt="">-->
+<!--                    <div class="button">Добавить</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Мероприятие</h1>
@@ -84,11 +84,10 @@ export default {
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
-            <div v-if="user.feed?.events?.length !== 0" class="home_block_posts_container">
-                <post-block :title="event.title" :type="event.category.name" :city="event.city.name"
-                            :price="event.price" :rating="event.rating" v-for="event in user.feed?.events"/>
+            <div v-if="user.feed?.events?.length !== 0" class="home_block_posts_container myevents_main">
+                <event-block :event="event" v-for="event in user.feed?.events"/>
             </div>
-            <div class="home_block_button green-bgc button margin-side">
+            <div @click="toLink('store', 'event')" class="home_block_button green-bgc button margin-side">
                 <div>
                     <img src="/plus.svg" alt="">
                     <div class="button">Добавить</div>

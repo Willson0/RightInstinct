@@ -1,8 +1,7 @@
 <script>
 import NavComponent from "@/components/NavComponent.vue";
 import HomeView from "@/views/HomeView.vue";
-import StorePost from "@/views/StorePost.vue";
-import StoreService from "@/views/StoreService.vue";
+import StorePost from "@/views/StoreView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import ChatView from "@/views/ChatView.vue";
 import DialogView from "@/views/DialogView.vue";
@@ -28,7 +27,7 @@ export default {
         FavouriteView,
         PostsView, ChatView, HomeView,
         MyPostsView, StorePost, NavComponent,
-        MyEventsView, ProfileView, StoreService,
+        MyEventsView, ProfileView,
         MySubscriptionsView, UserView,
         NotificationsView, DialogView,
     },
@@ -86,8 +85,7 @@ export default {
     <div class="notification_container"></div>
     <nav-component>
         <home-view v-if="$route.query.s === 'home'" />
-        <store-post v-if="$route.query.s === 'store_post'" />
-        <store-service v-if="$route.query.s === 'store_service'" />
+        <store-post v-if="$route.query.s === 'store'" />
         <profile-view v-if="$route.query.s === 'profile'" />
         <chat-view v-if="$route.query.s === 'chat'" />
         <dialog-view v-if="$route.query.s === 'dialog'" />

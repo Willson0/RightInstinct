@@ -140,6 +140,7 @@ export function favourite (action, type, id, isLoading, user) {
     }).then((response) => {
         if (action) {
             notify("Успешно добавлено в избранное!");
+            if (!user || !user.favourites || !Array.isArray(user.favourites[type])) user.favourites[type] = [];
             user.favourites[type].push(id);
         } else {
             notify("Успешно удалено из избранного!");
@@ -152,4 +153,20 @@ export function favourite (action, type, id, isLoading, user) {
     }).finally(() => {
         isLoading.status = false;
     })
+}
+
+export function toLocalSimpleISO(date) {
+    const pad = n => String(n).padStart(2, "0")
+    return [
+            date.getFullYear(),
+            pad(date.getMonth() + 1),
+            pad(date.getDate())
+        ].join("-") + "T" +
+        [
+            pad(date.getHours()),
+            pad(date.getMinutes()),
+            pad(date.getSeconds())
+        ].join(":") +
+        "." +
+        String(date.getMilliseconds()).padStart(3, "0")
 }

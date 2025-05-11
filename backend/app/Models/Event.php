@@ -6,5 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    //
+    protected $guarded = false;
+
+    public function city () {
+        return $this->belongsTo(City::class);
+    }
+    public function category () {
+        return $this->belongsTo(ServiceType::class, "type_id", "id");
+    }
+    public function user () {
+        return $this->belongsTo(User::class);
+    }
+    public function pictures () {
+        return $this->hasMany(Picture::class, "object_id")->where("type", "post");
+    }
 }

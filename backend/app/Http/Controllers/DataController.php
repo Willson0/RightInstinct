@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Breed;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\ServiceType;
 use Illuminate\Http\Request;
 
 class DataController extends Controller
@@ -15,6 +16,7 @@ class DataController extends Controller
         $data["breeds"] = Breed::all();
         $data["cities"] = City::all();
         $data["categories"] = Category::all();
+        $data["types"] = ServiceType::all();
 
         return response()->json($data);
     }

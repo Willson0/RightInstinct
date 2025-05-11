@@ -1191,6 +1191,9 @@ div {
     line-height: 12px;
     margin: auto 0;
 }
+.event_calendar {
+    margin-bottom: 6px;
+}
 .event>img {
     width: 100%;
     height: 82px;
@@ -1723,4 +1726,103 @@ div {
 .ratingOverlay_main_stars>svg {
     width: 24px;
     height: 24px;
+}
+
+/*CALENDAR*/
+
+.calendar-container {
+    background: #eef1e6;
+    border-radius: 12px;
+    padding: 20px;
+    display: inline-block;
+    box-shadow: 0 2px 10px #0001;
+}
+
+/* Убираем лишние поля и подчеркивания */
+.dp__input_wrap,
+.dp__input {
+    display: none !important;
+}
+
+/* Стили самой панели */
+.dp__main {
+    background: transparent !important;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Заголовок месяца */
+.dp__month_year_row {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #47604e;
+    justify-content: center;
+}
+
+/* Стилизация стрелочек */
+.dp__arrow {
+    color: #97a569 !important;
+    background: none !important;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.3em;
+    padding: 2px 8px;
+    transition: background 0.15s;
+}
+.dp__arrow:hover {
+    background: #e6edc7 !important;
+}
+
+/* Названия дней недели */
+.dp__calendar_header_item {
+    font-weight: 500;
+    color: #848a74;
+    padding: 6px 8px;
+    font-size: 1.1em;
+}
+
+/* Стилизация ячеек дней */
+.dp__cell_inner {
+    border: 1.7px solid #ced6bc !important;
+    border-radius: 12px !important;
+    width: 38px !important;
+    height: 38px !important;
+    margin: 1.8px;
+    font-size: 1.04em;
+    color: #47604e;
+    background: #fff;
+    transition: background 0.2s, border 0.2s;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Сегодня */
+.dp__cell_inner.dp__today {
+    border-color: #97a569 !important;
+    background: #f2f8eb !important;
+    color: #91a572 !important;
+}
+
+/* Активный день */
+.dp__cell_inner.dp__active_date {
+    background: #cddaa4 !important;
+    border-color: #8db158 !important;
+    color: #47604e;
+}
+
+/* Неактивные (дни из других месяцев) */
+.dp__cell_inner.dp__cell_disabled,
+.dp__cell_inner.dp__over_disabled {
+    opacity: 0.5;
+    background: none !important;
+    color: #bbbbbb !important;
+    cursor: default;
+}
+
+.dp__calendar {
+    gap: 0px !important; /* чтоб ячейки сблизились */
 }

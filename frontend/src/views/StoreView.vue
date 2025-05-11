@@ -1,10 +1,13 @@
 <script>
 import axios from "axios";
 import config from "@/config.json"
-import {notify, toLink} from "@/utils.js";
+import {hideOverlay, notify, showOverlay, toLink, toLocalSimpleISO} from "@/utils.js";
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 export default {
     name: "StorePost",
+    components: {VueDatePicker},
     data () {
         return {
             gender: null, // 0 - ж 1 - м
@@ -19,11 +22,15 @@ export default {
             description: "",
             isLoading: false,
             data: [],
+            type: 'post',
+            details: "",
+            dates: [],
         }
     },
     async mounted () {
+        this.type = this.$route.query.id;
+
         window.addEventListener("click", (event) => {
-            console.log(event.target.closest(".store_input_select_container"));
             if (event.target.closest(".store_input_select_container") === null)
                 document.querySelectorAll(".store_input_select_list").forEach(el => {
                     el.classList.remove("active");
@@ -35,6 +42,8 @@ export default {
         });
     },
     methods: {
+        showOverlay,
+        hideOverlay,
         async openList (event) {
             let select = event.target.closest(".store_input_select_container");
             document.querySelectorAll(".store_input_select_list").forEach(el => {
@@ -72,13 +81,28 @@ export default {
             this.photos.shift();
         },
         async sendData () {
-            Object.values(this.$refs).forEach(el => el.style.border = "");
-            let rules = [
-                [this.age < 1, "Возраст не может быть меньше 1 месяца!", "age"],
-                [this.age > 360, "Возраст не может быть больше 360 месяцев!", "age"],
-                [this.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
-                [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
-            ];
+            Object.values(this.$refs).forEach(el => {
+                if (el) el.style.border = ""
+            });
+
+            let rules = [];
+            if (this.type === 'post')
+                rules = [
+                    [this.age < 1, "Возраст не может быть меньше 1 месяца!", "age"],
+                    [this.age > 360, "Возраст не может быть больше 360 месяцев!", "age"],
+                    [this.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
+                    [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+                ];
+            else if (this.type === 'service')
+                rules = [
+                    [this.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
+                    [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+                ]
+            else if (this.type === 'event')
+                rules = [
+                    [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+                    [this.details.length < 10, "Описание деталей не может быть меньше 10 символов!", "details"],
+                ]
             let isError = false;
             for (let rule of rules) {
                 if (rule[0]) {
@@ -94,14 +118,24 @@ export default {
             let fd = new FormData();
             fd.append("initData", window.Telegram.WebApp.initData);
             fd.append("title", this.title);
-            fd.append("age", this.age);
-            fd.append("gender", this.gender);
-            fd.append("breed_id", this.breed);
-            fd.append("city_id", this.city);
-            fd.append("price", this.price);
-            fd.append("category_id", this.category);
             fd.append("description", this.description);
-            fd.append("rewards", this.rewards);
+            fd.append("city_id", this.city);
+            if (this.type === "post") {
+                fd.append("age", this.age);
+                fd.append("gender", this.gender);
+                fd.append("breed_id", this.breed);
+                fd.append("price", this.price);
+                fd.append("category_id", this.category);
+                fd.append("rewards", this.rewards);
+            } else if (this.type === "service") {
+                fd.append("type_id", this.category);
+                fd.append("price", this.price);
+            } else if (this.type === 'event') {
+                fd.append("type_id", this.category);
+                fd.append("details", this.details);
+                fd.append("start_date", toLocalSimpleISO(this.dates[0]));
+                fd.append("end_date", toLocalSimpleISO(this.dates[1]));
+            }
 
             let index = 0;
             for (let img of this.photos) {
@@ -110,7 +144,7 @@ export default {
             }
 
             this.isLoading = true;
-            await axios.post(config.backend + "post/", fd)
+            await axios.post(config.backend + this.type + "/", fd)
             .then((response) => {
                 notify("Пост успешно создан!");
                 setTimeout(() => {
@@ -124,15 +158,48 @@ export default {
                 this.isLoading = false;
             })
         }
+    },
+    computed: {
+        beautifullyDate () {
+            if (this.dates[0].getYear() === this.dates[1].getYear())
+                return (String(this.dates[0].getDate()).padStart(2, "0") + "."
+                    + String(this.dates[0].getMonth()+1).padStart(2, "0") + " - "
+                    + String(this.dates[1].getDate()).padStart(2, "0")
+                        + "." + String(this.dates[1].getMonth()+1).padStart(2, "0")
+                        + "." + String(this.dates[1].getFullYear()).padStart(2,"0"))
+        },
+        rulePost () {
+            return this.photos.length !== 0 && this.price && this.rewards && this.category && this.city
+                && this.breed && this.gender !== null && this.title && this.age && this.description
+                && !this.isLoading;
+        },
+        ruleService () {
+            return this.photos.length !== 0 && this.price && this.category && this.city && this.title
+                    && this.description && !this.isLoading;
+        },
+        ruleEvent () {
+            return this.photos.length !== 0 && this.category && this.city && this.title && this.details
+                && this.dates.length > 0 && this.description && !this.isLoading;
+        }
     }
 }
 </script>
 
 <template>
+    <div style="display:none" @click="hideOverlay('dateSelect')" class="background dateSelect"></div>
+    <div style="display:none" class="overlay dateSelect">
+        <div @click="hideOverlay('dateSelect')"  class="overlay_button"><div></div></div>
+        <div class="dateSelect_main">
+            <VueDatePicker v-model="dates" :range="true" :enable-time-picker="false" :inline="true"
+                           :auto-apply="true" :min-date="new Date()" locale="ru" :month-picker="false"
+                           :hide-input-icon="true"/>
+        </div>
+    </div>
     <div class="store">
-        <h1 class="store_title">Добавить объявление</h1>
+        <h1 class="store_title">Добавить {{ this.type === 'post' ? 'объявление' : this.type === 'service' ? 'услугу' : 'мероприятие' }}</h1>
         <input v-model="title" class="store_input" type="text" placeholder="Название">
-        <div style="z-index:10" class="store_input_container">
+        <input ref="description" v-if="['event'].includes(type)" v-model="description" class="store_input" type="text" placeholder="Описание">
+        <div v-if="['post'].includes(type)" style="z-index:10" class="store_input_container">
             <input ref="age" v-model="age" type="number" placeholder="Возраст (мес)">
             <div class="store_input_select_container">
                 <div ref="gender" @click="openList" class="store_input_select">
@@ -161,7 +228,7 @@ export default {
                 </div>
             </div>
         </div>
-        <div style="z-index:9" class="store_input_select_container">
+        <div v-if="['post'].includes(type)" style="z-index:9" class="store_input_select_container">
             <div ref="breed" @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
                     <div v-if="!breed">Порода</div>
@@ -178,7 +245,7 @@ export default {
         <div style="z-index:8" class="store_input_select_container">
             <div ref="city" @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
-                    <div v-if="!city">Город</div>
+                    <div v-if="!city">{{ !['event'].includes(type) ? 'Город' : 'Место проведения' }}</div>
                     <div v-else>{{ data.cities.find(el => el.id === city).name }}</div>
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
@@ -190,8 +257,19 @@ export default {
             </div>
         </div>
         <div style="z-index:7" class="store_input_container">
-            <input ref="price" v-model="price" type="number" placeholder="Цена, ₽">
-            <div ref="category" class="store_input_select_container">
+            <input v-if="['post'].includes(type)" ref="price" v-model="price" type="number" placeholder="Цена, ₽">
+            <div v-if="['event'].includes(type)" ref="category" class="store_input_select_container">
+                <div @click="showOverlay('dateSelect')" class="store_input_select">
+                    <div class="store_input_select_main">
+                        <div v-if="!dates.length">
+                            <img src="/calendar.svg" alt="">
+                            <div>Дата</div>
+                        </div>
+                        <div v-else>{{ beautifullyDate }}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="['post'].includes(type)" ref="category" class="store_input_select_container">
                 <div @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
                         <div v-if="!category">Категория</div>
@@ -201,6 +279,20 @@ export default {
                 </div>
                 <div class="store_input_select_list">
                     <div v-for="catg in data.categories" @click="category = catg.id; hideList($event)">
+                        <div>{{ catg.name }}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="['service', 'event'].includes(type)" ref="category" class="store_input_select_container">
+                <div @click="openList" class="store_input_select">
+                    <div class="store_input_select_main">
+                        <div v-if="!category">Вид услуги</div>
+                        <div v-else>{{data.types.find(el => el.id === category).name}}</div>
+                        <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                    </div>
+                </div>
+                <div class="store_input_select_list">
+                    <div v-for="catg in data.types" @click="category = catg.id; hideList($event)">
                         <div>{{ catg.name }}</div>
                     </div>
                 </div>
@@ -236,12 +328,15 @@ export default {
             </label>
         </div>
         <input @input="addImage" id="image" type="file" style="display:none;" accept="image/*">
-        <textarea ref="description" placeholder="Описание" rows="2" v-model="description" class="input"></textarea>
-        <input ref="rewards" v-model="rewards" type="text" placeholder="Титулы и награды">
-        <button class="store_button button" :class="
-            photos.length !== 0 && price && rewards && category && city && breed && gender !== null && title && age
-            && description && !isLoading ? 'active' : ''
-        " @click="sendData">Сохранить</button>
+        <textarea v-if="['event'].includes(type)" ref="details" placeholder="Подробности" rows="2" v-model="details" class="input"></textarea>
+        <textarea v-else ref="description" placeholder="Описание" rows="2" v-model="description" class="input"></textarea>
+        <input v-if="['post'].includes(type)" ref="rewards" v-model="rewards" type="text" placeholder="Титулы и награды">
+        <button v-if="['post'].includes(type)"  class="store_button button"
+                :class="rulePost ? 'active' : ''" @click="rulePost ? sendData() : ''">Сохранить</button>
+        <button v-if="['service'].includes(type)"  class="store_button button"
+                :class="ruleService ? 'active' : ''" @click="ruleService ? sendData() : ''">Сохранить</button>
+        <button v-if="['event'].includes(type)"  class="store_button button"
+                :class="ruleEvent ? 'active' : ''" @click="ruleEvent ? sendData() : ''">Отправить на модерацию</button>
     </div>
 </template>
 

@@ -3,7 +3,7 @@ import UserBlock from "@/components/UserBlock.vue";
 import config from "@/config.json";
 import axios from "axios"
 import PostBlock from "@/components/PostBlock.vue";
-import {notify} from "@/utils.js";
+import {favourite, notify} from "@/utils.js";
 
 export default {
     name: "UserView.vue",
@@ -12,7 +12,14 @@ export default {
         return {
             us: {},
             isLoading: false,
+            type: "user",
+            isLoadingLike: {status: false},
         }
+    },
+    computed: {
+        user () {
+            return this.$store.state.user;
+        },
     },
     async mounted () {
         await axios.post(config.backend + "user/" + this.$route.query.id, {
@@ -25,6 +32,7 @@ export default {
         })
     },
     methods: {
+        favourite,
         async subscribe (status = 1) {
             if (this.isLoading) return;
 
@@ -70,7 +78,11 @@ export default {
         <div class="user_buttons">
             <button v-if="us.isSubscribe" class="button" @click="subscribe(0)">Отписаться</button>
             <button v-else class="button" @click="subscribe(1)">Подписаться</button>
-            <button><img style="width: 32px; height: 32px;" src="/like.svg" alt=""></button>
+            <button v-if="user" @click.stop="favourite(!user?.favourites[type]?.includes(us.id), type, us.id, isLoadingLike, user)">
+                <img v-if="user && user.favourites && user.favourites[type] && user?.favourites[type]?.includes(us.id)"
+                     src="/like_active.svg"  alt="">
+                <img v-else src="/like.svg" style="width: 32px; height: 32px;" alt="">
+            </button>
             <button><img src="/share.svg" alt=""></button>
         </div>
         <a href="https://t.me/wilflw" class="postOverlay_main_complain">Пожаловаться</a>

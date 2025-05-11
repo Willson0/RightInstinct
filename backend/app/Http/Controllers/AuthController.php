@@ -29,6 +29,15 @@ class AuthController extends Controller
         $user->city;
         $user->notifications;
         $user->subscriptions = $user->subscriptions()->with("user_subscription")->get();
+        $user->reviews = $user->reviews()->get()->groupBy("type")->map(function ($group) {
+            return $group->map(function ($review) {
+                return [
+                    'id' => $review->object_id,
+                    'rating' => $review->rating,
+                ];
+            });
+        })
+        ->toArray();
 
         foreach ($user->subscriptions as $us) {
             $us->user_subscription->city;
@@ -83,9 +92,9 @@ class AuthController extends Controller
 
         $feed = [];
         $feed["posts"] = Post::limit(10)->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
-        $feed["services"] = Service::limit(10)->with("city")->get();
+        $feed["services"] = Service::limit(10)->with("pictures")->with("user")->with("city")->with("category")->get();
         $feed["popular"] = null;
-        $feed["events"] = Event::limit(10)->with("city")->get();
+        $feed["events"] = Event::limit(10)->with("pictures")->with("user")->with("city")->with("category")->get();
 
         $user["feed"] = $feed;
 

@@ -89,9 +89,9 @@ export default {
             </div>
             <div class="postOverlay_mainContainer">
                 <h4>{{ object.title }}</h4>
-                <div class="input">{{ object.breed.name }}</div>
+                <div v-if="['post'].includes(type)" class="input">{{ object.breed.name }}</div>
                 <div class="postOverlay_main_info">
-                    <div class="postOverlay_main_info_age">
+                    <div v-if="['post'].includes(type)" class="postOverlay_main_info_age">
                         <img :src="object.gender ? '/male.svg' : '/female.svg'" alt="">
                         <div class="input">{{ object.age }} месяцев</div>
                     </div>
@@ -104,7 +104,7 @@ export default {
             <div class="postOverlay_main_description">
                 {{ object.description }}
             </div>
-            <div class="postOverlay_main_rewards">
+            <div v-if="['post'].includes(type)" class="postOverlay_main_rewards">
                 <img src="/star.svg" alt="">
                 <div>{{ object.rewards }}</div>
             </div>
@@ -118,7 +118,11 @@ export default {
             <div class="postOverlay_main_buttons">
                 <div class="button"><h3>{{ beautifullyPrice }} ₽</h3></div>
                 <button><img src="/press.svg" alt=""></button>
-                <button><img src="/like.svg" alt=""></button>
+                <button @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">
+                    <img v-if="user?.favourites[type]?.includes(object.id)"
+                         src="/like_active.svg" style="width:24px; height: 24px;" alt="">
+                    <img v-else src="/like.svg" alt="">
+                </button>
                 <button><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
             </div>
             <button class="button" @click="toLink('dialog', object.user.id)">Связаться с продавцом</button>
@@ -131,7 +135,7 @@ export default {
             <rating-block :id="object.id" :rating="object.rating" :type="type"/>
         </div>
         <div class="block_post_info">
-            <div class="sign">{{ object.title }}</div>
+            <div class="sign">{{ object.title }} {{object.id}}</div>
             <div class="grey sign">{{ object.category.name }}</div>
         </div>
         <div class="block_post_location">
@@ -144,7 +148,7 @@ export default {
                     {{ beautifullyPrice }} ₽
                 </div>
             </div>
-            <div class="button" @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">
+            <div v-if="user && user.favourites" class="button" @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">
                 <img v-if="user?.favourites[type]?.includes(object.id)"
                      src="/like_active.svg" style="width:24px; height: 24px;" alt="">
                 <img v-else src="/like.svg" alt="">
