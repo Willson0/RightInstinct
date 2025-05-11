@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Service extends Model
 {
     protected $guarded = false;
+    protected $fillable = ["user_id", "title", "city_id", "price", "type_id", "description", "rating"];
 
     public function city () {
         return $this->belongsTo(City::class);

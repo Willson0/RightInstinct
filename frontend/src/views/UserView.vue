@@ -14,6 +14,7 @@ export default {
             isLoading: false,
             type: "user",
             isLoadingLike: {status: false},
+            config: config,
         }
     },
     computed: {
@@ -85,7 +86,7 @@ export default {
             </button>
             <button><img src="/share.svg" alt=""></button>
         </div>
-        <a href="https://t.me/wilflw" class="postOverlay_main_complain">Пожаловаться</a>
+        <a :href="config.complain" class="postOverlay_main_complain">Пожаловаться</a>
     </div>
 </template>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\utils;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,6 +21,9 @@ class SubscriptionController extends Controller
             "user_id" => $user->id,
             "user_subscription_id" => $request->user_subscription_id,
         ]);
+
+        utils::addNotification($user, "subscribe", "user", $request->user_subscription_id);
+
         return response()->json($response);
     }
 

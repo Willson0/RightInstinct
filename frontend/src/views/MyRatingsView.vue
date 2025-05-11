@@ -1,28 +1,85 @@
 <script>
+import axios from "axios";
+import config from "@/config.json"
+import RatingBlock from "@/components/RatingBlock.vue";
 export default {
-    name: "MyRatingsView"
+    name: "MyRatingsView",
+    components: {RatingBlock},
+    data () {
+        return {
+            reviews: [],
+            config: config,
+        }
+    },
+    async mounted () {
+        await this.fetchData();
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
+    },
+    methods: {
+        async fetchData () {
+            await axios.post(config.backend + "rating", {
+                initData: window.Telegram.WebApp.initData,
+            }).then((response) => {
+                this.reviews = response.data;
+            }).catch((error) => {
+                if (error.response)
+                    alert (error.message);
+            })
+        },
+        async rate (rating, type, id) {
+            if (this.isLoading) return;
+
+            this.isLoading = true;
+            await axios.post(config.backend + "rating/rate", {
+                initData: window.Telegram.WebApp.initData,
+                type: type,
+                object_id: id,
+                rating: rating,
+            }).then((response) => {
+                this.user.reviews[type].find(el => el.id === id).rating = rating;
+                this.$store.dispatch("updateUser", this.user);
+
+                this.fetchData();
+            }).catch((error) => {
+                if (error.response) {
+                    return alert (`An error occurred: ${error.message}`);
+                }
+            }).finally(() => {
+                this.isLoading = false;
+            });
+        },
+        ratingNow (type, id) {
+            if (!Array.isArray(this.user?.reviews[type])) this.user.reviews[type] = [];
+            return this.user?.reviews[type].find(el => el.id === id)?.rating ?? 0;
+        }
+    }
 }
 </script>
 
 <template>
-    <div class="myratings">
+    <div class="myratings margin-all">
         <h1>Мои оценки</h1>
         <div class="myratings_main">
-            <div v-for="el in 3">
-                <img src="/rating.png" alt="">
-                <div class="myratings_el_rating">
-                    <img src="/star.svg" alt="">
-                    <div>4,9</div>
+            <div v-for="review in reviews">
+                <div class="block_post_img">
+                    <img :src="config.storage + review.object.pictures[0].url" alt="">
+                    <div class="green-bgc">
+                        <img src="/star.svg" alt="">
+                        <div class="grey-light">{{ review.object.rating }}</div>
+                    </div>
                 </div>
                 <div class="myratings_el_info">
-                    <div>
-                        <div class="myratings_el_info_title">Щенки золотистого ретривера</div>
-                        <div class="myratings_el_info_category">Щенки</div>
+                    <div class="myratings_el_info_text">
+                        <div class="myratings_el_info_title sign">{{ review.object.title }}</div>
+                        <div class="myratings_el_info_category sign">{{ review.object.category.name }}</div>
                     </div>
-                    <div>
-                        <svg v-for="star in 5" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4.93745 13.5625L8.49995 11.6875L12.0624 13.5625C12.1041 13.5728 12.1406 13.5677 12.1719 13.547C12.2033 13.5263 12.2138 13.495 12.2034 13.453L11.5314 9.48401L14.4064 6.67151C14.4378 6.64018 14.4483 6.60635 14.4379 6.57001C14.4276 6.53368 14.4016 6.51018 14.3599 6.49951L10.3754 5.92151L8.59395 2.31201C8.57295 2.27035 8.54162 2.24951 8.49995 2.24951C8.45828 2.24951 8.42695 2.27035 8.40595 2.31201L6.62445 5.92151L2.63995 6.49951C2.59828 6.50985 2.57228 6.53335 2.56195 6.57001C2.55162 6.60668 2.56212 6.64051 2.59345 6.67151L5.46845 9.48401L4.78095 13.453C4.78095 13.4947 4.79662 13.526 4.82795 13.547C4.85928 13.568 4.89578 13.5732 4.93745 13.5625Z" fill="#E4BA6A"/>
-                        </svg>
+                    <div class="ratingOverlay_main_stars">
+                        <img @click.stop="rate(star, review.type, review.object_id)" v-for="star in ratingNow(review.type, review.object_id)" src="/star.svg" alt="">
+                        <img @click.stop="rate(star + ratingNow(review.type, review.object_id), review.type, review.object_id)" v-for="star in (5 - ratingNow(review.type, review.object_id))" src="/star_disabled.svg" alt="">
                     </div>
                 </div>
             </div>

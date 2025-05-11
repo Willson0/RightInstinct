@@ -14,6 +14,10 @@ import MyPostsView from "@/views/MyPostsView.vue";
 import PostsView from "@/views/PostsView.vue";
 import UserView from "@/views/UserView.vue"
 import FavouriteView from "@/views/FavouriteView.vue"
+import MyServicesView from "@/views/MyServicesView.vue";
+import MyRatingsView from "@/views/MyRatingsView.vue";
+import EventsView from "@/views/EventsView.vue";
+import UpdateView from "@/views/UpdateView.vue";
 
 export default {
     name: "MainView",
@@ -24,6 +28,10 @@ export default {
         }
     },
     components: {
+        UpdateView,
+        EventsView,
+        MyRatingsView,
+        MyServicesView,
         FavouriteView,
         PostsView, ChatView, HomeView,
         MyPostsView, StorePost, NavComponent,
@@ -93,9 +101,13 @@ export default {
         <my-subscriptions-view v-if="$route.query.s === 'mysubscriptions'" />
         <my-events-view v-if="$route.query.s === 'myevents'" />
         <my-posts-view v-if="$route.query.s === 'myposts'" />
+        <my-services-view v-if="$route.query.s === 'myservices'" />
+        <my-ratings-view v-if="$route.query.s === 'myratings'" />
         <posts-view v-if="$route.query.s === 'posts'" />
+        <events-view v-if="$route.query.s === 'events'" />
         <user-view v-if="$route.query.s === 'user'" />
         <favourite-view v-if="$route.query.s === 'favourite'" />
+        <update-view v-if="$route.query.s === 'update'" />
     </nav-component>
 <!--    123-->
 </template>

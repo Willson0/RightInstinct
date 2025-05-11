@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\PostStoreRequest;
+use App\Http\Requests\Post\PostUpdateRequest;
 use App\Http\utils;
 use App\Models\Picture;
 use App\Models\Post;
@@ -53,5 +54,20 @@ class PostController extends Controller
     public function index (Request $request) {
         $data = utils::index(Post::class, $request);
         return response()->json($data);
+    }
+
+    public function show ($id, Request $request) {
+        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+
+        $post = Post::where("id", $id)->with("pictures")->with("breed")->with("user")
+            ->with("city")->with("category")->first();
+        if ($post->user_id !== $user->id) abort (409);
+
+        return response()->json($post);
+    }
+
+    public function update (Post $post, PostUpdateRequest $request) {
+        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        return utils::update($post, $user, $request);
     }
 }

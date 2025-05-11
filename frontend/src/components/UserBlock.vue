@@ -1,8 +1,10 @@
 <script>
 import {toLink} from "@/utils.js";
+import RatingBlock from "@/components/RatingBlock.vue";
 
 export default {
     name: "UserBlock",
+    components: {RatingBlock},
     methods: {toLink},
     props: {
         user: {
@@ -19,11 +21,14 @@ export default {
         <div class="profile_info">
             <div class="profile_info_name">{{ user.fullname }}</div>
             <div class="profile_info_city" v-if="user.city">{{ user.city.name }}</div>
+<!--            <div class="block_post_img">-->
+<!--                <div class="green-bgc">-->
+<!--                    <img src="/star.svg" alt="">-->
+<!--                    <div class="grey-light">{{ user.rating }}</div>-->
+<!--                </div>-->
+<!--            </div>-->
             <div class="block_post_img">
-                <div class="green-bgc">
-                    <img src="/star.svg" alt="">
-                    <div class="grey-light">{{ user.rating }}</div>
-                </div>
+                <rating-block :rating="user.rating" :id="user.id" type="user"/>
             </div>
         </div>
         <button @click.stop="toLink('dialog', user.id)">

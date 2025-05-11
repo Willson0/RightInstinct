@@ -5,12 +5,18 @@ namespace App\Http;
 
 use App\Models\Admin;
 use App\Models\AdminCookie;
+use App\Models\Event;
+use App\Models\Notification;
+use App\Models\Picture;
 use App\Models\Post;
+use App\Models\Service;
 use App\Models\User;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use OpenAI\Client;
 
 class utils
@@ -165,17 +171,26 @@ class utils
         $query = $class::take($limit);
         if ($class === Post::class) $query = Post::limit($limit)->orderBy("created_at", "desc")->with("pictures")
             ->with("breed")->with("user")->with("city")->with("category");
+        else if ($class === Service::class) $query = Service::limit($limit)->orderBy("created_at", "desc")
+            ->with("pictures")->with("user")->with("city")->with("category");
+        else if ($class === Event::class) $query = Event::limit($limit)->orderBy("created_at", "desc")
+            ->with("pictures")->with("user")->with("city")->with("category");
 
         if ($request->has("sort")) $query->orderby("id", $request->sort);
         if ($request->has('datesort')) $query->orderby('id', $request->datesort);
         if ($request->has('offset')) $query->offset($request->offset);
         if ($request->has('namesort')) $query->orderby('title', $request->namesort);
-        if ($request->has("category")) $query->where("category_id", $request->category);
+        if ($request->has("category")) {
+            if ($class === Service::class) $query->where("type_id", $request->category);
+            else $query->where("category_id", $request->category);
+        }
         if ($request->has("breed")) $query->where("breed_id", $request->breed);
         if ($request->has("gender")) $query->where("gender", $request->gender);
         if ($request->has("city")) $query->where("city_id", $request->city);
-        if ($request->has("price_from") AND $request->has("price_to"))
-            $query->whereBetween("price", $request->price_from, $request->price_to);
+        if ($request->has("price_from") OR $request->has("price_to"))
+            $query->whereBetween("price", [$request->price_from ?? 0, $request->price_to ?? 10000000]);
+        if ($request->has("age_from") AND $request->has("age_to"))
+            $query->whereBetween("age", [$request->age_from, $request->age_to]);
         if ($request->has("rating") AND ($request->rating === "true")) $query->where("rating", ">=", 4);
         if ($request->has("isNew") AND ($request->isNew === "true")) $query->orderBy("created_at", "desc");
             else $query->orderBy("created_at", "asc");
@@ -225,5 +240,88 @@ class utils
         $text = preg_replace('/_+/', '_', $text);
         $text = trim($text, '_');
         return $text;
+    }
+
+    static function addNotification ($user, $action, $type, $object) {
+        $tables = [
+            "post" => Post::class,
+            "service" => Service::class,
+            "event" => Event::class,
+            "user" => User::class,
+        ];
+        $object = $tables[$type]::find($object);
+
+        $title = "";
+        Log::critical($object->toArray());
+        if ($action == "favourite") {
+            $object->get();
+
+            $title = "Вашу услугу добавили в избранное";
+            $description = "Пользователь " . ($object->user->fullname ?? $object->fullname) . " добавил услугу {$object->title} вашей собаки в избранное";
+        } else if ($action == "subscribe") {
+            $title = "На вас подписались";
+            $description = "Пользователь {$object->fullname} подписался на вас";
+        }
+
+        Notification::create([
+            "user_id" => $object->user->id ?? $object->id,
+            "title" => $title,
+            "description" => $description,
+            "type" => $type,
+            "object_id" => $object->id,
+            "readed" => false,
+        ]);
+
+        return true;
+    }
+
+    static function update ($post, $user, $request, $type = "post") {
+        if ($post->user_id !== $user->id) abort (409);
+
+        $data = $request->validated();
+        $post->fill($data)->save();
+
+        if ($request->has("delete_pictures"))
+            foreach ($request->delete_pictures as $picture) Picture::destroy($picture);
+
+        $time = time();
+        $index = 0;
+        $pictures = $request->file('pictures', []);
+
+        foreach ($pictures as &$picture) {
+            Storage::disk("public")->putFileAs($type, $picture, "image_$time" . $index . "." . $picture->extension());
+            $picture = "$type/image_$time" . $index . "." . $picture->extension();
+            $index++;
+        }
+
+        if ($request->has("number_main_picture") AND $request->number_main_picture < sizeof($pictures)) {
+            $oldPictures = Picture::where("type", $type)->where("object_id", $post->id)->get();
+            Picture::where("type", $type)->where("object_id", $post->id)->delete();
+
+            Picture::create([
+                "type" => $type,
+                "object_id" => $post->id,
+                "url" => $pictures[$request->number_main_picture],
+            ]);
+            unset($pictures[$request->number_main_picture]);
+
+            foreach ($oldPictures as $oldPicture) {
+                Picture::create([
+                    "type" => $type,
+                    "object_id" => $post->id,
+                    "url" => $oldPicture->url,
+                ]);
+            }
+        }
+
+        foreach ($pictures as $picture) {
+            Picture::create([
+                "type" => $type,
+                "object_id" => $post->id,
+                "url" => $picture,
+            ]);
+        }
+
+        return response()->json($post);
     }
 }

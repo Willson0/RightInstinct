@@ -100,8 +100,8 @@ class AuthController extends Controller
 
         $my = [];
         $my["posts"] = $user->posts()->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
-        $my["services"] = $user->services;
-        $my["events"] = $user->events;
+        $my["services"] = $user->services()->with("pictures")->with("user")->with("city")->with("category")->get();
+        $my["events"] = $user->events()->with("pictures")->with("user")->with("city")->with("category")->get();;
 
         $user["my"] = $my;
 
@@ -121,7 +121,7 @@ class AuthController extends Controller
 
         $user->city;
         $user->posts = $user->posts()->with("pictures")->with("breed")->with("city")->with("category")->get();
-        $user->services;
+        $user->services = $user->services()->with("pictures")->with("user")->with("city")->with("category")->get();
 
         if (Subscription::where("user_id", $sender->id)->where("user_subscription_id", $user->id)->exists())
             $user->isSubscribe = true;

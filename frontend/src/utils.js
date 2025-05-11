@@ -41,10 +41,10 @@ export function notify (text, error) {
     }, 5000);
 }
 
-export function toLink (query, id = null) {
+export function toLink (query, id = null, type = null) {
     document.body.style.overflow = "";
 
-    if (id) router.push({ query: { s: query, id: id }});
+    if (id) router.push({ query: { s: query, id: id, type: type }});
     else router.push({ query: { s: query }});
 }
 

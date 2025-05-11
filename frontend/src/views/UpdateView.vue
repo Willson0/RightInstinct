@@ -6,29 +6,24 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
 export default {
-    name: "StorePost",
+    name: "UpdateView",
     components: {VueDatePicker},
     data () {
         return {
-            gender: null, // 0 - ж 1 - м
-            title: "",
-            breed: "",
-            city: "",
-            price: "",
-            category: "",
-            photos: [],
-            rewards: "",
-            age: "",
-            description: "",
+            originalObject: null,
+            object: {},
             isLoading: false,
             data: [],
             type: 'post',
-            details: "",
             dates: [],
+            photos: [],
+            main_photo: null,
+            allPhotos: [],
+            deletedPhotos: [],
         }
     },
     async mounted () {
-        this.type = this.$route.query.id;
+        this.type = this.$route.query.type;
 
         window.addEventListener("click", (event) => {
             if (event.target.closest(".store_input_select_container") === null)
@@ -40,6 +35,26 @@ export default {
         await axios.get(config.backend + "data").then((response) => {
             this.data = response.data;
         });
+
+        await axios.post(config.backend + `${this.type}/` + this.$route.query.id, {
+            initData: window.Telegram.WebApp.initData,
+        }).then((response) => {
+            this.originalObject = {... response.data};
+            this.object = {... response.data};
+
+            this.allPhotos = response.data.pictures;
+            for (let photo in this.allPhotos) {
+                this.allPhotos[photo].url = config.storage + this.allPhotos[photo].url;
+            }
+
+            if (this.object.start_date) {
+                this.dates[0] = new Date(this.object.start_date);
+                this.dates[1] = new Date(this.object.end_date);
+            }
+        }).catch((error) => {
+            if (error.response)
+                alert (error.message);
+        })
     },
     methods: {
         showOverlay,
@@ -61,9 +76,9 @@ export default {
             let file = ev.target.files[0];
 
             if (file && file.type.startsWith("image/")) {
-                this.photos.push({
+                this.allPhotos.push({
                     file: file,
-                    link: URL.createObjectURL(file),
+                    url: URL.createObjectURL(file),
                 });
             }
         },
@@ -71,14 +86,20 @@ export default {
             let file = ev.target.files[0];
 
             if (file && file.type.startsWith("image/")) {
-                this.photos[0] = {
+                if (this.allPhotos[0].created_at)
+                    this.deletedPhotos.push(this.allPhotos[0].id);
+
+                this.allPhotos[0] = {
                     file: file,
-                    link: URL.createObjectURL(file),
+                    url: URL.createObjectURL(file),
                 };
             }
         },
         async deleteImage (ev) {
-            this.photos.shift();
+            if (this.allPhotos[0].created_at)
+                this.deletedPhotos.push(this.allPhotos[0].id);
+
+            this.allPhotos.shift();
         },
         async sendData () {
             Object.values(this.$refs).forEach(el => {
@@ -88,20 +109,20 @@ export default {
             let rules = [];
             if (this.type === 'post')
                 rules = [
-                    [this.age < 1, "Возраст не может быть меньше 1 месяца!", "age"],
-                    [this.age > 360, "Возраст не может быть больше 360 месяцев!", "age"],
-                    [this.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
-                    [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+                    [this.object.age < 1, "Возраст не может быть меньше 1 месяца!", "age"],
+                    [this.object.age > 360, "Возраст не может быть больше 360 месяцев!", "age"],
+                    [this.object.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
+                    [this.object.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
                 ];
             else if (this.type === 'service')
                 rules = [
-                    [this.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
-                    [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+                    [this.object.price < 0, "Цена не может быть меньше 0 рублей!", "price"],
+                    [this.object.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
                 ]
             else if (this.type === 'event')
                 rules = [
-                    [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
-                    [this.details.length < 10, "Описание деталей не может быть меньше 10 символов!", "details"],
+                    [this.object.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
+                    [this.object.details.length < 10, "Описание деталей не может быть меньше 10 символов!", "details"],
                 ]
             let isError = false;
             for (let rule of rules) {
@@ -112,43 +133,36 @@ export default {
                 }
             }
             if (isError) return;
-
             if (this.isLoading) return;
 
             let fd = new FormData();
             fd.append("initData", window.Telegram.WebApp.initData);
-            fd.append("title", this.title);
-            fd.append("description", this.description);
-            fd.append("city_id", this.city);
-            if (this.type === "post") {
-                fd.append("age", this.age);
-                fd.append("gender", this.gender);
-                fd.append("breed_id", this.breed);
-                fd.append("price", this.price);
-                fd.append("category_id", this.category);
-                fd.append("rewards", this.rewards);
-            } else if (this.type === "service") {
-                fd.append("type_id", this.category);
-                fd.append("price", this.price);
-            } else if (this.type === 'event') {
-                fd.append("type_id", this.category);
-                fd.append("details", this.details);
+            for (const key in this.object) {
+                if (this.object[key] !== this.originalObject[key]) {
+                    fd.append(key, this.object[key]);
+                }
+            }
+
+            for (let picture of this.deletedPhotos)
+                fd.append('delete_pictures[]', picture);
+            for (let picture of this.allPhotos) {
+                if (picture.file) {
+                    fd.append('pictures[]', picture.file);
+                }
+            }
+            if (this.allPhotos[0].file) fd.append("number_main_picture", 0);
+
+            if (this.dates[0]) {
                 fd.append("start_date", toLocalSimpleISO(this.dates[0]));
                 fd.append("end_date", toLocalSimpleISO(this.dates[1]));
             }
 
-            let index = 0;
-            for (let img of this.photos) {
-                fd.append(`pictures[${index}]`, img.file);
-                index ++;
-            }
-
             this.isLoading = true;
-            await axios.post(config.backend + this.type + "/", fd)
+            await axios.post(config.backend + this.type + "/" + this.object.id + "/update", fd)
             .then((response) => {
-                notify("Пост успешно создан!");
+                notify("Пост успешно обновлён!");
                 setTimeout(() => {
-                    toLink('home');
+                    // toLink('home');
                 }, 2000);
             }).catch((error) => {
                 if (error.response) {
@@ -161,25 +175,25 @@ export default {
     },
     computed: {
         beautifullyDate () {
-            if (this.dates[0].getYear() === this.dates[1].getYear())
-                return (String(this.dates[0].getDate()).padStart(2, "0") + "."
-                    + String(this.dates[0].getMonth()+1).padStart(2, "0") + " - "
-                    + String(this.dates[1].getDate()).padStart(2, "0")
-                        + "." + String(this.dates[1].getMonth()+1).padStart(2, "0")
-                        + "." + String(this.dates[1].getFullYear()).padStart(2,"0"))
+            if (this.dates.length > 0)
+                if (this.dates[0].getYear() === this.dates[1].getYear())
+                    return (String(this.dates[0].getDate()).padStart(2, "0") + "."
+                        + String(this.dates[0].getMonth()+1).padStart(2, "0") + " - "
+                        + String(this.dates[1].getDate()).padStart(2, "0")
+                            + "." + String(this.dates[1].getMonth()+1).padStart(2, "0")
+                            + "." + String(this.dates[1].getFullYear()).padStart(2,"0"))
         },
         rulePost () {
-            return this.photos.length !== 0 && this.price && this.rewards && this.category && this.city
-                && this.breed && this.gender !== null && this.title && this.age && this.description
-                && !this.isLoading;
+            return this.object.pictures.length !== 0 && this.object.price && this.object.rewards
+                && this.object.title && this.object.age && this.object.description && !this.isLoading;
         },
         ruleService () {
-            return this.photos.length !== 0 && this.price && this.category && this.city && this.title
-                    && this.description && !this.isLoading;
+            return this.object.pictures.length !== 0 && this.object.price && this.object.title
+                    && this.object.description && !this.isLoading;
         },
         ruleEvent () {
-            return this.photos.length !== 0 && this.category && this.city && this.title && this.details
-                && this.dates.length > 0 && this.description && !this.isLoading;
+            return this.object.pictures.length !== 0 && this.object.title && this.object.details
+                && this.object.description && !this.isLoading;
         }
     }
 }
@@ -195,21 +209,21 @@ export default {
                            :hide-input-icon="true"/>
         </div>
     </div>
-    <div class="store">
+    <div class="store" v-if="originalObject">
         <h1 class="store_title">Добавить {{ this.type === 'post' ? 'объявление' : this.type === 'service' ? 'услугу' : 'мероприятие' }}</h1>
-        <input v-model="title" class="store_input" type="text" placeholder="Название">
-        <input ref="description" v-if="['event'].includes(type)" v-model="description" class="store_input" type="text" placeholder="Описание">
+        <input v-model="object.title" class="store_input" type="text" placeholder="Название">
+        <input ref="description" v-if="['event'].includes(type)" v-model="object.description" class="store_input" type="text" placeholder="Описание">
         <div v-if="['post'].includes(type)" style="z-index:10" class="store_input_container">
-            <input ref="age" v-model="age" type="number" placeholder="Возраст (мес)">
+            <input ref="age" v-model="object.age" type="number" placeholder="Возраст (мес)">
             <div class="store_input_select_container">
                 <div ref="gender" @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
-                        <div v-if="gender === null">Пол</div>
-                        <div v-else-if="gender === 0">
+                        <div v-if="object.gender === null">Пол</div>
+                        <div v-else-if="object.gender === 0">
                             <img src="/female.svg" alt="">
                             <div>Сука</div>
                         </div>
-                        <div v-else-if="gender === 1">
+                        <div v-else-if="object.gender === 1">
                             <img src="/male.svg" alt="">
                             <div>Кобель</div>
                         </div>
@@ -217,11 +231,11 @@ export default {
                     </div>
                 </div>
                 <div class="store_input_select_list">
-                    <div @click="gender = 0; hideList($event)">
+                    <div @click="object.gender = 0; hideList($event)">
                         <img src="/female.svg" alt="">
                         <div>Сука</div>
                     </div>
-                    <div @click="gender = 1; hideList($event)">
+                    <div @click="object.gender = 1; hideList($event)">
                         <img src="/male.svg" alt="">
                         <div>Кобель</div>
                     </div>
@@ -231,13 +245,13 @@ export default {
         <div v-if="['post'].includes(type)" style="z-index:9" class="store_input_select_container">
             <div ref="breed" @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
-                    <div v-if="!breed">Порода</div>
-                    <div v-else>{{ data.breeds.find(el => el.id === breed).name }}</div>
+                    <div v-if="!object.breed_id">Порода</div>
+                    <div v-else>{{ data.breeds.find(el => el.id === object.breed_id).name }}</div>
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
             </div>
             <div class="store_input_select_list">
-                <div v-for="br in data.breeds" @click="breed = br.id; hideList($event)">
+                <div v-for="br in data.breeds" @click="object.breed_id = br.id; hideList($event)">
                     <div>{{ br.name }}</div>
                 </div>
             </div>
@@ -245,40 +259,34 @@ export default {
         <div style="z-index:8" class="store_input_select_container">
             <div ref="city" @click="openList" class="store_input_select">
                 <div class="store_input_select_main">
-                    <div v-if="!city">{{ !['event'].includes(type) ? 'Город' : 'Место проведения' }}</div>
-                    <div v-else>{{ data.cities.find(el => el.id === city).name }}</div>
+                    <div>{{ data.cities.find(el => el.id === object.city_id).name }}</div>
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
             </div>
             <div class="store_input_select_list">
-                <div v-for="ct in data.cities" @click="city = ct.id; hideList($event)">
+                <div v-for="ct in data.cities" @click="object.city_id = ct.id; hideList($event)">
                     <div>{{ ct.name }}</div>
                 </div>
             </div>
         </div>
         <div style="z-index:7" class="store_input_container">
-            <input v-if="['post', 'service'].includes(type)" ref="price" v-model="price" type="number" placeholder="Цена, ₽">
+            <input v-if="['post', 'service'].includes(type)" ref="price" v-model="object.price" type="number" placeholder="Цена, ₽">
             <div v-if="['event'].includes(type)" ref="category" class="store_input_select_container">
                 <div @click="showOverlay('dateSelect')" class="store_input_select">
                     <div class="store_input_select_main">
-                        <div v-if="!dates.length">
-                            <img src="/calendar.svg" alt="">
-                            <div>Дата</div>
-                        </div>
-                        <div v-else>{{ beautifullyDate }}</div>
+                        <div>{{ beautifullyDate }}</div>
                     </div>
                 </div>
             </div>
             <div v-if="['post'].includes(type)" ref="category" class="store_input_select_container">
                 <div @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
-                        <div v-if="!category">Категория</div>
-                        <div v-else>{{data.categories.find(el => el.id === category).name}}</div>
+                        <div>{{data.categories.find(el => el.id === object.category_id).name}}</div>
                         <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                     </div>
                 </div>
                 <div class="store_input_select_list">
-                    <div v-for="catg in data.categories" @click="category = catg.id; hideList($event)">
+                    <div v-for="catg in data.categories" @click="object.category_id = catg.id; hideList($event)">
                         <div>{{ catg.name }}</div>
                     </div>
                 </div>
@@ -286,19 +294,18 @@ export default {
             <div v-if="['service', 'event'].includes(type)" ref="category" class="store_input_select_container">
                 <div @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
-                        <div v-if="!category">Вид услуги</div>
-                        <div v-else>{{data.types.find(el => el.id === category).name}}</div>
+                        <div>{{data.types.find(el => el.id === object.type_id).name}}</div>
                         <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                     </div>
                 </div>
                 <div class="store_input_select_list">
-                    <div v-for="catg in data.types" @click="category = catg.id; hideList($event)">
+                    <div v-for="catg in data.types" @click="object.type_id = catg.id; hideList($event)">
                         <div>{{ catg.name }}</div>
                     </div>
                 </div>
             </div>
         </div>
-        <label v-if="photos.length === 0" for="image" class="store_photo_container">
+        <label v-if="allPhotos.length === 0" for="image" class="store_photo_container">
             <div class="store_photo_empty">
                 <div>
                     <img src="/camera.svg" alt="">
@@ -309,7 +316,7 @@ export default {
         </label>
         <div v-else class="store_photos">
             <div>
-                <img :src="photos[0].link" alt="">
+                <img :src="allPhotos[0].url" alt="">
                 <div class="store_photo_first_number">Главное</div>
                 <div class="store_photo_first_buttons">
                     <label for="firstImage">
@@ -321,16 +328,16 @@ export default {
                     </button>
                 </div>
             </div>
-            <img :src="photo.link" alt="" v-for="photo in photos.slice(1)">
+            <img :src="photo.url" alt="" v-for="photo in allPhotos.slice(1)">
             <label for="image">
                 <img src="/camera.svg" alt="">
                 <div class="store_photo_title">Загрузить</div>
             </label>
         </div>
         <input @input="addImage" id="image" type="file" style="display:none;" accept="image/*">
-        <textarea v-if="['event'].includes(type)" ref="details" placeholder="Подробности" rows="2" v-model="details" class="input"></textarea>
-        <textarea v-else ref="description" placeholder="Описание" rows="2" v-model="description" class="input"></textarea>
-        <input v-if="['post'].includes(type)" ref="rewards" v-model="rewards" type="text" placeholder="Титулы и награды">
+        <textarea v-if="['event'].includes(type)" ref="details" placeholder="Подробности" rows="2" v-model="object.details" class="input"></textarea>
+        <textarea v-else ref="description" placeholder="Описание" rows="2" v-model="object.description" class="input"></textarea>
+        <input v-if="['post'].includes(type)" ref="rewards" v-model="object.rewards" type="text" placeholder="Титулы и награды">
         <button v-if="['post'].includes(type)"  class="store_button button"
                 :class="rulePost ? 'active' : ''" @click="rulePost ? sendData() : ''">Сохранить</button>
         <button v-if="['service'].includes(type)"  class="store_button button"

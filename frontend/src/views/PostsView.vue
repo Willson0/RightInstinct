@@ -3,10 +3,12 @@ import axios from "axios";
 import config from "@/config.json";
 import PostBlock from "@/components/PostBlock.vue";
 import {hideList, openList} from "@/utils.js";
+import { ElSlider } from "element-plus";
+import "element-plus/dist/index.css"
 
 export default {
     name: "PostsView",
-    components: {PostBlock},
+    components: {PostBlock, ElSlider},
     data () {
         return {
             data: {},
@@ -15,15 +17,19 @@ export default {
             isLoading: false,
             isFull: false,
             filter: {},
-            percentMoved: 100,
             offset: 0,
+            categories: [],
         }
     },
     async mounted () {
         await axios.get(config.backend + "data").then((response) => {
             this.data = response.data;
+            if (this.$route.query.id === 'post')
+                this.categories = response.data.categories;
+            else if (this.$route.query.id === "service")
+                this.categories = response.data.types;
         });
-        await axios.get(config.backend + "post").then((response) => {
+        await axios.get(config.backend + this.$route.query.id).then((response) => {
             this.feed = response.data;
         })
 
@@ -41,9 +47,13 @@ export default {
             this.isLoading = true;
             this.isFull = false;
 
-            let query = config.backend + "post?offset=" + this.feed.length;
+            let query = config.backend + this.$route.query.id + "?offset=" + this.feed.length;
             if (this.selectedCategory) query += "&category=" + this.selectedCategory;
             if (this.filter.search) query += "&s=" + this.filter.search;
+            if (this.filter.age) {
+                query += "&age_from=" + this.filter.age[0];
+                query += "&age_to=" + this.filter.age[1];
+            }
             for (let keyFilter in this.filter)
                 query += `&${keyFilter}=` + this.filter[keyFilter];
 
@@ -66,49 +76,6 @@ export default {
         },
         async hideFilter () {
             this.$refs.filter.style.display='none';
-        },
-        onMouseDown(e) {
-            this.dragging = true;
-            this.circle = this.$refs.circle;
-            this.offsetX = e.clientX - this.circle.offsetLeft;
-            document.addEventListener('mousemove', this.onMouseMove);
-            document.addEventListener('mouseup', this.onMouseUp);
-            document.body.style.userSelect = 'none';
-        },
-        onMouseDownLeft(e) {
-            this.dragging = true;
-            this.circle = this.$refs.circle;
-            this.offsetX = e.clientX - this.circle.offsetLeft;
-            document.addEventListener('mousemove', this.onMouseMoveLeft);
-            document.addEventListener('mouseup', this.onMouseUp);
-            document.body.style.userSelect = 'none';
-        },
-        onMouseMoveLeft (e) {
-            if (!this.dragging) return;
-            const parentRect = this.$refs.parent.getBoundingClientRect();
-            let maxLeft = this.$refs.parent.clientWidth;
-
-            let newLeft = e.clientX - this.offsetX + this.circle.clientWidth;
-            newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-
-            this.offset = (newLeft / maxLeft) * 100;
-        },
-        onMouseMove(e) {
-            if (!this.dragging) return;
-            const parentRect = this.$refs.parent.getBoundingClientRect();
-            let maxLeft = this.$refs.parent.clientWidth;
-
-            let newLeft = e.clientX - this.offsetX + this.circle.clientWidth;
-            newLeft = Math.max(this.offset, Math.min(newLeft, maxLeft));
-
-            this.percentMoved = (newLeft / maxLeft) * 100;
-        },
-        onMouseUp() {
-            this.dragging = false;
-            document.removeEventListener('mousemove', this.onMouseMove);
-            document.removeEventListener('mousemove', this.onMouseMoveLeft);
-            document.removeEventListener('mouseup', this.onMouseUp);
-            document.body.style.userSelect = '';
         },
     }
 }
@@ -164,12 +131,12 @@ export default {
                         <div @click="openList" class="store_input_select">
                             <div class="store_input_select_main">
                                 <div v-if="!filter.category">Категория</div>
-                                <div v-else>{{data.categories.find(el => el.id === filter.category).name}}</div>
+                                <div v-else>{{categories.find(el => el.id === filter.category).name}}</div>
                                 <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                             </div>
                         </div>
                         <div class="store_input_select_list">
-                            <div v-for="catg in data.categories" @click="filter.category = catg.id; hideList($event)">
+                            <div v-for="catg in categories" @click="filter.category = catg.id; hideList($event)">
                                 <div>{{ catg.name }}</div>
                             </div>
                         </div>
@@ -193,18 +160,19 @@ export default {
         </div>
         <div class="filter_age">
             <div class="filter_age_title">Возраст</div>
-            <div ref="parent" class="filter_age_input">
-                <div class="filter_age_input_active_line" :style="{ width: percentMoved + '%'}">
-                    <div class="filter_age_input_active_line" :style="{ width: offset + '%', color: 'grey'}">
-                        <div ref="circle" @mousedown="onMouseDownLeft" class="filter_age_input_active_line_circle"></div>
-                    </div>
-                    <div ref="circle" @mousedown="onMouseDown"
-                         class="filter_age_input_active_line_circle"></div>
-                </div>
-                <div class="filter_age_input_line"></div>
+            <div class="slider-wrapper">
+                <el-slider
+                    v-model="filter.age"
+                    :min="0"
+                    :max="120"
+                    :step="1"
+                    range
+                    :show-tooltip="false"
+                    class="custom-slider"
+                    height="12px"
+                />
             </div>
             <div class="filter_age_sign">
-                {{percentMoved.toFixed(1)}}
                 <div>0</div>
                 <div>10 лет</div>
             </div>
@@ -237,7 +205,7 @@ export default {
             <button @click="showFilter"><img src="/filter.svg" alt=""></button>
         </div>
         <div class="posts_categories">
-            <h4 @click="changeCategory(category.id)" v-for="category in data.categories"
+            <h4 @click="changeCategory(category.id)" v-for="category in categories"
                 :class="selectedCategory === category.id ? 'active' : ''">
                 {{ category.name }}
             </h4>

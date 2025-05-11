@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Favourite\FavouriteStoreRequest;
+use App\Http\utils;
 use App\Models\Favourite;
 use App\Models\Post;
 use App\Models\User;
@@ -20,6 +21,11 @@ class FavouriteController extends Controller
             ->where("object_id", $data["object_id"])->exists()) abort(409, "Already exists");
 
         $favourite = Favourite::create($data);
+
+//        try {
+            utils::addNotification($user, "favourite", $data["type"], $data["object_id"]);
+//        } catch (\Exception $e) {}
+
         return response()->json($favourite);
     }
 

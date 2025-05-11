@@ -28,7 +28,7 @@ export default {
         <div class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Объявления</h1>
-                <div @click="toLink('posts')" class="button green-bgc">
+                <div @click="toLink('posts', 'post')" class="button green-bgc">
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
@@ -48,7 +48,7 @@ export default {
         <div class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Услуги</h1>
-                <div class="button green-bgc">
+                <div @click="toLink('posts', 'service')" class="button green-bgc">
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
@@ -80,11 +80,11 @@ export default {
         <div class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Мероприятие</h1>
-                <div class="button green-bgc">
+                <div @click="toLink('events')" class="button green-bgc">
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
-            <div v-if="user.feed?.events?.length !== 0" class="home_block_posts_container myevents_main">
+            <div v-if="user.feed?.events?.length !== 0" class="home_block_posts_container">
                 <event-block :event="event" v-for="event in user.feed?.events"/>
             </div>
             <div @click="toLink('store', 'event')" class="home_block_button green-bgc button margin-side">

@@ -98,7 +98,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div style="background-color:transparent; padding: 0;">
         <div v-if="overlay" style="display:none" @click.stop="hideOverlay('ratingOverlay')" class="background ratingOverlay"></div>
         <div v-if="overlay" @click.stop="nothing" style="display:none" class="overlay ratingOverlay">
             <div @click.stop="hideOverlay('ratingOverlay')" class="overlay_button"><div></div></div>
