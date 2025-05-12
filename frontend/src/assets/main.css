@@ -906,7 +906,7 @@ div {
 
 /*DIALOG*/
 .dialog {
-    max-height: calc(100vh - 132px);
+    height: calc(100vh - 132px);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
