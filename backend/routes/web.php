@@ -12,6 +12,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckAdminMiddleware;
 use App\Http\Middleware\CheckTelegram;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::group(["prefix" => "api"], function () {
     });
 
     Route::post("/user/{user}", [AuthController::class, 'show'])->middleware(CheckTelegram::class);
+    Route::get("/users", [UserController::class, "index"])->middleware(CheckAdminMiddleware::class);
 
     Route::group(["prefix" => "subscription", "middleware" => CheckTelegram::class], function () {
         Route::post("/subscribe", [SubscriptionController::class, 'subscribe']);
@@ -81,6 +83,9 @@ Route::group(["prefix" => "api"], function () {
     Route::post("/admin/login", [AdminController::class, "login"]);
     Route::group(["prefix" => "admin", "middleware" => CheckAdminMiddleware::class], function () {
         Route::get("profile", [AdminController::class, "profile"]);
+        Route::get('posts', [AdminController::class, 'posts']);
+        Route::get('services', [AdminController::class, 'services']);
+        Route::get('events', [AdminController::class, 'events']);
     });
 
     Route::group(["prefix" => "stats", "middleware" => CheckAdminMiddleware::class], function () {

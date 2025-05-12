@@ -375,5 +375,7 @@ export default {
 </template>
 
 <style scoped>
-
+* {
+    color: white;
+}
 </style>

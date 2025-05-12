@@ -3,6 +3,10 @@ import HomeView from "@/views/HomeView.vue";
 import MainView from "@/views/MainView.vue";
 import AdminView from "@/views/admin/adminView.vue";
 import AdminLoginView from "@/views/admin/adminLoginView.vue";
+import adminUsersView from "@/views/admin/adminUsersView.vue";
+import adminPostsView from "@/views/admin/adminPostsView.vue";
+import adminServicesView from "@/views/admin/adminServicesView.vue";
+import adminEventsView from "@/views/admin/adminEventsView.vue";
 
 const routes = [
     {
@@ -20,6 +24,30 @@ const routes = [
         component: AdminView,
         meta: { title: 'Верное чутьё | Admin', h: 'Dashboard' },
         name: 'admin'
+    },
+    {
+        path: "/admin/users",
+        component: adminUsersView,
+        meta: { title: 'Верное чутьё | Пользователи', h: 'Пользователи' },
+        name: 'adminUsers'
+    },
+    {
+        path: "/admin/posts",
+        component: adminPostsView,
+        meta: { title: 'Верное чутьё | Объявления', h: 'Объявления' },
+        name: 'adminPosts'
+    },
+    {
+        path: "/admin/services",
+        component: adminServicesView,
+        meta: { title: 'Верное чутьё | Услуги', h: 'Услуги' },
+        name: 'adminServices'
+    },
+    {
+        path: "/admin/events",
+        component: adminEventsView,
+        meta: { title: 'Верное чутьё | Мероприятия', h: 'Мероприятия' },
+        name: 'adminEvents'
     },
 ]
 

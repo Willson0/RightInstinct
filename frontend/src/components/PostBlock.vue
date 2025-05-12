@@ -1,5 +1,5 @@
 <script>
-import {favourite, hideOverlay, notify, showOverlay, toLink} from "@/utils.js";
+import {favourite, notify, toLink} from "@/utils.js";
 import config from "@/config.json";
 import RatingBlock from "@/components/RatingBlock.vue";
 import axios from "axios";
@@ -60,6 +60,14 @@ export default {
                     }
                 });
             }
+        },
+        openFullScreen(ev) {
+            this.overlayImage = ev.target.src;
+            document.body.style.overflow = 'hidden';
+        },
+        closeFullScreen() {
+            this.overlayImage = null
+            document.body.style.overflow = '';
         }
     },
     data () {
@@ -68,6 +76,7 @@ export default {
             overlay: false,
             config: config,
             isLoading: {status: false},
+            overlayImage: null,
         }
     },
     props: {
@@ -100,19 +109,22 @@ export default {
 </script>
 
 <template>
+    <div v-if="overlayImage" class="image-overlay" @click="closeFullScreen">
+        <img :src="overlayImage" alt="" />
+    </div>
     <div v-if="overlay" style="display:none" @click="hideOverlay('postOverlay')" class="background postOverlay"></div>
     <div v-if="overlay" style="display:none" class="overlay postOverlay">
         <div @click="hideOverlay('postOverlay')" class="overlay_button"><div></div></div>
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="object.pictures?.length !== 0">
                 <div>
-                    <img :src="config.storage + object.pictures[0]?.url" alt="">
+                    <img @click="openFullScreen" :src="config.storage + object.pictures[0]?.url" alt="">
                     <div class="green-bgc">
                         <img src="/star.svg" alt="">
                         <div class="grey-light">{{ object.rating }}</div>
                     </div>
                 </div>
-                <img v-for="img in object.pictures.slice(1)" :src="config.storage + img.url" alt="">
+                <img @click="openFullScreen" v-for="img in object.pictures.slice(1)" :src="config.storage + img.url" alt="">
             </div>
             <div class="postOverlay_mainContainer">
                 <h4>{{ object.title }}</h4>

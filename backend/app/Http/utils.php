@@ -164,7 +164,7 @@ class utils
         return $random_string;
     }
 
-    static function index ($class, $request) {
+    static function index ($class, $request, $forAdmin = false) {
         $limit = 10;
         if ($request->has("limit")) $limit = $request->limit;
 
@@ -175,6 +175,7 @@ class utils
             ->with("pictures")->with("user")->with("city")->with("category");
         else if ($class === Event::class) $query = Event::limit($limit)->orderBy("created_at", "desc")
             ->with("pictures")->with("user")->with("city")->with("category");
+        else if ($class === User::class) $query = User::limit($limit)->with('city');
 
         if ($request->has("sort")) $query->orderby("id", $request->sort);
         if ($request->has('datesort')) $query->orderby('id', $request->datesort);
@@ -195,7 +196,18 @@ class utils
         if ($request->has("isNew") AND ($request->isNew === "true")) $query->orderBy("created_at", "desc");
             else $query->orderBy("created_at", "asc");
         if ($request->has("s")) {
-            $query->where("title", "like", "%$request->s%");
+            if ($class === User::class) $query->where("fullname", "like", "%$request->s%")->orWhere("username", "like", "%$request->s%");
+            else $query->where("title", "like", "%$request->s%");
+        }
+
+        if ($forAdmin) {
+            $countpage = ceil($query->count()/$limit);
+            if ($request->has('page') and $limit) $query->skip(($request->page - 1) * $limit);
+
+            $response["data"] = $query->get();
+            $response["count"] = $countpage;
+
+            return response()->json($response);
         }
 
         return $query->get();

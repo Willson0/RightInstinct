@@ -9,6 +9,7 @@ export default {
             config: config,
             overlay: false,
             isLoading: {status: false},
+            overlayImage: null,
         }
     },
     props: {
@@ -95,25 +96,36 @@ export default {
                     }
                 });
             }
+        },
+        openFullScreen(ev) {
+            this.overlayImage = ev.target.src;
+            document.body.style.overflow = 'hidden';
+        },
+        closeFullScreen() {
+            this.overlayImage = null
+            document.body.style.overflow = '';
         }
     }
 }
 </script>
 
 <template>
+    <div v-if="overlayImage" class="image-overlay" @click="closeFullScreen">
+        <img :src="overlayImage" alt="" />
+    </div>
     <div v-if="overlay" style="display:none" @click="hideOverlay('postOverlay')" class="background postOverlay"></div>
     <div v-if="overlay" style="display:none" class="overlay postOverlay">
         <div @click="hideOverlay('postOverlay')" class="overlay_button"><div></div></div>
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="event.pictures?.length !== 0">
                 <div>
-                    <img :src="config.storage + event.pictures[0]?.url" alt="">
+                    <img @click="openFullScreen" :src="config.storage + event.pictures[0]?.url" alt="">
                     <div class="green-bgc">
                         <img src="/star.svg" alt="">
                         <div class="grey-light">{{ event.rating }}</div>
                     </div>
                 </div>
-                <img v-for="img in event.pictures.slice(1)" :src="config.storage + img.url" alt="">
+                <img @click="openFullScreen" v-for="img in event.pictures.slice(1)" :src="config.storage + img.url" alt="">
             </div>
             <div class="postOverlay_mainContainer">
                 <h4>{{ event.title }}</h4>

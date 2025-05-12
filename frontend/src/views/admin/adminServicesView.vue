@@ -1,7 +1,8 @@
 <script>
 import adminnav from "@/components/adminnav.vue";
-import config from "@/components/config.json"
-import {removeLoading} from "@/assets/utils.js";
+import config from "@/config.json"
+import {removeLoading} from "@/assets/admin.js";
+import "@/assets/admin.css"
 export default {
     data () {
         return {
@@ -64,13 +65,12 @@ export default {
     },
     methods: {
         async fetchproducts() {
-            let url = config.backend + 'analytic?limit=10';
+            let url = config.backend + 'admin/services?limit=10';
             url += `&page=${this.page}`
             if (this.dateasc !== null) url += `&datesort=${this.dateasc?'asc':'desc'}`;
             if (this.nameasc !== null) url += `&namesort=${this.nameasc?'asc':'desc'}`;
             if (this.fromdate !== '') url += `&datefrom=${this.fromdate}`;
             if (this.todate !== '') url += `&dateto=${this.todate}`;
-            if (this.blocked) url += "&blocked=true";
             if (this.search) url += `&s=${this.search}`
 
             await fetch(url, {
@@ -161,27 +161,6 @@ export default {
                 this.selectedusers.push(id);
             }
         },
-        async downloadexport() {
-            await fetch(config.backend + "product/export", {
-                method: "GET",
-                credentials: "include",
-            }).then ((response) => {
-                if (!response.ok) return alert("Непредвиденная ошибка. Сообщите разработчику");
-                return response.blob();
-            }).then((response) => {
-                let url = window.URL.createObjectURL(response);
-                console.log(url);
-
-                let a = document.createElement('a');
-                a.href = url;
-                a.download = "products.xls";
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-
-                window.URL.revokeObjectURL(url);
-            })
-        }
     }
 }
 </script>
@@ -189,11 +168,9 @@ export default {
 <template>
     <adminnav>
         <div class="admin_users_main">
-        <button @click="$router.push({name: 'addAnalyticAdmin'})" class="admin_products_new">Add new analytic</button>
             <div class="admin_users_main_header">
                 <div class="admin_users_main_header_search">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input @input="fetchproducts()" v-model="search" placeholder="Search by name" type="text">
+                    <input @input="fetchproducts()" v-model="search" placeholder="Искать по имени" type="text">
                 </div>
                 <div class="admin_users_main_header_buttons">
                     <div class="admin_users_main_header_buttons_sort">
@@ -272,27 +249,25 @@ export default {
                 <table class="admin_users_main_main_table">
                     <thead>
                     <tr>
-                        <th><div :class="selectedusers.length === products.length ? 'active' : ''" @click="selectall()" class="admin_users_main_main_table_checkbox"><i class="fa-solid fa-check"></i></div></th>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Image</th>
-                        <th>Link</th>
-                        <th>PDF</th>
-                        <th>Date</th>
-                        <th>Created at</th>
+                        <th>Заголовок</th>
+                        <th>Владелец (ID)</th>
+                        <th>Город</th>
+                        <th>Цена</th>
+                        <th>Категория</th>
+                        <th>Рейтинг</th>
+                        <th>Добавлена</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr class="admin_products_main_main_table_tr" v-for="(product, key) in products">
-                        <th><div @click="selectcheckbox($event, product.id)" :class="selectedusers.includes(product.id) ? 'active' : ''" class="admin_users_main_main_table_checkbox"><i class="fa-solid fa-check"></i></div></th>
                         <th>{{ product.id }}</th>
-                        <th><a target="_blank" :href="'/admin/analytics/' + product.id">{{ product.title ? product.title : '?' }}</a></th>
-                        <th style="text-overflow: ellipsis; max-width:250px; overflow:hidden;">{{ product.description ? product.description : '?'}}</th>
-                        <th><a target="_blank" :href="config.storage + product.image">link</a></th>
-                        <th><a target="_blank" :href="product.link">{{product.link ? "link" : "-"}}</a></th>
-                        <th><a target="_blank" :href="product.pdf">{{product.pdf ? "link" : "-"}}</a></th>
-                        <th>{{ product.date ? formatDate(product.date) : '-' }}</th>
+                        <th>{{ product.title }}</th>
+                        <th>{{ product.user_id }}</th>
+                        <th>{{ product.city?.name }}</th>
+                        <th>{{ product.price }}</th>
+                        <th>{{ product.category?.name }}</th>
+                        <th>{{ product.rating }}</th>
                         <th>{{ product.created_at ? formatDate(product.created_at) : '-' }}</th>
                     </tr>
                     </tbody>
@@ -321,5 +296,7 @@ export default {
 </template>
 
 <style scoped>
-
+* {
+    color: white;
+}
 </style>

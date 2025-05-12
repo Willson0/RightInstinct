@@ -1,7 +1,7 @@
 :root {
     --transition: 0.2s;
     --grey-light: #F4F4F7;
-    --green-dark: #222B1B;
+    --green-dark: rgba(20, 25, 16, 0.7);
     --bdrs: 10px;
     --beige: #F1EBD8;
     --grey: #A2ACB0;
@@ -1997,4 +1997,23 @@ div {
 .myratings_el_info .ratingOverlay_main_stars {
     margin: 0;
     column-gap: 8px;
+}
+
+/* FULLSCREEN IMAGES */
+.image-overlay {
+    position: fixed;
+    z-index: 99999999;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background: var(--green-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.image-overlay img {
+    max-width: 90vw;
+    max-height: 90vh;
+    box-shadow: 0 0 40px var(--green-dark);
+    border-radius: 10px;
+    background: #fff;
 }

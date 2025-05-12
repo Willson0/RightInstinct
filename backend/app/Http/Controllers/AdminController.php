@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MailingRequest;
 use App\Http\utils;
 use App\Models\Admin;
+use App\Models\Event;
+use App\Models\Post;
+use App\Models\Service;
 use App\Models\User;
 use App\Models\Webinar;
 use Illuminate\Http\Request;
@@ -28,5 +31,15 @@ class AdminController extends Controller
         return response()
             ->json(["Message" => "Успешная авторизация!", "cookie" => $cookie])
             ->withCookie($respcookie);
+    }
+
+    public function posts (Request $request) {
+        return utils::index(Post::class, $request, true);
+    }
+    public function services (Request $request) {
+        return utils::index(Service::class, $request, true);
+    }
+    public function events (Request $request) {
+        return utils::index(Event::class, $request, true);
     }
 }

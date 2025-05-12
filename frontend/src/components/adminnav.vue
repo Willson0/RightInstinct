@@ -116,25 +116,25 @@ export default {
                     <i class="fa-solid fa-code-branch"></i>
                     <p>Dashboard</p>
                 </div>
-                <div @click="$router.push({'name': 'servicesAdmin'})">
-                    <div v-if="$route.name === 'ordersAdmin'" class="adminnav_main_nav_main_el_point">&middot;</div>
+                <div @click="$router.push('/admin/users')">
+                    <div v-if="$route.path === '/admin/users'" class="adminnav_main_nav_main_el_point">&middot;</div>
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <p>Services</p>
+                    <p>Пользователи</p>
                 </div>
-                <div @click="$router.push({'name': 'productsAdmin'})">
-                    <div v-if="$route.name === 'productsAdmin'" class="adminnav_main_nav_main_el_point">&middot;</div>
-                    <i class="fa-solid fa-seedling"></i>
-                    <p>Webinars</p>
-                </div>
-                <div @click="$router.push({'name': 'analyticsAdmin'})">
-                    <div v-if="$route.name === 'analyticsAdmin'" class="adminnav_main_nav_main_el_point">&middot;</div>
-                    <i class="fa-solid fa-seedling"></i>
-                    <p>Analytics</p>
-                </div>
-                <div @click="$router.push({'name': 'mailingAdmin'})">
-                    <div v-if="$route.name === 'mailingAdmin'" class="adminnav_main_nav_main_el_point">&middot;</div>
+                <div @click="$router.push('/admin/posts')">
+                    <div v-if="$route.path === '/admin/posts'" class="adminnav_main_nav_main_el_point">&middot;</div>
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <p>Mailing</p>
+                    <p>Объявления</p>
+                </div>
+                <div @click="$router.push('/admin/services')">
+                    <div v-if="$route.path === '/admin/services'" class="adminnav_main_nav_main_el_point">&middot;</div>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <p>Услуги</p>
+                </div>
+                <div @click="$router.push('/admin/events')">
+                    <div v-if="$route.path === '/admin/events'" class="adminnav_main_nav_main_el_point">&middot;</div>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <p>Мероприятия</p>
                 </div>
             </div>
         </nav>
@@ -146,5 +146,7 @@ export default {
 </template>
 
 <style scoped>
-
+* {
+    color: white;
+}
 </style>
