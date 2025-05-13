@@ -263,7 +263,7 @@ export default {
                         <th>{{ product.id }}</th>
                         <th>{{ product.fullname ?? '?' }}</th>
                         <th>{{ product.username ?? '?'}}</th>
-                        <th><a target="_blank" :href="config.storage + product.image">link</a></th>
+                        <th><a target="_blank" :href="product.avatar">link</a></th>
                         <th>{{ product.city?.name ?? '?'}}</th>
                         <th>{{ product.rating ?? '?'}}</th>
                         <th>{{ product.created_at ? formatDate(product.created_at) : '-' }}</th>
