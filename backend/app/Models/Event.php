@@ -14,7 +14,7 @@ class Event extends Model
         return $this->belongsTo(City::class);
     }
     public function category () {
-        return $this->belongsTo(ServiceType::class, "type_id", "id");
+        return $this->belongsTo(EventType::class, "type_id", "id");
     }
     public function user () {
         return $this->belongsTo(User::class);

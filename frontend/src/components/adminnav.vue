@@ -136,6 +136,11 @@ export default {
                     <i class="fa-solid fa-cart-shopping"></i>
                     <p>Мероприятия</p>
                 </div>
+                <div @click="$router.push('/admin/moderate')">
+                    <div v-if="$route.path === '/admin/moderate'" class="adminnav_main_nav_main_el_point">&middot;</div>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <p>Модерация</p>
+                </div>
             </div>
         </nav>
         <div class="adminnav_main_main">

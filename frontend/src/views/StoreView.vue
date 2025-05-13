@@ -25,6 +25,8 @@ export default {
             type: 'post',
             details: "",
             dates: [],
+            cityString: "",
+            link: "",
         }
     },
     async mounted () {
@@ -44,12 +46,14 @@ export default {
     methods: {
         showOverlay,
         hideOverlay,
-        async openList (event) {
+        async openList (event, id = null) {
             let select = event.target.closest(".store_input_select_container");
             document.querySelectorAll(".store_input_select_list").forEach(el => {
                 if (el !== select.querySelector(".store_input_select_list"))
                     el.classList.remove("active");
             })
+
+            if (id) document.getElementById(id).focus();
 
             select.querySelector(".store_input_select_list").classList.toggle("active");
         },
@@ -80,6 +84,14 @@ export default {
         async deleteImage (ev) {
             this.photos.shift();
         },
+        isValidUrl(str) {
+            try {
+                new URL(str);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        },
         async sendData () {
             Object.values(this.$refs).forEach(el => {
                 if (el) el.style.border = ""
@@ -103,6 +115,11 @@ export default {
                     [this.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
                     [this.details.length < 10, "Описание деталей не может быть меньше 10 символов!", "details"],
                 ]
+            if (this.link.length > 0) rules.push([!this.isValidUrl(this.link), "Неправильная ссылка!", "link"]);
+
+            this.city = this.data.cities.find(el => el.name.toLowerCase() === this.cityString.toLowerCase())?.id;
+            rules.push([!this.city, "Выберите правильный город!", "city"]);
+
             let isError = false;
             for (let rule of rules) {
                 if (rule[0]) {
@@ -127,9 +144,11 @@ export default {
                 fd.append("price", this.price);
                 fd.append("category_id", this.category);
                 fd.append("rewards", this.rewards);
+                if (this.link) fd.append("link", this.link);
             } else if (this.type === "service") {
                 fd.append("type_id", this.category);
                 fd.append("price", this.price);
+                if (this.link) fd.append("link", this.link);
             } else if (this.type === 'event') {
                 fd.append("type_id", this.category);
                 fd.append("details", this.details);
@@ -147,9 +166,12 @@ export default {
             await axios.post(config.backend + this.type + "/", fd)
             .then((response) => {
                 notify("Пост успешно создан!");
-                setTimeout(() => {
+                axios.post(config.backend + "auth/profile", {
+                    "initData": window.Telegram.WebApp.initData,
+                }).then((response) => {
+                    this.$store.dispatch("updateUser", response.data);
                     toLink('home');
-                }, 2000);
+                })
             }).catch((error) => {
                 if (error.response) {
                     return alert (`An error occurred: ${error.message}`);
@@ -169,16 +191,16 @@ export default {
                         + "." + String(this.dates[1].getFullYear()).padStart(2,"0"))
         },
         rulePost () {
-            return this.photos.length !== 0 && this.price && this.rewards && this.category && this.city
+            return this.photos.length !== 0 && this.price && this.rewards && this.category && this.cityString
                 && this.breed && this.gender !== null && this.title && this.age && this.description
                 && !this.isLoading;
         },
         ruleService () {
-            return this.photos.length !== 0 && this.price && this.category && this.city && this.title
+            return this.photos.length !== 0 && this.price && this.category && this.cityString && this.title
                     && this.description && !this.isLoading;
         },
         ruleEvent () {
-            return this.photos.length !== 0 && this.category && this.city && this.title && this.details
+            return this.photos.length !== 0 && this.category && this.cityString && this.title && this.details
                 && this.dates.length > 0 && this.description && !this.isLoading;
         }
     }
@@ -193,6 +215,11 @@ export default {
             <VueDatePicker v-model="dates" :range="true" :enable-time-picker="false" :inline="true"
                            :auto-apply="true" :min-date="new Date()" locale="ru" :month-picker="false"
                            :hide-input-icon="true"/>
+        </div>
+        <div @click="hideOverlay('dateSelect')" class="home_block_button green-bgc button margin-side">
+            <div>
+                <div class="button">Выбрать даты</div>
+            </div>
         </div>
     </div>
     <div class="store">
@@ -243,15 +270,15 @@ export default {
             </div>
         </div>
         <div style="z-index:8" class="store_input_select_container">
-            <div ref="city" @click="openList" class="store_input_select">
+            <div ref="city" @click="openList($event, 'city_string');" class="store_input_select">
                 <div class="store_input_select_main">
-                    <div v-if="!city">{{ !['event'].includes(type) ? 'Город' : 'Место проведения' }}</div>
-                    <div v-else>{{ data.cities.find(el => el.id === city).name }}</div>
+                    <input type="text" v-model="cityString" style="padding: 0; border: 0;" id="city_string"
+                           :placeholder="!['event'].includes(type) ? 'Город' : 'Место проведения'" >
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
             </div>
             <div class="store_input_select_list">
-                <div v-for="ct in data.cities" @click="city = ct.id; hideList($event)">
+                <div v-for="ct in data.cities?.filter(el => el.name.toLowerCase().includes(cityString.toLowerCase()))" @click="cityString = ct.name; hideList($event)">
                     <div>{{ ct.name }}</div>
                 </div>
             </div>
@@ -283,7 +310,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="['service', 'event'].includes(type)" ref="category" class="store_input_select_container">
+            <div v-if="['service'].includes(type)" ref="category" class="store_input_select_container">
                 <div @click="openList" class="store_input_select">
                     <div class="store_input_select_main">
                         <div v-if="!category">Вид услуги</div>
@@ -293,6 +320,20 @@ export default {
                 </div>
                 <div class="store_input_select_list">
                     <div v-for="catg in data.types" @click="category = catg.id; hideList($event)">
+                        <div>{{ catg.name }}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="['event'].includes(type)" ref="category" class="store_input_select_container">
+                <div @click="openList" class="store_input_select">
+                    <div class="store_input_select_main">
+                        <div v-if="!category">Вид услуги</div>
+                        <div v-else>{{data.event_types.find(el => el.id === category).name}}</div>
+                        <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                    </div>
+                </div>
+                <div class="store_input_select_list">
+                    <div v-for="catg in data.event_types" @click="category = catg.id; hideList($event)">
                         <div>{{ catg.name }}</div>
                     </div>
                 </div>
@@ -328,6 +369,7 @@ export default {
             </label>
         </div>
         <input @input="addImage" id="image" type="file" style="display:none;" accept="image/*">
+        <input v-if="['post', 'service'].includes(type)" ref="link" v-model="link" type="text" placeholder="Ссылка на видео">
         <textarea v-if="['event'].includes(type)" ref="details" placeholder="Подробности" rows="2" v-model="details" class="input"></textarea>
         <textarea v-else ref="description" placeholder="Описание" rows="2" v-model="description" class="input"></textarea>
         <input v-if="['post'].includes(type)" ref="rewards" v-model="rewards" type="text" placeholder="Титулы и награды">

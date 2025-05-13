@@ -42,4 +42,20 @@ class AdminController extends Controller
     public function events (Request $request) {
         return utils::index(Event::class, $request, true);
     }
+
+    public function moderate (Request $request) {
+        return Event::where("moderated", "0")->with("pictures")->with("user")->with("city")->with("category")->get();
+    }
+    public function moderateAccept (Event $event, Request $request) {
+        $event->update(["moderated" => "1"]);
+
+        $event->user;
+        utils::addNotification($event->user, "accept", "event", $event->id);
+
+        return response()->json($event);
+    }
+    public function moderateDelete (Event $event, Request $request) {
+        $event->delete();
+        return response()->json($event);
+    }
 }

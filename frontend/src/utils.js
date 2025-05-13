@@ -41,11 +41,11 @@ export function notify (text, error) {
     }, 5000);
 }
 
-export function toLink (query, id = null, type = null) {
+export function toLink (query, id = null, type = null, needback = 1) {
     document.body.style.overflow = "";
 
-    if (id) router.push({ query: { s: query, id: id, type: type }});
-    else router.push({ query: { s: query }});
+    if (id) router.push({ query: { s: query, id: id, type: type, needback: needback }});
+    else router.push({ query: { s: query, needback: needback }});
 }
 
 export function levenshtein(a, b) {

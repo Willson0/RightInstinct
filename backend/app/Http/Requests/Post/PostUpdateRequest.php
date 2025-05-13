@@ -36,6 +36,7 @@ class PostUpdateRequest extends FormRequest
             "delete_pictures" => "array",
             "delete_pictures.*" => "integer|exists:pictures,id",
             "number_main_picture" => "integer|min:0",
+            "link" => "string",
         ];
     }
 }

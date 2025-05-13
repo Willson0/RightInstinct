@@ -1,6 +1,9 @@
 INSERT INTO `categories` (`name`) VALUES
 ('Продажа');
 
+INSERT INTO `event_types` (`name`) VALUES
+('Выставка'), ('Состязание'), ('Испытания'), ('Турнир');
+
 INSERT INTO `service_types` (`name`) VALUES
 ('Натаска'), ('Вязка'), ('Дрессировка'), ('Передержка');
 

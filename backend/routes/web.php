@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ComplainController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavouriteController;
@@ -86,6 +87,15 @@ Route::group(["prefix" => "api"], function () {
         Route::get('posts', [AdminController::class, 'posts']);
         Route::get('services', [AdminController::class, 'services']);
         Route::get('events', [AdminController::class, 'events']);
+        Route::get('events/moderate', [AdminController::class, 'moderate']);
+        Route::get('events/moderate/{event}/accept', [AdminController::class, 'moderateAccept']);
+        Route::get('events/moderate/{event}/delete', [AdminController::class, 'moderateDelete']);
+    });
+
+    Route::group(["prefix" => "complain"], function () {
+       Route::post("/", [ComplainController::class, 'store'])->middleware(CheckTelegram::class);
+        Route::get("/", [ComplainController::class, 'index'])->middleware(CheckAdminMiddleware::class);
+        Route::delete("/{complain}", [ComplainController::class, 'index'])->middleware(CheckAdminMiddleware::class);
     });
 
     Route::group(["prefix" => "stats", "middleware" => CheckAdminMiddleware::class], function () {

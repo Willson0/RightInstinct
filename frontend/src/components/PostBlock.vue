@@ -117,13 +117,14 @@ export default {
         <div @click="hideOverlay('postOverlay')" class="overlay_button"><div></div></div>
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="object.pictures?.length !== 0">
-                <div>
-                    <img @click="openFullScreen" :src="config.storage + object.pictures[0]?.url" alt="">
+                <a :href="object.link" target="_blank">
+                    <img @click="object.link ? '' : openFullScreen" :src="config.storage + object.pictures[0]?.url" alt="">
                     <div class="green-bgc">
                         <img src="/star.svg" alt="">
                         <div class="grey-light">{{ object.rating }}</div>
                     </div>
-                </div>
+                    <img v-if="object.link" class="postOverlay_main_photos_video" src="/play.svg">
+                </a>
                 <img @click="openFullScreen" v-for="img in object.pictures.slice(1)" :src="config.storage + img.url" alt="">
             </div>
             <div class="postOverlay_mainContainer">

@@ -65,7 +65,9 @@ export default {
                 return;
             }
 
-            this.queryHistory.push(from);
+            if (to.needback === "1" || to.needback == null) {
+                this.queryHistory.push(from);
+            }
             console.log(this.queryHistory);
 
             window.Telegram.WebApp.BackButton.show();

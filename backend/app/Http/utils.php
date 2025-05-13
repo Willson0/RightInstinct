@@ -173,7 +173,7 @@ class utils
             ->with("breed")->with("user")->with("city")->with("category");
         else if ($class === Service::class) $query = Service::limit($limit)->orderBy("created_at", "desc")
             ->with("pictures")->with("user")->with("city")->with("category");
-        else if ($class === Event::class) $query = Event::limit($limit)->orderBy("created_at", "desc")
+        else if ($class === Event::class) $query = Event::limit($limit)->where("moderated", "1")->orderBy("created_at", "desc")
             ->with("pictures")->with("user")->with("city")->with("category");
         else if ($class === User::class) $query = User::limit($limit)->with('city');
 
@@ -273,6 +273,9 @@ class utils
         } else if ($action == "subscribe") {
             $title = "На вас подписались";
             $description = "Пользователь {$object->fullname} подписался на вас";
+        } else if ($action == "accept") {
+            $title = "Ваше мероприятие одобрили";
+            $description = "Администратор одобрил ваше мероприятие";
         }
 
         Notification::create([

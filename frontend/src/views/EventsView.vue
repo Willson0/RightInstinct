@@ -31,7 +31,7 @@ export default {
 
 <template>
     <div class="myevents margin-all">
-        <h1>Мои мероприятия</h1>
+        <h1>Мероприятия</h1>
         <div class="myevents_accepted">
             <div class="myevents_main">
                 <event-block :event="event" v-for="event in events"/>

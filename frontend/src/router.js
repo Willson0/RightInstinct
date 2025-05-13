@@ -7,6 +7,7 @@ import adminUsersView from "@/views/admin/adminUsersView.vue";
 import adminPostsView from "@/views/admin/adminPostsView.vue";
 import adminServicesView from "@/views/admin/adminServicesView.vue";
 import adminEventsView from "@/views/admin/adminEventsView.vue";
+import adminEventsModerateView from "@/views/admin/adminEventsModerateView.vue";
 
 const routes = [
     {
@@ -48,6 +49,12 @@ const routes = [
         component: adminEventsView,
         meta: { title: 'Верное чутьё | Мероприятия', h: 'Мероприятия' },
         name: 'adminEvents'
+    },
+    {
+        path: "/admin/moderate",
+        component: adminEventsModerateView,
+        meta: { title: 'Верное чутьё | Модерация', h: 'Модерация' },
+        name: 'adminModerate'
     },
 ]
 

@@ -94,7 +94,7 @@ class AuthController extends Controller
         $feed["posts"] = Post::limit(10)->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
         $feed["services"] = Service::limit(10)->with("pictures")->with("user")->with("city")->with("category")->get();
         $feed["popular"] = null;
-        $feed["events"] = Event::limit(10)->with("pictures")->with("user")->with("city")->with("category")->get();
+        $feed["events"] = Event::limit(10)->with("pictures")->with("user")->with("city")->with("category")->where("moderated", "1")->get();
 
         $user["feed"] = $feed;
 

@@ -28,7 +28,8 @@ class ServiceStoreRequest extends FormRequest
             "type_id" => "required|integer|exists:service_types,id",
             "price" => "required|integer|min:0",
             "pictures" => "required|array|min:1",
-            "pictures.*" => "required|file"
+            "pictures.*" => "required|file",
+            "link" => "string",
         ];
     }
 }

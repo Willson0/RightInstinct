@@ -3,7 +3,7 @@ import UserBlock from "@/components/UserBlock.vue";
 import config from "@/config.json";
 import axios from "axios"
 import PostBlock from "@/components/PostBlock.vue";
-import {favourite, notify} from "@/utils.js";
+import {favourite, notify, toLink} from "@/utils.js";
 
 export default {
     name: "UserView.vue",
@@ -23,14 +23,21 @@ export default {
         },
     },
     async mounted () {
-        await axios.post(config.backend + "user/" + this.$route.query.id, {
-            "initData": window.Telegram.WebApp.initData,
-        }).then((response) => {
-            this.us = response.data;
-        }).catch((error) => {
-            if (error.response)
-                alert (error.message);
-        })
+        if (Number(this.$route.query.id) === this.user.id) toLink("profile", null, null, 0);
+        else
+            await axios.post(config.backend + "user/" + this.$route.query.id, {
+                "initData": window.Telegram.WebApp.initData,
+            }).then((response) => {
+                this.us = response.data;
+            }).catch((error) => {
+                if (error.response)
+                    alert (error.message);
+            })
+    },
+    watch: {
+        user () {
+            if (Number(this.$route.query.id) === this.user.id) toLink("profile", null, null, 0);
+        }
     },
     methods: {
         favourite,

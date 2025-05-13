@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Breed;
 use App\Models\Category;
 use App\Models\City;
+use App\Models\EventType;
 use App\Models\ServiceType;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ class DataController extends Controller
         $data["cities"] = City::all();
         $data["categories"] = Category::all();
         $data["types"] = ServiceType::all();
+        $data["event_types"] = EventType::all();
 
         return response()->json($data);
     }

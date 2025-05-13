@@ -33,6 +33,7 @@ class PostStoreRequest extends FormRequest
             "rewards" => "required|string",
             "pictures" => "required|array|min:1",
             "pictures.*" => "required|file",
+            "link" => "string",
         ];
     }
 }

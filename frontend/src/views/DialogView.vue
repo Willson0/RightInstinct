@@ -15,6 +15,7 @@ export default {
     },
     async mounted () {
         if (!this.$route.query.id) return toLink('chat');
+        if (Number(this.$route.query.id) === this.user.id) toLink("chat", null, null, 0);
 
         await this.fetchData();
         this.interval = setInterval(() => {
@@ -31,6 +32,14 @@ export default {
                 "initData": window.Telegram.WebApp.initData,
             }).then((response) => {
                 this.data = response.data;
+
+                requestAnimationFrame(() => {
+                    const element = document.querySelector('.dialog_main');
+                    element.scrollTop = element.scrollHeight;
+                });
+
+                this.user.chat.find(el => String(el.user.id) === this.$route.query.id).unreaded = 0;
+                this.$store.dispatch("updateUser", this.user);
             }).catch((error) => {
                 if (error.response) {
                     return alert (`An error occurred: ${error.message}`);
@@ -40,6 +49,12 @@ export default {
         async sendMessage () {
             if (this.isLoading) return;
             if (this.message.length === 0) return;
+
+            const element = document.querySelector('.dialog_main');
+            element.scrollTo({
+                top: element.scrollHeight,
+                behavior: 'smooth'
+            });
 
             this.data.dialog.push({
                 "sender_id": this.user.id,
@@ -68,6 +83,11 @@ export default {
         user() {
             return this.$store.state.user;
         },
+    },
+    watch: {
+        user () {
+            if (Number(this.$route.query.id) === this.user.id) toLink("chat", null, null, 0);
+        }
     }
 }
 </script>
