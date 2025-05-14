@@ -20,7 +20,7 @@ export default {
         hasNewNotification () {
             if (this.user) {
                 for (let notify in this.user.notifications) {
-                    if (this.user.notifications[notify].unreaded) return true;
+                    if (!this.user.notifications[notify].readed) return true;
                 }
             }
             return false;

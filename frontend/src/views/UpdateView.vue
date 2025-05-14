@@ -138,7 +138,7 @@ export default {
                     [this.object.description.length < 10, "Описание не может быть меньше 10 символов!", "description"],
                     [this.object.details.length < 10, "Описание деталей не может быть меньше 10 символов!", "details"],
                 ]
-            if (this.object.link.length > 0) rules.push([!this.isValidUrl(this.object.link), "Неправильная ссылка!", "link"])
+            if (this.object.link) rules.push([!this.isValidUrl(this.object.link), "Неправильная ссылка!", "link"])
 
             this.object.city_id = this.data.cities.find(el => el.name.toLowerCase() === this.cityString.toLowerCase())?.id;
             rules.push([!this.object.city_id, "Выберите правильный город!", "city"]);

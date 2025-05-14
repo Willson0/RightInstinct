@@ -16,6 +16,9 @@ export default {
                     initData: window.Telegram.WebApp.initData,
                 }).then((response) => {
                     this.notification = response.data;
+
+                    this.user.notifications.find(el => String(el.id) === this.$route.query.id).readed = 1;
+                    this.$store.dispatch("updateUser", this.user);
                 }).catch((error) => {
                     if (error.response)
                         alert (error.message);
