@@ -17,7 +17,7 @@ class ChatController extends Controller
         })->orWhere(function($q) use($user, $companion) {
             $q->where("sender_id", $companion->id)
                 ->where("recipient_id", $user->id);
-        })->get();
+        })->orderBy("id")->get();
 
         Message::where("sender_id", $companion->id)
             ->where("recipient_id", $user->id)->update(["readed" => true]);
