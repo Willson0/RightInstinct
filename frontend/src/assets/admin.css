@@ -2760,3 +2760,243 @@ outline:none !important;
     font-size:14px;
     user-select:none;
 }
+
+
+.admin_show_root {
+    background: #12121C;
+    margin: 0;
+    width: 100%;
+    color: #eef0fb;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+.admin_show_nav-panel {
+    background: #389466;
+    color: #fff;
+    font-size: 20px;
+    padding: 22px 36px;
+    letter-spacing: 1px;
+}
+.admin_show_content {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 38px 24px;
+}
+.admin_show_title {
+    font-size: 2.1em;
+    margin-bottom: 20px;
+    color:white;
+}
+.admin_show_fields-wrap {
+    background: rgba(56, 148, 102, 0.12);
+    border-radius: 14px;
+    padding: 30px 34px 24px 34px;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.09);
+}
+.admin_show_fields p {
+    margin: 6px 0 0 0;
+    color:grey;
+}
+.admin_show_fields a {
+    color: #60db9d;
+    text-decoration: underline;
+    word-break: break-all;
+}
+.admin_show_delete-btn {
+    margin-top: 22px;
+    padding: 10px 36px;
+    background: #d9534f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s;
+    float: right;
+    box-shadow: 0 1px 8px #a92f2f2c;
+}
+.admin_show_delete-btn:hover {
+    background: #b53c38;
+}
+
+.admin_show_pictures-block {
+    margin-top: 38px;
+}
+.admin_show_pictures-title {
+    margin: 0 0 14px 2px;
+    font-weight: 600;
+    font-size: 1.2em;
+}
+.admin_show_pictures-list {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.admin_show_thumbnail {
+    cursor: pointer;
+    width: 110px;
+    height: 110px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #389466;
+    box-shadow: 0 2px 8px #21212E50;
+    transition: border-color 0.18s;
+}
+.admin_show_thumbnail:hover {
+    border-color: #60db9d;
+}
+
+/* Модалка */
+.admin_show_modal {
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: rgba(30,40,50,0.86);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn .13s;
+    cursor: zoom-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+}
+.admin_show_modal-img {
+    max-width: 94vw;
+    max-height: 92vh;
+    border-radius: 16px;
+    box-shadow: 0 4px 52px #12121cc4;
+    cursor: auto;
+}
+.admin_show_modal-close {
+    color: #fff;
+    position: fixed;
+    top: 28px;
+    right: 60px;
+    font-size: 52px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 1002;
+    line-height: 1;
+}
+.admin_show_modal-close:hover {
+    color: #60db9d;
+}
+
+/* Сообщение об удалении */
+.admin_show_deleted-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    font-size: 1.7em;
+    color: #d9534f;
+    font-weight: bold;
+    background: rgba(217,83,79,0.11);
+    border-radius: 18px;
+    margin: 30px;
+    text-align: center;
+}
+.admin_show_fields b {
+    color:white;
+}
+.admin_show_pictures-title {
+    color:white;
+}
+
+.admin_complains_container {
+    background: #12121C;
+    color: #eee;
+    min-height: 100vh;
+    padding: 32px 24px 24px 48px;
+    font-family: inherit;
+}
+.admin_complains_title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 32px;
+    color: #fff;
+    letter-spacing: 1px;
+}
+.admin_complains_card {
+    background: #181828;
+    border: 1px solid #389466;
+    border-radius: 8px;
+    margin-bottom: 28px;
+    padding: 20px 25px 15px 25px;
+    box-shadow: 0 3px 12px #0003;
+    transition: box-shadow 0.14s;
+}
+.admin_complains_card:hover {
+    box-shadow: 0 6px 24px #0005;
+}
+.admin_complains_row {
+    margin-bottom: 11px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.admin_complains_label {
+    color: #389466;
+    width: 110px;
+    min-width: 90px;
+    display: inline-block;
+    font-weight: 500;
+    font-size: 15px;
+}
+.admin_complains_value, .admin_complains_reason {
+    color: #eee;
+    font-size: 16px;
+}
+.admin_complains_reason {
+    background: #303244;
+    border-radius: 4px;
+    padding: 3px 10px;
+}
+.admin_complains_postlink {
+    color: #389466;
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+}
+.admin_complains_postlink:hover {
+    color: #2B7D4C;
+}
+.admin_complains_markread {
+    background: #389466;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 7px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.15s;
+}
+.admin_complains_markread:active, .admin_complains_markread:hover {
+    background: #2B7D4C;
+}
+.admin_complains_actions {
+    margin-top: 5px;
+}
+.admin_complains_created {
+    color: #bbb;
+    font-size: 13px;
+    margin-top: 2px;
+    text-align: right;
+}
+.admin_complains_empty {
+    color: #fff;
+    background: #303244;
+    border-radius: 12px;
+    padding: 32px 0;
+    text-align: center;
+    margin: 40px 0 0 0;
+    font-size: 22px;
+}

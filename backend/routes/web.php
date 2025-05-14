@@ -90,6 +90,8 @@ Route::group(["prefix" => "api"], function () {
         Route::get('events/moderate', [AdminController::class, 'moderate']);
         Route::get('events/moderate/{event}/accept', [AdminController::class, 'moderateAccept']);
         Route::get('events/moderate/{event}/delete', [AdminController::class, 'moderateDelete']);
+        Route::get("{type}/{id}", [AdminController::class, 'show']);
+        Route::delete("{type}/{id}", [AdminController::class, 'destroy']);
     });
 
     Route::group(["prefix" => "complain"], function () {

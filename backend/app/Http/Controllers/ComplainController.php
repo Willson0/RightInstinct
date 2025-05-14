@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Complain\ComplainStoreRequest;
 use App\Models\Complain;
 use App\Models\Event;
 use App\Models\Post;
@@ -21,12 +22,13 @@ class ComplainController extends Controller
                 "user" => User::class,
             ];
             $complain->object = $tables[$complain->type]::find($complain->object_id);
+            $complain->user;
         }
 
         return response()->json($complains);
     }
 
-    public function store (Request $request) {
+    public function store (ComplainStoreRequest $request) {
         $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $data = $request->validated();

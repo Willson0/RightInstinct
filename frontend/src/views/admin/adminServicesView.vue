@@ -262,7 +262,7 @@ export default {
                     <tbody>
                     <tr class="admin_products_main_main_table_tr" v-for="(product, key) in products">
                         <th>{{ product.id }}</th>
-                        <th>{{ product.title }}</th>
+                        <th><a :href="'/admin/service/' + product.id">{{ product.title }}</a></th>
                         <th>{{ product.user_id }}</th>
                         <th>{{ product.city?.name }}</th>
                         <th>{{ product.price }}</th>

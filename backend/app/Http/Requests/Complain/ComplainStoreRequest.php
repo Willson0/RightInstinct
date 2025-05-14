@@ -23,7 +23,7 @@ class ComplainStoreRequest extends FormRequest
     {
         return [
             "type" => "required|string|in:post,user,service,event",
-            "object_id" => "required|string",
+            "object_id" => "required|integer",
             "reason" => "required|string",
         ];
     }

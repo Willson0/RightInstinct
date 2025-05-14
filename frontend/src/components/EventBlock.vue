@@ -1,6 +1,6 @@
 <script>
 import config from "@/config.json"
-import {favourite, notify, toLink} from "@/utils.js";
+import {complain, favourite, notify, toLink} from "@/utils.js";
 import axios from "axios";
 export default {
     name: "EventBlock",
@@ -42,6 +42,7 @@ export default {
         },
     },
     methods: {
+        complain,
         favourite,
         toLink,
         showOverlay (cl) {
@@ -172,7 +173,8 @@ export default {
                 </button>
                 <button v-if="my" @click="deleteEvent(event.id)"><img style="width: 24px; height: 24px;" src="/trash.svg" alt=""></button>
             </div>
-            <a :href="config.complain" class="postOverlay_main_complain">Пожаловаться</a>
+<!--            <a :href="config.complain" class="postOverlay_main_complain">Пожаловаться</a>-->
+            <a @click="complain('event', event.id)" class="postOverlay_main_complain">Пожаловаться</a>
         </div>
     </div>
     <div @click="showOverlay('postOverlay')" class="event">

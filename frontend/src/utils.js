@@ -170,3 +170,26 @@ export function toLocalSimpleISO(date) {
         "." +
         String(date.getMilliseconds()).padStart(3, "0")
 }
+
+export function complain (type, id) {
+    let user = this.$store.state.user;
+
+    let status = true;
+
+    let string = prompt("Введите причину жалобы:");
+    if (!string) return notify ("Пустая причина жалобы!", 1);
+
+    axios.post(config.backend + "complain", {
+        initData: window.Telegram.WebApp.initData,
+        type: type,
+        object_id: id,
+        reason: string,
+    }).then((response) => {
+        status = true;
+        notify ("Жалоба успешно отправлена!");
+    }).catch(() => {
+        status = false;
+    });
+
+    return status;
+}

@@ -8,6 +8,8 @@ import adminPostsView from "@/views/admin/adminPostsView.vue";
 import adminServicesView from "@/views/admin/adminServicesView.vue";
 import adminEventsView from "@/views/admin/adminEventsView.vue";
 import adminEventsModerateView from "@/views/admin/adminEventsModerateView.vue";
+import adminShowView from "@/views/admin/adminShowView.vue";
+import adminComplainsView from "@/views/admin/adminComplainsView.vue";
 
 const routes = [
     {
@@ -55,6 +57,18 @@ const routes = [
         component: adminEventsModerateView,
         meta: { title: 'Верное чутьё | Модерация', h: 'Модерация' },
         name: 'adminModerate'
+    },
+    {
+        path: "/admin/:type/:id",
+        component: adminShowView,
+        meta: { title: 'Верное чутьё | Пост', h: 'Пост' },
+        name: 'adminShow'
+    },
+    {
+        path: "/admin/complains",
+        component: adminComplainsView,
+        meta: { title: 'Верное чутьё | Жалобы', h: 'Жалобы' },
+        name: 'adminComplains'
     },
 ]
 

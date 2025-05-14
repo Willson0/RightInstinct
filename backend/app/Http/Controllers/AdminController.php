@@ -58,4 +58,37 @@ class AdminController extends Controller
         $event->delete();
         return response()->json($event);
     }
+
+    public function show ($type, $id) {
+        $tables = [
+            "post" => Post::class,
+            "service" => Service::class,
+            "event" => Event::class,
+            "user" => User::class,
+        ];
+
+        $table = $tables[$type];
+        $response = $table::where("id", $id);
+
+        if ($type === "post") $response->with("pictures")->with("breed")->with("user")->with("city")->with("category")->with("user");
+        else if ($type === "service") $response->with("pictures")->with("user")->with("city")->with("category")->with("user");
+        else if ($type === "event") $response->with("pictures")->with("user")->with("city")->with("category")->with("user");
+        $response = $response->first();
+
+        return response()->json($response);
+    }
+
+    public function destroy ($type, $id) {
+        $tables = [
+            "post" => Post::class,
+            "service" => Service::class,
+            "event" => Event::class,
+            "user" => User::class,
+        ];
+
+        $table = $tables[$type];
+        $table::destroy($id);
+
+        return response()->json(["ok" => true]);
+    }
 }

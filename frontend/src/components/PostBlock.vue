@@ -1,5 +1,5 @@
 <script>
-import {favourite, notify, toLink} from "@/utils.js";
+import {complain, favourite, notify, toLink} from "@/utils.js";
 import config from "@/config.json";
 import RatingBlock from "@/components/RatingBlock.vue";
 import axios from "axios";
@@ -8,6 +8,7 @@ export default {
     name: "PostBlock",
     components: {RatingBlock},
     methods: {
+        complain,
         favourite,
         toLink,
         showOverlay (cl) {
@@ -118,7 +119,7 @@ export default {
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="object.pictures?.length !== 0">
                 <a :href="object.link" target="_blank">
-                    <img @click="object.link ? '' : openFullScreen" :src="config.storage + object.pictures[0]?.url" alt="">
+                    <img @click="object.link ? '' : openFullScreen()" :src="config.storage + object.pictures[0]?.url" alt="">
                     <div class="green-bgc">
                         <img src="/star.svg" alt="">
                         <div class="grey-light">{{ object.rating }}</div>
@@ -177,7 +178,8 @@ export default {
                 <button @click="deletePost(object.id)"><img style="width: 24px; height: 24px;" src="/trash.svg" alt=""></button>
             </div>
             <button v-if="!my" class="button" @click="toLink('dialog', object.user.id)">Связаться с продавцом</button>
-            <a v-if="!my" :href="config.complain" class="postOverlay_main_complain">Пожаловаться</a>
+<!--            <a v-if="!my" :href="config.complain" class="postOverlay_main_complain">Пожаловаться</a>-->
+            <a v-if="!my" @click="complain(type, object.id)" class="postOverlay_main_complain">Пожаловаться</a>
         </div>
     </div>
     <div @click="clickable ? showOverlay('postOverlay') : ''" class="block_post">
