@@ -62,21 +62,20 @@ export default {
                 </div>
             </div>
         </div>
-<!--        <div v-if="user.feed?.popular?.length !== 0 && user.feed?.popular !== null" class="home_block">-->
-<!--            <div class="home_block_header margin-side">-->
-<!--                <h1>Популярное</h1>-->
-<!--            </div>-->
-<!--            <div class="home_block_posts_container">-->
-<!--                <post-block :title="popular.title" :type="popular.category.name" :city="popular.city.name"-->
-<!--                            :price="popular.price" :rating="popular.rating" v-for="popular in user.feed?.popular"/>-->
-<!--            </div>-->
-<!--            <div class="home_block_button green-bgc button margin-side">-->
-<!--                <div>-->
-<!--                    <img src="/plus.svg" alt="">-->
-<!--                    <div class="button">Добавить</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div v-if="user.feed?.popular?.length !== 0 && user.feed?.popular !== null" class="home_block">
+            <div class="home_block_header margin-side">
+                <h1>Популярное</h1>
+            </div>
+            <div class="home_block_posts_container">
+                <post-block :object="popular" :type="popular.breed ? 'post' : 'service'" v-for="popular in user.feed?.popular"/>
+            </div>
+            <div class="home_block_button green-bgc button margin-side">
+                <div>
+                    <img src="/plus.svg" alt="">
+                    <div class="button">Добавить</div>
+                </div>
+            </div>
+        </div>
         <div class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Мероприятие</h1>

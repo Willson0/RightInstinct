@@ -19,6 +19,7 @@ export default {
             filter: {},
             offset: 0,
             categories: [],
+            cityString: "",
         }
     },
     async mounted () {
@@ -56,6 +57,9 @@ export default {
             }
             for (let keyFilter in this.filter)
                 query += `&${keyFilter}=` + this.filter[keyFilter];
+
+            let city = this.data.cities.find(el => el.name.toLowerCase() === this.cityString.toLowerCase())?.id;
+            if (city) query += `&city=` + city;
 
             await axios.get(query).then((response) => {
                 if (response.data.length === 0) return this.isFull = true;
@@ -144,15 +148,15 @@ export default {
                 </div>
             </div>
             <div style="z-index:5" class="store_input_select_container">
-                <div ref="city" @click="openList" class="store_input_select">
+                <div ref="city" @click="openList($event, 'city_string');" class="store_input_select">
                     <div class="store_input_select_main">
-                        <div v-if="!filter.city">Город</div>
-                        <div v-else>{{ data.cities.find(el => el.id === filter.city).name }}</div>
+                        <input type="text" v-model="cityString" style="padding: 0; border: 0;" id="city_string"
+                               :placeholder="!['event'].includes(type) ? 'Город' : 'Место проведения'" >
                         <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                     </div>
                 </div>
                 <div class="store_input_select_list">
-                    <div v-for="ct in data.cities" @click="filter.city = ct.id; hideList($event)">
+                    <div v-for="ct in data.cities?.filter(el => el.name.toLowerCase().includes(cityString.toLowerCase()))" @click="cityString = ct.name; hideList($event)">
                         <div>{{ ct.name }}</div>
                     </div>
                 </div>

@@ -10,6 +10,7 @@ const store = createStore({
             state.user = newValue;
         },
         setInterval(state, newValue) {
+            clearInterval(state.interval);
             state.interval = newValue;
         },
     },

@@ -91,10 +91,20 @@ class AuthController extends Controller
         $user["chat"] = $dialogs;
 
         $feed = [];
-        $feed["posts"] = Post::limit(10)->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
-        $feed["services"] = Service::limit(10)->with("pictures")->with("user")->with("city")->with("category")->get();
-        $feed["popular"] = null;
-        $feed["events"] = Event::limit(10)->with("pictures")->with("user")->with("city")->with("category")->where("moderated", "1")->get();
+        $feed["posts"] = Post::limit(10)->orderByDesc("id")->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
+        $feed["services"] = Service::limit(10)->orderByDesc("id")->with("pictures")->with("user")->with("city")->with("category")->get();
+
+        $postsPopular = Post::orderByDesc("rating")->limit(15)->with(["pictures", "breed", "user", "city", "category"])->get();
+        $servicesPopular = Service::orderByDesc("rating")->limit(15)->with(["pictures", "user", "city", "category"])->get();
+
+        $items = $postsPopular
+            ->concat($servicesPopular)
+            ->sortByDesc('rating')
+            ->take(10)
+            ->values();
+        $feed["popular"] = $items;
+
+        $feed["events"] = Event::limit(10)->orderByDesc("id")->with("pictures")->with("user")->with("city")->with("category")->where("moderated", "1")->get();
 
         $user["feed"] = $feed;
 

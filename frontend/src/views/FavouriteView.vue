@@ -38,7 +38,7 @@ export default {
         <div v-if="data.user?.length" class="favourite_users margin-side">
             <h3>Владельцы</h3>
             <div>
-                <user-block user="object" v-for="object in data.user" />
+                <user-block :user="object" v-for="object in data.user" />
             </div>
         </div>
         <div v-if="data.post?.length" class="favourite_posts">
@@ -50,7 +50,7 @@ export default {
         <div v-if="data.service?.length" class="favourite_services">
             <h3 class="margin-side">Услуги</h3>
             <div class="home_block_posts_container">
-<!--                <post-block :object="post" v-for="post in user.feed?.posts"/>-->
+                <post-block :object="post" type="service" v-for="post in data.service"/>
             </div>
         </div>
         <div v-if="data.event?.length" class="favourite_events margin-side">

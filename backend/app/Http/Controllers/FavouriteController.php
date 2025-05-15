@@ -6,6 +6,7 @@ use App\Http\Requests\Favourite\FavouriteStoreRequest;
 use App\Http\utils;
 use App\Models\Favourite;
 use App\Models\Post;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,8 @@ class FavouriteController extends Controller
             foreach ($group as &$favourite) {
                 if ($groupName === "post") $favourite = Post::where("id", $favourite["object_id"])
                     ->with("pictures")->with("breed")->with("user")->with("city")->with("category")->firstOrFail();
+                else if ($groupName === "service") $favourite = Service::where("id", $favourite["object_id"])
+                    ->with("pictures")->with("user")->with("city")->with("category")->firstOrFail();
                 else {
                     $table = [
                         'post' => "posts",

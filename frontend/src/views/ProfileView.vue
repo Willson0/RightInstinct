@@ -161,7 +161,7 @@ export default {
                 </div>
             </div>
             <button @click="showOverlay('settings');  city = user.city?.name ?? ''">
-                <img src="/like.svg" alt="">
+                <img src="/settings.svg" alt="">
             </button>
         </div>
         <div class="profile_nav">
@@ -179,8 +179,8 @@ export default {
                 <div>Мои подписки</div>
                 <div @click="toLink('mysubscriptions')" class="profile_subscribers">
                     <div v-if="subLength > 3" :style="`left: 0px;`"><div>{{ subLength-3 }}+</div></div>
-                    <img v-if="subLength > 2" :style="`left: ${(subLength-1)*7 > 7 ? 7 : (subLength-1)*7}px;`" :src="user.subscriptions[2].user_subscription.avatar" alt="">
-                    <img v-if="subLength > 1" :style="`left: ${(subLength-1)*7 > 14 ? 14 : (subLength-1)*7}px;`" :src="user.subscriptions[1].user_subscription.avatar" alt="">
+                    <img v-if="subLength > 2" :style="`left: ${(subLength-3)*7 > 7 ? 7 : (subLength-3)*7}px;`" :src="user.subscriptions[2].user_subscription.avatar" alt="">
+                    <img v-if="subLength > 1" :style="`left: ${(subLength-2)*7 > 14 ? 14 : (subLength-2)*7}px;`" :src="user.subscriptions[1].user_subscription.avatar" alt="">
                     <img :style="`left: ${(subLength-1)*7 > 21 ? 21 : (subLength-1)*7}px;`" :src="user?.subscriptions[0]?.user_subscription.avatar" alt="">
                 </div>
             </div>

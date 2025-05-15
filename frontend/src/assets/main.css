@@ -269,6 +269,12 @@ div {
     flex-direction: column;
     row-gap:4px;
 }
+.block_post_info>div {
+    white-space: nowrap;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
 .block_post_location {
     display: flex;
     flex-direction: row;
@@ -960,6 +966,7 @@ div {
     overflow-y: auto;
     margin: 0 16px !important;
     padding: 16px 0;
+    padding-right: 8px;
 }
 
 .dialog_input {
@@ -1022,6 +1029,7 @@ div {
     font-weight: 300;
     font-size: 12px;
     color: var(--grey);
+    white-space: nowrap;
 }
 .dialog_main_footer>img {
     width: 24px;
