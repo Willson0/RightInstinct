@@ -30,7 +30,7 @@ class PostStoreRequest extends FormRequest
             "price" => "required|integer|min:0",
             "category_id" => "required|integer|exists:categories,id",
             "description" => "required|string",
-            "rewards" => "required|string",
+            "rewards" => "nullable|string",
             "pictures" => "required|array|min:1",
             "pictures.*" => "required|file",
             "link" => "string",

@@ -195,3 +195,15 @@ export function complain (type, id) {
 
     return status;
 }
+
+export function endLoading (cl = "loading") {
+    let loading = document.querySelector("." + cl);
+    loading.style.opacity = 0;
+    setTimeout(() => {
+        loading.style.display = "none";
+    }, 400);
+}
+
+export function startLoading (cl = "loading") {
+
+}

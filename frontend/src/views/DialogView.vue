@@ -1,5 +1,5 @@
 <script>
-import {notify, toLink, utcToLocalTime} from "@/utils.js";
+import {endLoading, notify, toLink, utcToLocalTime} from "@/utils.js";
 import axios from "axios";
 import config from "@/config.json";
 
@@ -11,6 +11,7 @@ export default {
             interval: null,
             message: "",
             isLoading: false,
+            firstLoading: true,
         }
     },
     async mounted () {
@@ -33,10 +34,21 @@ export default {
             }).then((response) => {
                 this.data = response.data;
 
-                requestAnimationFrame(() => {
+                if (this.firstLoading) {
+                    this.firstLoading = false;
+                    endLoading("loading_dialog");
+
                     const element = document.querySelector('.dialog_main');
-                    element.scrollTop = element.scrollHeight;
-                });
+                    this.$nextTick(() => {
+                        requestAnimationFrame(() => {
+                            element.scrollTo({
+                                top: element.scrollHeight,
+                                // bottom: 0,
+                                behavior: 'instant'
+                            });
+                        });
+                    });
+                }
 
                 this.user.chat.find(el => String(el.user.id) === this.$route.query.id).unreaded = 0;
                 this.$store.dispatch("updateUser", this.user);
@@ -50,18 +62,22 @@ export default {
             if (this.isLoading) return;
             if (this.message.length === 0) return;
 
-            const element = document.querySelector('.dialog_main');
-            element.scrollTo({
-                top: element.scrollHeight,
-                behavior: 'smooth'
-            });
-
             this.data.dialog.push({
                 "sender_id": this.user.id,
                 "recipient_id": this.data.companion.id,
                 "message": this.message,
                 "readed": 0,
+                "created_at": new Date().toISOString(),
             })
+
+            requestAnimationFrame(() => {
+                const element = document.querySelector('.dialog_main');
+                element.scrollTo({
+                    top: element.scrollHeight + 100,
+                    // bottom: 0,
+                    behavior: 'smooth'
+                });
+            });
 
             this.isLoading = true;
             await axios.post(config.backend + "chat/" + this.$route.query.id + "/send", {
@@ -93,6 +109,7 @@ export default {
 </script>
 
 <template>
+    <div class="loading loading_dialog"></div>
     <div class="dialog">
         <div class="dialog_header" @click="toLink('user', data?.companion.id)">
             <div>
@@ -115,8 +132,8 @@ export default {
         </div>
         <div class="dialog_input margin-side">
             <img src="/attach.svg" alt="">
-            <img src="/smile.svg" alt="">
-            <input type="text" v-model="message" placeholder="Введите сообщение...">
+<!--            <img src="/smile.svg" alt="">-->
+            <input type="text" v-model="message" style="border-radius: 0 !important" placeholder="Введите сообщение...">
             <img @click="sendMessage" src="/plane.svg" alt="">
         </div>
     </div>

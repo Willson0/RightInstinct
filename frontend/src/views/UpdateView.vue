@@ -206,7 +206,7 @@ export default {
                             + "." + String(this.dates[1].getFullYear()).padStart(2,"0"))
         },
         rulePost () {
-            return this.object.pictures.length !== 0 && this.object.price && this.object.rewards
+            return this.object.pictures.length !== 0 && this.object.price
                 && this.object.title && this.object.age && this.object.description && !this.isLoading;
         },
         ruleService () {

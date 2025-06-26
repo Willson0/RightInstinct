@@ -4,7 +4,7 @@ import UserBlock from "@/components/UserBlock.vue";
 import EventBlock from "@/components/EventBlock.vue";
 import axios from "axios";
 import config from "@/config.json";
-import {toLink} from "@/utils.js";
+import {endLoading, toLink} from "@/utils.js";
 
 export default {
     name: "NotificationsView",
@@ -19,6 +19,8 @@ export default {
 
                     this.user.notifications.find(el => String(el.id) === this.$route.query.id).readed = 1;
                     this.$store.dispatch("updateUser", this.user);
+
+                    endLoading("loading_notifications");
                 }).catch((error) => {
                     if (error.response)
                         alert (error.message);
@@ -49,6 +51,7 @@ export default {
 </script>
 
 <template>
+    <div v-if="$route.query.id" class="loading loading_notifications"></div>
     <div class="notifications margin-side">
         <h1 class="notifications_title">Уведомления</h1>
         <div v-if="user?.notifications?.length === 0 && !$route.query.id" class="notifications_empty">

@@ -118,14 +118,13 @@ export default {
         <div @click="hideOverlay('postOverlay')" class="overlay_button"><div></div></div>
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="object.pictures?.length !== 0">
-                <a :href="object.link" target="_blank">
-                    <img @click="object.link ? '' : openFullScreen()" :src="config.storage + object.pictures[0]?.url" alt="">
-                    <div class="green-bgc">
-                        <img src="/star.svg" alt="">
-                        <div class="grey-light">{{ object.rating }}</div>
-                    </div>
-                    <img v-if="object.link" class="postOverlay_main_photos_video" src="/play.svg">
-                </a>
+                <div>
+                    <rating-block :zid="true" @click.stop="$event.preventDefault()" :rating="object.rating" :type="type" :id="object.id" />
+                    <a target="_blank" :href="object.link">
+                        <img @click="object.link ? '' : openFullScreen($event)" :src="config.storage + object.pictures[0]?.url" alt="">
+                        <img v-if="object.link" class="postOverlay_main_photos_video" src="/play.svg">
+                    </a>
+                </div>
                 <img @click="openFullScreen" v-for="img in object.pictures.slice(1)" :src="config.storage + img.url" alt="">
             </div>
             <div class="postOverlay_mainContainer">
@@ -148,7 +147,7 @@ export default {
             <div class="postOverlay_main_description">
                 {{ object.description }}
             </div>
-            <div v-if="['post'].includes(type)" class="postOverlay_main_rewards">
+            <div v-if="['post'].includes(type) && object.rewards != null" class="postOverlay_main_rewards">
                 <img src="/star.svg" alt="">
                 <div>{{ object.rewards }}</div>
             </div>

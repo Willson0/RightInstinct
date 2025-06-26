@@ -3,7 +3,7 @@ import UserBlock from "@/components/UserBlock.vue";
 import config from "@/config.json";
 import axios from "axios"
 import PostBlock from "@/components/PostBlock.vue";
-import {complain, favourite, notify, toLink} from "@/utils.js";
+import {complain, endLoading, favourite, notify, toLink} from "@/utils.js";
 
 export default {
     name: "UserView.vue",
@@ -29,6 +29,7 @@ export default {
                 "initData": window.Telegram.WebApp.initData,
             }).then((response) => {
                 this.us = response.data;
+                endLoading("loading_user");
             }).catch((error) => {
                 if (error.response)
                     alert (error.message);
@@ -70,6 +71,7 @@ export default {
 </script>
 
 <template>
+    <div class="loading loading_user"></div>
     <div class="user_index margin-all">
         <user-block v-if="us" :user="us" />
         <div v-if="us.posts && us.posts?.length !== 0" class="user_posts">

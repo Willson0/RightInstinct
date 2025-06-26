@@ -84,6 +84,10 @@ export default {
             type: Number,
             required: true,
         },
+        zid: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         user () {
@@ -111,7 +115,7 @@ export default {
             </div>
         </div>
     </div>
-    <div @click.stop="showOverlay('ratingOverlay')" class="green-bgc">
+    <div :style="zid ? 'z-index: 99999' : ''" @click.stop="showOverlay('ratingOverlay')" class="green-bgc">
         <img src="/star.svg" alt="">
         <div class="grey-light">{{ rating }}</div>
     </div>

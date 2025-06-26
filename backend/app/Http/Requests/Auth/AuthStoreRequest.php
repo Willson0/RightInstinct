@@ -24,6 +24,21 @@ class AuthStoreRequest extends FormRequest
         return [
             "notification" => "boolean",
             "city_id" => "integer|exists:cities,id",
+            "fullname" => [
+                "nullable",
+                "string",
+                "regex:/^[A-ZА-ЯЁ][a-zа-яё]+(?: [A-ZА-ЯЁ][a-zа-яё]+){0,2}$/u",
+            ],
+            "phone" => [
+                "nullable",
+                "string",
+                "regex:/^(\+7|8)[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/u",
+            ],
+            "email" => [
+                "nullable",
+                "string",
+                "regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/u"
+            ]
         ];
     }
 }

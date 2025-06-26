@@ -160,7 +160,7 @@ export default {
                         <div class="sign">{{ beautifullyDate }}</div>
                     </div>
                 </div>
-                <button v-if="!my" @click.stop="favourite(!user?.favourites[type]?.includes(event.id), 'event', event.id, isLoading, user)">
+                <button v-if="!my" @click.stop="favourite(!user?.favourites['event']?.includes(event.id), 'event', event.id, isLoading, user)">
                     <img v-if="user?.favourites['event']?.includes(event.id)"
                          src="/like_active.svg" style="width:24px; height: 24px;" alt="">
                     <img v-else src="/like.svg" alt="">

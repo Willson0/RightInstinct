@@ -18,6 +18,7 @@ import MyServicesView from "@/views/MyServicesView.vue";
 import MyRatingsView from "@/views/MyRatingsView.vue";
 import EventsView from "@/views/EventsView.vue";
 import UpdateView from "@/views/UpdateView.vue";
+import {endLoading} from "@/utils.js";
 
 export default {
     name: "MainView",
@@ -25,14 +26,13 @@ export default {
         return {
             queryHistory: [],
             isGoingBack: false,
+            firstLoading: true,
+            touch: false,
         }
     },
     components: {
-        UpdateView,
-        EventsView,
-        MyRatingsView,
-        MyServicesView,
-        FavouriteView,
+        UpdateView, EventsView, MyRatingsView,
+        MyServicesView, FavouriteView,
         PostsView, ChatView, HomeView,
         MyPostsView, StorePost, NavComponent,
         MyEventsView, ProfileView,
@@ -42,17 +42,26 @@ export default {
     async mounted () {
         if (!this.$route.query.s) this.$router.push({ query: { s: 'home' }});
 
-        await axios.post(config.backend + "auth/profile", {
-            "initData": window.Telegram.WebApp.initData,
-        }).then((response) => {
-            this.$store.dispatch("updateUser", response.data);
-        }).catch((error) => {
-            if (error.response) {
-                return alert (`An error occurred: ${error.message}`);
-            }
-        });
+        this.fetchData();
+        setInterval (() => {
+            this.fetchData();
+        }, 2000);
 
         window.Telegram.WebApp.BackButton.onClick(() => this.backByQuery());
+
+
+        window.addEventListener("touchstart", () => this.touch = true);
+        // window.addEventListener("touchend", () => this.touch = false);
+
+        document.querySelectorAll("input").forEach((el) => {
+            let footer = document.querySelector(".footer");
+            el.addEventListener("focus", () => {
+                if (this.touch) footer.style.display = "none";
+            });
+            el.addEventListener("blur", () => {
+                footer.style.display = "";
+            });
+        })
     },
     watch: {
         $route(to, from) {
@@ -74,6 +83,21 @@ export default {
         }
     },
     methods: {
+        async fetchData () {
+            axios.post(config.backend + "auth/profile", {
+                "initData": window.Telegram.WebApp.initData,
+            }).then((response) => {
+                this.$store.dispatch("updateUser", response.data);
+                if (this.firstLoading) {
+                    this.firstLoading = false;
+                    endLoading();
+                }
+            }).catch((error) => {
+                if (error.response) {
+                    return alert (`An error occurred: ${error.message}`);
+                }
+            });
+        },
         backByQuery() {
             console.log(this.queryHistory);
             if (this.queryHistory.length > 0) {
@@ -92,6 +116,7 @@ export default {
 </script>
 
 <template>
+    <div class="loading"></div>
     <div class="notification_container"></div>
     <nav-component>
         <home-view v-if="$route.query.s === 'home'" />
