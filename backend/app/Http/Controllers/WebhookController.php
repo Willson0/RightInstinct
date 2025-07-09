@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -32,7 +33,7 @@ class WebhookController extends Controller
 
 Погрузитесь в атмосферу заботы и весёлого общения, делайте жизнь своих питомцев ещё ярче и счастливее вместе с нами! ✨🐶',
                     'parse_mode' => 'MarkdownV2',
-                    "photo" => "https://exobloom.ru/storage/dog.jpg"
+                    "photo" => InputFile::create(Storage::disk("public")->path("dog.jpg"))
                 ]);
             }
         }
