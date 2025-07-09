@@ -2107,11 +2107,17 @@ div {
 }
 .dialog_attachment img {
    height: 100%;
-    max-width: 100%;
-    width: 100%;
-    display:flex;
-    object-fit: contain;
 }
+.dialog_attachment img.wide {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+}
+.dialog_attachment img.tall {
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
+}​
 .dialog_attachment_trash {
     position: absolute;
     top: 6px;
