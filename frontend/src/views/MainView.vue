@@ -18,7 +18,8 @@ import MyServicesView from "@/views/MyServicesView.vue";
 import MyRatingsView from "@/views/MyRatingsView.vue";
 import EventsView from "@/views/EventsView.vue";
 import UpdateView from "@/views/UpdateView.vue";
-import {endLoading} from "@/utils.js";
+import {endLoading, toLink} from "@/utils.js";
+import ShareView from "@/views/ShareView.vue";
 
 export default {
     name: "MainView",
@@ -28,9 +29,11 @@ export default {
             isGoingBack: false,
             firstLoading: true,
             touch: false,
+            backFuntion: false,
         }
     },
     components: {
+        ShareView,
         UpdateView, EventsView, MyRatingsView,
         MyServicesView, FavouriteView,
         PostsView, ChatView, HomeView,
@@ -40,15 +43,24 @@ export default {
         NotificationsView, DialogView,
     },
     async mounted () {
-        if (!this.$route.query.s) this.$router.push({ query: { s: 'home' }});
+        if (window.Telegram.WebApp.initDataUnsafe.start_param) {
+            const params = window.Telegram.WebApp.initDataUnsafe.start_param.split("_");
+            window.Telegram.WebApp.initDataUnsafe.start_param = undefined;
+
+            if (/^[0-9]+$/.test(params[1]) && Number(params[1]) >= 0)  {
+                if (params[0] === "user") toLink("user", params[1])
+                else if (["post", "event", "service"].includes(params[0])) toLink("share", params[1], params[0])
+            } else this.$router.push({ query: { s: 'home' }});
+        }
+        else if (!this.$route.query.s) this.$router.push({ query: { s: 'home' }});
 
         this.fetchData();
         setInterval (() => {
             this.fetchData();
         }, 2000);
 
-        window.Telegram.WebApp.BackButton.onClick(() => this.backByQuery());
-
+        window.Telegram.WebApp.BackButton.onClick(this.backByQuery);
+        window.backByQueryFunction = this.backByQuery;
 
         window.addEventListener("touchstart", () => this.touch = true);
         // window.addEventListener("touchend", () => this.touch = false);
@@ -69,12 +81,26 @@ export default {
             this.$store.dispatch("updateInterval", null);
         },
         '$route.query' (to, from) {
+            console.log(to);
+            if (to.backfunction === '1') {
+                this.backFuntion = true;
+                return this.$router.push({ query: { s: this.$route.query.s }});
+            }
+            if (this.backFuntion === true) {
+                window.Telegram.WebApp.BackButton.offClick();
+
+                window.Telegram.WebApp.BackButton.onClick(this.backByQuery);
+                return this.backFuntion = false;
+            }
+
             if (this.isGoingBack === true) {
                 this.isGoingBack = false;
                 return;
             }
+            if (from.s === undefined) return;
 
-            if (to.needback === "1" || to.needback == null) {
+            if (to.needback === "1" || to.needback == undefined || to.needback == null) {
+                console.log("ZAPISANO");
                 this.queryHistory.push(from);
             }
             console.log(this.queryHistory);
@@ -99,6 +125,7 @@ export default {
             });
         },
         backByQuery() {
+            console.log("VOZVRASHENIE");
             console.log(this.queryHistory);
             if (this.queryHistory.length > 0) {
                 this.isGoingBack = true;
@@ -135,6 +162,7 @@ export default {
         <user-view v-if="$route.query.s === 'user'" />
         <favourite-view v-if="$route.query.s === 'favourite'" />
         <update-view v-if="$route.query.s === 'update'" />
+        <share-view v-if="$route.query.s === 'share'" />
     </nav-component>
 <!--    123-->
 </template>

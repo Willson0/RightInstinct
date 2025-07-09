@@ -47,7 +47,8 @@ export function toLink (query, id = null, type = null, needback = 1) {
     if (id) router.push({ query: { s: query, id: id, type: type, needback: needback }});
     else router.push({ query: { s: query, needback: needback }});
 
-    document.querySelector(".image-overlay").remove();
+    let overlay = document.querySelector(".image-overlay");
+    if (overlay) overlay.remove();
 }
 
 export function levenshtein(a, b) {
@@ -206,4 +207,15 @@ export function endLoading (cl = "loading") {
 
 export function startLoading (cl = "loading") {
 
+}
+
+export function copy (type, id) {
+    let text = 'https://t.me/' + config.bot + '?startapp=' + type + '_' + id;
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            notify("Успешно скопировано!", 0);
+        })
+        .catch(err => {
+            notify("Устройство не позволяет скопирвать ссылку", 1);
+        });
 }

@@ -2081,3 +2081,102 @@ div {
     z-index: 99999999;
     transition: 0.4s;
 }
+
+
+
+.dialog_attachment {
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+    max-height: 100px;
+    min-height:100px;
+    padding: 0 16px;
+    margin: 8px 0;
+    column-gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.dialog_attachment>div {
+    position: relative;
+}
+.dialog_attachment img {
+   height: 100%;
+}
+.dialog_attachment_trash {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background-color: rgba(58, 58, 58, 0.71);
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.dialog_attachment_trash>svg {
+    width: 100%;
+    height: 100%;
+}
+.dialog_main_photos {
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    overflow:hidden;
+    margin-bottom: 6px;
+}
+.dialog_main_photos>img {
+    height: 100px;
+    background-color: #fff;
+    box-sizing: border-box;
+    object-fit: cover;
+    width: 100%;
+}
+
+
+.photo_slider {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: white;
+    z-index: 9999999999;
+    user-select: none;
+    touch-action: pan-y;
+}
+
+.slider-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.3s cubic-bezier(.32,.72,.56,1); /* плавно */
+    will-change: transform;
+}
+
+.photo_slider img {
+    width: 100vw;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+    user-select: none;
+}
+.photo_slider_counter {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    padding: 4px 8px;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--beige);
+    background-color: var(--green-dark);
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.share {
+    margin: 20px auto;
+    display: flex;
+    width: fit-content;
+}

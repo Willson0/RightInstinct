@@ -3,7 +3,7 @@ import UserBlock from "@/components/UserBlock.vue";
 import config from "@/config.json";
 import axios from "axios"
 import PostBlock from "@/components/PostBlock.vue";
-import {complain, endLoading, favourite, notify, toLink} from "@/utils.js";
+import {complain, copy, endLoading, favourite, notify, toLink} from "@/utils.js";
 
 export default {
     name: "UserView.vue",
@@ -41,6 +41,7 @@ export default {
         }
     },
     methods: {
+        copy,
         complain,
         favourite,
         async subscribe (status = 1) {
@@ -94,7 +95,7 @@ export default {
                      src="/like_active.svg"  alt="">
                 <img v-else src="/like.svg" style="width: 32px; height: 32px;" alt="">
             </button>
-            <button><img src="/share.svg" alt=""></button>
+            <button @click="copy('user', us.id)"><img src="/share.svg" alt=""></button>
         </div>
 <!--        <a :href="config.complain" class="postOverlay_main_complain">Пожаловаться</a>-->
         <a @click="complain('user', us.id)" class="postOverlay_main_complain">Пожаловаться</a>

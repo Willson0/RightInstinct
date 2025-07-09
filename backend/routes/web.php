@@ -14,6 +14,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebhookController;
 use App\Http\Middleware\CheckAdminMiddleware;
 use App\Http\Middleware\CheckTelegram;
 use Illuminate\Support\Facades\Route;
@@ -102,5 +103,9 @@ Route::group(["prefix" => "api"], function () {
 
     Route::group(["prefix" => "stats", "middleware" => CheckAdminMiddleware::class], function () {
         Route::get("/", [StatsController::class, "index"]);
+    });
+
+    Route::group(["prefix" => "webhook"], function () {
+        Route::post("/tg", [WebhookController::class, 'tg']);
     });
 });

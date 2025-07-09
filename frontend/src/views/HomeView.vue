@@ -2,11 +2,12 @@
 import PostBlock from "@/components/PostBlock.vue";
 import {hideOverlay, showOverlay, toLink} from "@/utils.js";
 import EventBlock from "@/components/EventBlock.vue";
+import PhotoSlider from "@/components/PhotoSlider.vue";
 
 export default {
     name: "HomeView",
     methods: {showOverlay, hideOverlay, toLink},
-    components: {EventBlock, PostBlock},
+    components: {PhotoSlider, EventBlock, PostBlock},
     async mounted () {
         window.Telegram.WebApp.disableVerticalSwipes();
     },
@@ -68,12 +69,6 @@ export default {
             </div>
             <div class="home_block_posts_container">
                 <post-block :object="popular" :type="popular.breed ? 'post' : 'service'" v-for="popular in user.feed?.popular"/>
-            </div>
-            <div class="home_block_button green-bgc button margin-side">
-                <div>
-                    <img src="/plus.svg" alt="">
-                    <div class="button">Добавить</div>
-                </div>
             </div>
         </div>
         <div class="home_block">

@@ -1,15 +1,18 @@
 <script>
 import config from "@/config.json"
-import {complain, favourite, notify, toLink} from "@/utils.js";
+import {complain, copy, favourite, notify, toLink} from "@/utils.js";
 import axios from "axios";
+import PhotoSlider from "@/components/PhotoSlider.vue";
 export default {
     name: "EventBlock",
+    components: {PhotoSlider},
     data () {
         return {
             config: config,
             overlay: false,
             isLoading: {status: false},
             overlayImage: null,
+            startIndex: null,
         }
     },
     props: {
@@ -42,6 +45,7 @@ export default {
         },
     },
     methods: {
+        copy,
         complain,
         favourite,
         toLink,
@@ -111,6 +115,7 @@ export default {
 </script>
 
 <template>
+    <PhotoSlider v-if="startIndex !== null" :images="event.pictures.map(item => item.url)" :start-index="startIndex" />
     <div v-if="overlayImage" class="image-overlay" @click="closeFullScreen">
         <img :src="overlayImage" alt="" />
     </div>
@@ -120,13 +125,13 @@ export default {
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="event.pictures?.length !== 0">
                 <div>
-                    <img @click="openFullScreen" :src="config.storage + event.pictures[0]?.url" alt="">
-                    <div class="green-bgc">
-                        <img src="/star.svg" alt="">
-                        <div class="grey-light">{{ event.rating }}</div>
-                    </div>
+                    <img @click="startIndex = 0" :src="config.storage + event.pictures[0]?.url" alt="">
+<!--                    <div class="green-bgc">-->
+<!--                        <img src="/star.svg" alt="">-->
+<!--                        <div class="grey-light">{{ event.rating }}</div>-->
+<!--                    </div>-->
                 </div>
-                <img @click="openFullScreen" v-for="img in event.pictures.slice(1)" :src="config.storage + img.url" alt="">
+                <img @click="startIndex = index+1" v-for="(img, index) in event.pictures.slice(1)" :src="config.storage + img.url" alt="">
             </div>
             <div class="postOverlay_mainContainer">
                 <h4>{{ event.title }}</h4>
@@ -165,9 +170,9 @@ export default {
                          src="/like_active.svg" style="width:24px; height: 24px;" alt="">
                     <img v-else src="/like.svg" alt="">
                 </button>
-                <button v-if="!my"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
+                <button v-if="!my" @click="copy('event', event.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
 
-                <button v-if="my"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
+                <button v-if="my" @click="copy('event', event.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
                 <button v-if="my" @click="toLink('update', event.id, 'event')">
                     <img style="width: 24px; height: 24px;" src="/edit.svg" alt="">
                 </button>

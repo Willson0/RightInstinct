@@ -1,13 +1,15 @@
 <script>
-import {complain, favourite, notify, toLink} from "@/utils.js";
+import {complain, copy, favourite, notify, toLink} from "@/utils.js";
 import config from "@/config.json";
 import RatingBlock from "@/components/RatingBlock.vue";
 import axios from "axios";
+import PhotoSlider from "@/components/PhotoSlider.vue";
 
 export default {
     name: "PostBlock",
-    components: {RatingBlock},
+    components: {PhotoSlider, RatingBlock},
     methods: {
+        copy,
         complain,
         favourite,
         toLink,
@@ -78,6 +80,7 @@ export default {
             config: config,
             isLoading: {status: false},
             overlayImage: null,
+            startIndex: null,
         }
     },
     props: {
@@ -110,6 +113,7 @@ export default {
 </script>
 
 <template>
+    <PhotoSlider @close="startIndex=null" v-if="startIndex !== null" :images="object.pictures.map(item => item.url)" :start-index="startIndex" />
     <div v-if="overlayImage" class="image-overlay" @click="closeFullScreen">
         <img :src="overlayImage" alt="" />
     </div>
@@ -121,11 +125,11 @@ export default {
                 <div>
                     <rating-block :zid="true" @click.stop="$event.preventDefault()" :rating="object.rating" :type="type" :id="object.id" />
                     <a target="_blank" :href="object.link">
-                        <img @click="object.link ? '' : openFullScreen($event)" :src="config.storage + object.pictures[0]?.url" alt="">
+                        <img @click="object.link ? '' : startIndex = 0" :src="config.storage + object.pictures[0]?.url" alt="">
                         <img v-if="object.link" class="postOverlay_main_photos_video" src="/play.svg">
                     </a>
                 </div>
-                <img @click="openFullScreen" v-for="img in object.pictures.slice(1)" :src="config.storage + img.url" alt="">
+                <img @click="startIndex = index+1" v-for="(img, index) in object.pictures.slice(1)" :src="config.storage + img.url" alt="">
             </div>
             <div class="postOverlay_mainContainer">
                 <h4>{{ object.title }}</h4>
@@ -166,11 +170,11 @@ export default {
                          src="/like_active.svg" style="width:24px; height: 24px;" alt="">
                     <img v-else src="/like.svg" alt="">
                 </button>
-                <button><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
+                <button @click="copy(type, object.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
             </div>
             <div v-if="my" class="postOverlay_main_buttons">
                 <div class="button"><h3>{{ beautifullyPrice }} ₽</h3></div>
-                <button><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
+                <button @click="copy(type, object.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
                 <button @click="toLink('update', object.id, type)">
                     <img style="width: 24px; height: 24px;" src="/edit.svg" alt="">
                 </button>
@@ -199,7 +203,7 @@ export default {
             <div class="sign">{{ object.city.name }}</div>
         </div>
         <div v-if="my" class="block_post_buttons">
-            <button><img src="/share.svg" alt=""></button>
+            <button @click="copy(type, object.id)"><img src="/share.svg" alt=""></button>
             <button @click.stop="toLink('update', object.id, type)"><img src="/edit.svg" alt=""></button>
             <button @click.stop="deletePost(object.id)"><img src="/trash.svg" alt=""></button>
         </div>

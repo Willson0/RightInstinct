@@ -23,6 +23,8 @@ class ChatSendRequest extends FormRequest
     {
         return [
             "message" => "required|string",
+            "attachments" => "nullable|array",
+            "attachments.*" => "nullable|file"
         ];
     }
 }
