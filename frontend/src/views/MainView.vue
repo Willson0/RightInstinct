@@ -72,6 +72,8 @@ export default {
         $route(to, from) {
             clearInterval(this.$store.state.interval);
             this.$store.dispatch("updateInterval", null);
+
+            this.hideFooter();
         },
         '$route.query' (to, from) {
             this.hideFooter();
