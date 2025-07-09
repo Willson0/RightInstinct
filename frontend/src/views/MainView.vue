@@ -142,10 +142,13 @@ export default {
                         footer.style.display = "none";
                         document.querySelector(".dialog").style.height =
                             "calc(100vh - 10px)";
+                        document.querySelector(".nav").style.paddingBottom = "0px"
                     }
                 });
                 el.addEventListener("blur", () => {
                     footer.style.display = "";
+                    document.querySelector(".dialog").style.height = "";
+                    document.querySelector(".nav").style.paddingBottom = "";
                 });
             })
         }
