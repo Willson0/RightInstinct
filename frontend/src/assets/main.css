@@ -2102,6 +2102,7 @@ div {
 .dialog_attachment>div {
     position: relative;
     width: fit-content !important;
+    display:flex;
 }
 .dialog_attachment img {
    height: 100%;
