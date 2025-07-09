@@ -41,17 +41,19 @@ class ChatController extends Controller
         ]);
 
         $index = 0;
-        foreach ($request["attachments"] as $file) {
-            $time = time();
-            $url = "messages/" . $message->id . "/" . $time . $index . "." . $file->extension();
-            Storage::disk("public")->putFileAs("messages/" . $message->id,
-                $file, $time . $index . "." . $file->extension());
+        if (isset($request["attachments"])) {
+            foreach ($request["attachments"] as $file) {
+                $time = time();
+                $url = "messages/" . $message->id . "/" . $time . $index . "." . $file->extension();
+                Storage::disk("public")->putFileAs("messages/" . $message->id,
+                    $file, $time . $index . "." . $file->extension());
 
-            $index ++;
-            MessagePicture::create([
-                "message_id" => $message->id,
-                "url" => $url,
-            ]);
+                $index ++;
+                MessagePicture::create([
+                    "message_id" => $message->id,
+                    "url" => $url,
+                ]);
+            }
         }
 
         return $this->show($companion, $request);
