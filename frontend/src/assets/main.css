@@ -2108,7 +2108,6 @@ div {
 .dialog_attachment img {
    height: 100%;
     width:100%;
-    max-width: 100%;
 }
 .dialog_attachment_trash {
     position: absolute;
