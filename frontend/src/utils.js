@@ -219,15 +219,3 @@ export function copy (type, id) {
             notify("Устройство не позволяет скопирвать ссылку", 1);
         });
 }
-
-export function hideFooter() {
-    document.querySelectorAll("input").forEach((el) => {
-        let footer = document.querySelector(".footer");
-        el.addEventListener("focus", () => {
-            if (this.touch) footer.style.display = "none";
-        });
-        el.addEventListener("blur", () => {
-            footer.style.display = "";
-        });
-    })
-}
