@@ -17,7 +17,7 @@ class WebhookController extends Controller
             $text = $message['text'] ?? '';
 
             if (trim($text) === '/start') {
-                Telegram::sendMessage([
+                Telegram::sendPhoto([
                     'chat_id' => $chatId,
                     'text'    => 'Hello!',
                 ]);
