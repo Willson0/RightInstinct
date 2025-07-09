@@ -2092,7 +2092,7 @@ div {
     flex-direction: row;
     height: 100px;
     max-height: 100px;
-    min-height:100px;
+    min-height: 100px;
     padding: 0 16px;
     margin: 8px 0;
     column-gap: 6px;
@@ -2101,14 +2101,14 @@ div {
 }
 .dialog_attachment>div {
     position: relative;
-    width: fit-content !important;
+    width: min-content !important;
     display:flex;
     max-width: 100vw;
 }
 .dialog_attachment img {
    height: 100%;
-    max-width: 100vw;
-    width: auto;
+    max-width: 100%;
+    width: 100%;
     display:flex;
     object-fit: contain;
 }
