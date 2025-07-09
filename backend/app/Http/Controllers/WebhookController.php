@@ -37,9 +37,11 @@ class WebhookController extends Controller
                     "reply_markup" => json_encode([
                         "inline_keyboard" => [
                             [
-                                "text" => "Открыть веб-приложение",
-                                "web_app" => [
-                                    "url" => "https://" . env("DOMAIN") . "?s=home",
+                                [
+                                    "text" => "Открыть веб-приложение",
+                                    "web_app" => [
+                                        "url" => "https://" . env("DOMAIN") . "?s=home",
+                                    ]
                                 ]
                             ]
                         ]
