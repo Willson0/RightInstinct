@@ -1058,9 +1058,8 @@ div {
 .dialog_main_to_user {
     background-color: var(--grey-light) !important;
     margin-left: 0 !important;
-    flex-direction: row !important;
 }
-.dialog_main_to_user img {
+.dialog_main_to_user .dialog_main_footer img {
     display: none;
 }
 .dialog_main_to_user svg {
@@ -1073,11 +1072,15 @@ div {
 }
 .dialog_main_to_user .dialog_main_text {
     margin: 0 !important;
+    padding-right:40px !important;
 }
 .dialog_main_to_user .dialog_main_footer {
     padding-top: 10px;
     padding-left: 10px;
     margin-left: 0;
+    position: absolute;
+    right: 6px;
+    bottom: 0;
 }
 
 

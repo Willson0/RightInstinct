@@ -287,10 +287,10 @@ export default {
             </div>
         </div>
         <div style="z-index:8" class="store_input_select_container">
-            <div ref="city" @click="focusToString($event, 'city_string')" class="store_input_select">
+            <div ref="city" @click="openList($event, 'city_string');" class="store_input_select">
                 <div class="store_input_select_main">
                     <input type="text" v-model="cityString" style="padding: 0; border: 0;" id="city_string"
-                           :placeholder="!['event'].includes(type) ? 'Город' : 'Место проведения'" @blur="hideList">
+                           :placeholder="!['event'].includes(type) ? 'Город' : 'Место проведения'">
                     <img class="store_input_select_triangle" src="/triangle.svg" alt="">
                 </div>
             </div>

@@ -22,7 +22,7 @@ class ChatSendRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "message" => "required|string",
+            "message" => "nullable|string",
             "attachments" => "nullable|array",
             "attachments.*" => "nullable|file"
         ];

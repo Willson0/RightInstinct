@@ -2,9 +2,11 @@
 import {endLoading, notify, toLink, utcToLocalTime} from "@/utils.js";
 import axios from "axios";
 import config from "@/config.json";
+import PhotoSlider from "@/components/PhotoSlider.vue";
 
 export default {
     name: "DialogView",
+    components: {PhotoSlider},
     data () {
         return {
             data: null,
@@ -14,6 +16,8 @@ export default {
             firstLoading: true,
             attachment: [],
             config: config,
+            startIndex: null,
+            sliderID: -1
         }
     },
     async mounted () {
@@ -62,14 +66,23 @@ export default {
         },
         async sendMessage () {
             if (this.isLoading) return;
-            if (this.message && this.message.length === 0) return;
+            if (this.message && this.message.length === 0 && this.attachment.length === 0) return;
+            else if (this.message.length === 0) this.message = "";
 
+            let attachment = [];
+            for (let file of this.attachment) {
+                attachment.push({
+                    url: file.preview,
+                });
+            }
+            console.log(attachment);
             this.data.dialog.push({
                 "sender_id": this.user.id,
                 "recipient_id": this.data.companion.id,
                 "message": this.message,
                 "readed": 0,
                 "created_at": new Date().toISOString(),
+                "attachments": attachment,
             })
 
             requestAnimationFrame(() => {
@@ -109,6 +122,12 @@ export default {
         },
         removePhoto (index) {
             this.attachment.splice(index, 1);
+        },
+        showSlider (ev, index) {
+            this.startIndex = index;
+            let element = ev.target.closest(".dialog_main>div");
+            console.log(element);
+            element.querySelector(".photo_slider").style.display = "";
         }
     },
     computed: {
@@ -137,8 +156,21 @@ export default {
             <div :style="message.attachments?.length ? 'max-width: 100%' : ''"
                 :class="message.sender_id === user.id ? 'dialog_main_from_user' : 'dialog_main_to_user'"
                  v-for="message in data?.dialog">
-                <div class="dialog_main_photos">
-                    <img :src="config.storage + photo.url" v-for="photo in message.attachments" alt="">
+                <photo-slider v-if="sliderID === message.id" @close="sliderID = -1"
+                              :start-index="startIndex" :images="message.attachments.map(file => file.url)" />
+                <div class="dialog_main_photos" v-if="message.attachments"
+                     :style="{
+                        gridTemplateColumns: message.attachments.length === 1 ? '1fr'
+                          : message.attachments.length % 3 === 0 ? 'repeat(3, 1fr)'
+                          : message.attachments.length % 2 === 0 ? 'repeat(2, 1fr)'
+                          : 'repeat(3, 1fr)'
+                      }">
+                    <img :src="photo.url.startsWith('blob:') ? photo.url : config.storage + photo.url" :style="{
+                        height: message.attachments.length === 1 ? '300px'
+                          : message.attachments.length % 3 === 0 ? '100px'
+                          : message.attachments.length % 2 === 0 ? '150px'
+                          : '100px'
+                      }" v-for="(photo, key) in message.attachments" alt="" @click="startIndex = key; sliderID = message.id;">
                 </div>
                 <div class="dialog_main_text">{{ message.message }}</div>
                 <div class="dialog_main_footer">

@@ -31,6 +31,9 @@ class ChatController extends Controller
     }
 
     public function send (User $companion, ChatSendRequest $request) {
+        if (!$request["message"] AND !$request["attachments"]) abort(400);
+        if (!$request["message"]) $request["message"] = "";
+
         $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $message = Message::create([
             "sender_id" => $user->id,
