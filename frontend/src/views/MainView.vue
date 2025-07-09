@@ -18,7 +18,7 @@ import MyServicesView from "@/views/MyServicesView.vue";
 import MyRatingsView from "@/views/MyRatingsView.vue";
 import EventsView from "@/views/EventsView.vue";
 import UpdateView from "@/views/UpdateView.vue";
-import {endLoading, toLink} from "@/utils.js";
+import {endLoading, hideFooter, toLink} from "@/utils.js";
 import ShareView from "@/views/ShareView.vue";
 
 export default {
@@ -65,7 +65,7 @@ export default {
         window.addEventListener("touchstart", () => this.touch = true);
         // window.addEventListener("touchend", () => this.touch = false);
 
-        this.hideFooter();
+        hideFooter();
 
     },
     watch: {
@@ -73,10 +73,10 @@ export default {
             clearInterval(this.$store.state.interval);
             this.$store.dispatch("updateInterval", null);
 
-            this.hideFooter();
+            this.$nextTick(() => hideFooter())
         },
         '$route.query' (to, from) {
-            this.hideFooter();
+            this.$nextTick(() => hideFooter())
 
             console.log(to);
             if (to.backfunction === '1') {
@@ -135,17 +135,6 @@ export default {
                 this.$router.push({ query: {s: 'home'} });
             }
         },
-        hideFooter () {
-            document.querySelectorAll("input").forEach((el) => {
-                let footer = document.querySelector(".footer");
-                el.addEventListener("focus", () => {
-                    if (this.touch) footer.style.display = "none";
-                });
-                el.addEventListener("blur", () => {
-                    footer.style.display = "";
-                });
-            })
-        }
     }
 }
 </script>
