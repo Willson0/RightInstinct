@@ -58,6 +58,8 @@ class RatingController extends Controller
             if ($review->type === "user") unset($review);
             else {
                 $review->object = $tables[$review->type]::find($review->object_id);
+                if (!$review->object) $review->delete();
+
                 $review->object->pictures;
                 $review->object->category;
             }
