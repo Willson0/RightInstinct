@@ -31,9 +31,19 @@ class WebhookController extends Controller
 *— Делитесь опытом, советами и милыми фото своих хвостатых друзей*
 — Удобный и быстрый поиск нужных товаров или услуг
 
-Погрузитесь в атмосферу заботы и весёлого общения, делайте жизнь своих питомцев ещё ярче и счастливее вместе с нами\! ✨🐶',
+Погрузитесь в атмосферу заботы и весёлого общения, делайте жизнь своих питомцев ещё ярче и счастливее\! ✨🐶',
                     'parse_mode' => 'MarkdownV2',
-                    "photo" => InputFile::create(Storage::disk("public")->path("dog.jpg"))
+                    "photo" => InputFile::create(Storage::disk("public")->path("dog.jpg")),
+                    "reply_markup" => [
+                        "inline_keyboard" => [
+                            [
+                                "text" => "Открыть веб-приложение",
+                                "web_app" => [
+                                    "url" => "https://" . env("DOMAIN") . "?s=home",
+                                ]
+                            ]
+                        ]
+                    ]
                 ]);
             }
         }
