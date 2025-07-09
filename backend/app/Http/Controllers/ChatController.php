@@ -41,7 +41,7 @@ class ChatController extends Controller
         ]);
 
         $index = 0;
-        if (isset($request["attachments"])) {
+        if ($request["attachments"]) {
             foreach ($request["attachments"] as $file) {
                 $time = time();
                 $url = "messages/" . $message->id . "/" . $time . $index . "." . $file->extension();
