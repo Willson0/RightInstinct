@@ -2107,10 +2107,10 @@ div {
 }
 .dialog_attachment img {
    height: 100%;
-    object-fit: cover;
-    display: block;
     max-width: 100vw;
-    width: min-content;
+    width: auto;
+    display:flex;
+    object-fit: contain;
 }
 .dialog_attachment_trash {
     position: absolute;
