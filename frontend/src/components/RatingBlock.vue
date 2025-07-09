@@ -30,6 +30,8 @@ export default {
             })
         },
         hideOverlay (cl) {
+            this.$emit("unfreeze");
+
             let el = document.querySelector(`.overlay.${cl}`);
             el.style.transform = "translateY(100%)";
 
@@ -115,7 +117,7 @@ export default {
             </div>
         </div>
     </div>
-    <div :style="zid ? 'z-index: 99999' : ''" @click.stop="showOverlay('ratingOverlay')" class="green-bgc">
+    <div :style="zid ? 'z-index: 99999' : ''" @click.stop="$emit('freeze'); showOverlay('ratingOverlay')" class="green-bgc">
         <img src="/star.svg" alt="">
         <div class="grey-light">{{ rating }}</div>
     </div>

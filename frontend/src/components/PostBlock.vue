@@ -33,6 +33,8 @@ export default {
             })
         },
         hideOverlay (cl) {
+            this.$emit('unfreeze');
+
             let el = document.querySelector(`.overlay.${cl}`);
             el.style.transform = "translateY(100%)";
 
@@ -123,7 +125,8 @@ export default {
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="object.pictures?.length !== 0">
                 <div>
-                    <rating-block :zid="true" @click.stop="$event.preventDefault()" :rating="object.rating" :type="type" :id="object.id" />
+                    <rating-block :zid="true" @click.stop="$event.preventDefault()" @freeze="$emit('freeze')"
+                                  :rating="object.rating" :type="type" :id="object.id" />
                     <a target="_blank" :href="object.link">
                         <img @click="object.link ? '' : startIndex = 0" :src="config.storage + object.pictures[0]?.url" alt="">
                         <img v-if="object.link" class="postOverlay_main_photos_video" src="/play.svg">
@@ -164,7 +167,7 @@ export default {
             </div>
             <div v-if="!my" class="postOverlay_main_buttons">
                 <div class="button"><h3>{{ beautifullyPrice }} ₽</h3></div>
-                <button><img src="/press.svg" alt=""></button>
+<!--                <button><img src="/press.svg" alt=""></button>-->
                 <button @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">
                     <img v-if="user?.favourites[type]?.includes(object.id)"
                          src="/like_active.svg" style="width:24px; height: 24px;" alt="">
@@ -192,7 +195,8 @@ export default {
                 <img src="/star.svg" alt="">
                 <div class="grey-light">{{ object.rating }}</div>
             </div>
-            <rating-block v-else :id="object.id" :rating="object.rating" :type="type"/>
+            <rating-block v-else :id="object.id" @unfreeze="$emit('unfreeze')"
+                          @freeze="$emit('freeze')" :rating="object.rating" :type="type"/>
         </div>
         <div class="block_post_info">
             <div class="sign">{{ object.title }}</div>

@@ -19,6 +19,20 @@ export default {
     data () {
         return {
             selectedId: null,
+            freezePopular: false,
+            popular: [],
+            newPopular: [],
+        }
+    },
+    watch: {
+        freezePopular () {
+            this.popular = this.newPopular;
+        },
+        'user.feed.popular' () {
+            this.newPopular = this.user.feed.popular;
+            if (!this.freezePopular) {
+                this.popular = this.newPopular;
+            }
         }
     }
 }
@@ -68,7 +82,8 @@ export default {
                 <h1>Популярное</h1>
             </div>
             <div class="home_block_posts_container">
-                <post-block :object="popular" :type="popular.breed ? 'post' : 'service'" v-for="popular in user.feed?.popular"/>
+                <post-block :object="pop" :type="pop.breed ? 'post' : 'service'"
+                            v-for="pop in popular" @freeze="freezePopular = true" @unfreeze="freezePopular = false"/>
             </div>
         </div>
         <div class="home_block">
