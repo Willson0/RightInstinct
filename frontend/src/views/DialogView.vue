@@ -62,7 +62,7 @@ export default {
         },
         async sendMessage () {
             if (this.isLoading) return;
-            if (this.message.length === 0) return;
+            if (this.message && this.message.length === 0) return;
 
             this.data.dialog.push({
                 "sender_id": this.user.id,
@@ -134,7 +134,7 @@ export default {
             </div>
         </div>
         <div class="dialog_main margin-all">
-            <div :style="message.attachments.length ? 'max-width: 100%' : ''"
+            <div :style="message.attachments?.length ? 'max-width: 100%' : ''"
                 :class="message.sender_id === user.id ? 'dialog_main_from_user' : 'dialog_main_to_user'"
                  v-for="message in data?.dialog">
                 <div class="dialog_main_photos">
