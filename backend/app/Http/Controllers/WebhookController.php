@@ -34,7 +34,7 @@ class WebhookController extends Controller
 Погрузитесь в атмосферу заботы и весёлого общения, делайте жизнь своих питомцев ещё ярче и счастливее\! ✨🐶',
                     'parse_mode' => 'MarkdownV2',
                     "photo" => InputFile::create(Storage::disk("public")->path("dog.jpg")),
-                    "reply_markup" => [
+                    "reply_markup" => json_encode([
                         "inline_keyboard" => [
                             [
                                 "text" => "Открыть веб-приложение",
@@ -43,7 +43,7 @@ class WebhookController extends Controller
                                 ]
                             ]
                         ]
-                    ]
+                    ])
                 ]);
             }
         }
