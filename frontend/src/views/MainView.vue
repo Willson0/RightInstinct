@@ -65,15 +65,8 @@ export default {
         window.addEventListener("touchstart", () => this.touch = true);
         // window.addEventListener("touchend", () => this.touch = false);
 
-        document.querySelectorAll("input").forEach((el) => {
-            let footer = document.querySelector(".footer");
-            el.addEventListener("focus", () => {
-                if (this.touch) footer.style.display = "none";
-            });
-            el.addEventListener("blur", () => {
-                footer.style.display = "";
-            });
-        })
+        this.hideFooter();
+
     },
     watch: {
         $route(to, from) {
@@ -81,6 +74,8 @@ export default {
             this.$store.dispatch("updateInterval", null);
         },
         '$route.query' (to, from) {
+            this.hideFooter();
+
             console.log(to);
             if (to.backfunction === '1') {
                 this.backFuntion = true;
@@ -137,6 +132,17 @@ export default {
             } else {
                 this.$router.push({ query: {s: 'home'} });
             }
+        },
+        hideFooter () {
+            document.querySelectorAll("input").forEach((el) => {
+                let footer = document.querySelector(".footer");
+                el.addEventListener("focus", () => {
+                    if (this.touch) footer.style.display = "none";
+                });
+                el.addEventListener("blur", () => {
+                    footer.style.display = "";
+                });
+            })
         }
     }
 }
