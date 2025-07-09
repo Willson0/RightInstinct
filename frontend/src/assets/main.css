@@ -2098,6 +2098,7 @@ div {
     column-gap: 6px;
     overflow-x: auto;
     overflow-y: hidden;
+    width:fit-content;
 }
 .dialog_attachment>div {
     position: relative;
@@ -2107,7 +2108,7 @@ div {
 }
 .dialog_attachment img {
    height: 100%;
-    width:100%;
+    width:auto;
 }
 .dialog_attachment_trash {
     position: absolute;
