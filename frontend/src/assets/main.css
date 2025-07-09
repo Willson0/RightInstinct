@@ -2098,9 +2098,13 @@ div {
     column-gap: 6px;
     overflow-x: auto;
     overflow-y: hidden;
-    width:fit-content;
 }
 .dialog_attachment>div {
+    width: min-content;
+    display:flex;
+    column-gap: 6px;
+}
+.dialog_attachment>div>div {
     position: relative;
     width: fit-content !important;
     display:flex;
