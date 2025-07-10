@@ -94,13 +94,13 @@ export default {
                 });
             });
 
-            this.message = "";
-            this.attachment = [];
-
             let formData = new FormData();
             formData.append("initData", window.Telegram.WebApp.initData);
             formData.append("message", this.message);
             for (let file of this.attachment) formData.append("attachments[]", file);
+
+            this.message = "";
+            this.attachment = [];
 
             this.isLoading = true;
             await axios.post(config.backend + "chat/" + this.$route.query.id + "/send",
