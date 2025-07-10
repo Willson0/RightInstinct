@@ -2111,8 +2111,7 @@ div {
     max-width: 100vw;
 }
 .dialog_attachment img {
-   height: 100%;
-    width:auto;
+   height: 100px;
 }
 .dialog_attachment_trash {
     position: absolute;
