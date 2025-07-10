@@ -270,7 +270,7 @@ class utils
             $object->get();
 
             $title = "Вашу услугу добавили в избранное";
-            $description = "Пользователь " . ($object->user->fullname ?? $object->fullname) . " добавил услугу {$object->title} вашей собаки в избранное";
+            $description = "Пользователь " . ($user->fullname) . " добавил услугу {$object->title} вашей собаки в избранное";
         } else if ($action == "subscribe") {
             $title = "На вас подписались";
             $description = "Пользователь {$object->fullname} подписался на вас";

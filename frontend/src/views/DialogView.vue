@@ -159,7 +159,7 @@ export default {
                  v-for="message in data?.dialog">
                 <photo-slider v-if="sliderID === message.id" @close="sliderID = -1"
                               :start-index="startIndex" :images="message.attachments.map(file => file.url)" />
-                <div class="dialog_main_photos" v-if="message.attachments"
+                <div class="dialog_main_photos" v-if="message.attachments?.length"
                      :style="{
                         gridTemplateColumns: message.attachments.length === 1 ? '1fr'
                           : message.attachments.length % 3 === 0 ? 'repeat(3, 1fr)'
