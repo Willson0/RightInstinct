@@ -266,11 +266,18 @@ class utils
 
         $title = "";
         Log::critical($object->toArray());
+
         if ($action == "favourite") {
             $object->get();
 
+            $tit = $object->title;
+            $escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+            foreach ($escape as $char) {
+                $tit = str_replace($char, '\\' . $char, $tit);
+            }
+
             $title = "Вашу услугу добавили в избранное";
-            $description = "Пользователь " . ($user->fullname) . " добавил услугу {$object->title} вашей собаки в избранное";
+            $description = "Пользователь " . ($user->fullname) . " добавил услугу {$tit} вашей собаки в избранное";
         } else if ($action == "subscribe") {
             $title = "На вас подписались";
             $description = "Пользователь {$object->fullname} подписался на вас";
