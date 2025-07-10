@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use OpenAI\Client;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class utils
 {
@@ -286,6 +287,16 @@ class utils
             "object_id" => $object->id,
             "readed" => false,
         ]);
+
+
+        $owner = User::find($object->user->id ?? $object->id);
+        if ($owner->notification)
+            Telegram::sendMessage([
+                "chat_id" => $owner->telegram_id,
+                "text" => "*🔔 $title*
+> $description",
+                "parse_mode" => "MarkdownV2"
+            ]);
 
         return true;
     }

@@ -10,6 +10,7 @@ export default {
     components: {PhotoSlider, EventBlock, PostBlock},
     async mounted () {
         window.Telegram.WebApp.disableVerticalSwipes();
+        this.popular = this.user.feed.popular;
     },
     computed: {
         user() {

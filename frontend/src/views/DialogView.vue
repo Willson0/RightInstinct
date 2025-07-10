@@ -94,6 +94,9 @@ export default {
                 });
             });
 
+            this.message = "";
+            this.attachment = [];
+
             let formData = new FormData();
             formData.append("initData", window.Telegram.WebApp.initData);
             formData.append("message", this.message);
@@ -103,8 +106,6 @@ export default {
             await axios.post(config.backend + "chat/" + this.$route.query.id + "/send",
                 formData).then((response) => {
                 this.data = response.data;
-                this.message = "";
-                this.attachment = [];
             }).catch((error) => {
                 if (error.response) {
                     return alert (`An error occurred: ${error.message}`);

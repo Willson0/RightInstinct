@@ -8,6 +8,7 @@ use App\Models\MessagePicture;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class ChatController extends Controller
 {
@@ -58,6 +59,13 @@ class ChatController extends Controller
                 ]);
             }
         }
+
+        if ($companion->notification)
+            Telegram::sendMessage([
+                "chat_id" => $companion->telegram_id,
+                "text" => "*🔔 Вам пришло новое сообщение*",
+                "parse_mode" => "MarkdownV2"
+            ]);
 
         return $this->show($companion, $request);
     }
