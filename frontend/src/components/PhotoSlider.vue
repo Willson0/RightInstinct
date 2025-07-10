@@ -89,7 +89,9 @@ export default {
                 this.$emit('close');
                 if (!oldVisible) window.Telegram.WebApp.BackButton.hide();
 
-                this.$router.push({ query: { s: this.$route.query.s, backfunction: 1 }});
+                let query = {...this.$route.query};
+                query["backfunction"] = 1;
+                this.$router.push({ query: query});
             }
         });
         window.Telegram.WebApp.BackButton.show();

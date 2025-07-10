@@ -52,13 +52,19 @@ export default {
             }, 200);
         },
         async deletePost (id) {
-            const name = this.user.my.posts.find(el => el.id === id).title;
-            if (confirm(`Вы уверены, что хотите удалить объявление \"${name}\"?`)) {
-                await axios.post(config.backend + "post/" + id + "/delete", {
+            const enums = {
+                "post": {translate: 'объявление', my: 'posts'},
+                "service": {translate: 'услугу', my: 'services'},
+            }
+
+            const name = this.user.my[enums[this.type].my].find(el => el.id === id).title;
+            if (confirm(`Вы уверены, что хотите удалить ${enums[this.type].translate} \"${name}\"?`)) {
+                await axios.post(config.backend + this.type + "/" + id + "/delete", {
                     initData: window.Telegram.WebApp.initData,
                 }).then((response) => {
-                    notify("Объявление успешно удалено!");
-                    this.user.my.posts = this.user.my.posts.filter(el => el.id !== id);
+                    notify("Удаление успешно завершено!");
+                    this.user.my[enums[this.type].my] =
+                        this.user.my[enums[this.type].my].filter(el => el.id !== id);
                 }).catch((error) => {
                     if (error.response) {
                         return alert (`An error occurred: ${error.message}`);
@@ -173,7 +179,7 @@ export default {
                          src="/like_active.svg" style="width:24px; height: 24px;" alt="">
                     <img v-else src="/like.svg" alt="">
                 </button>
-                <button @click="copy(type, object.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
+                <button @click.stop="copy(type, object.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
             </div>
             <div v-if="my" class="postOverlay_main_buttons">
                 <div class="button"><h3>{{ beautifullyPrice }} ₽</h3></div>

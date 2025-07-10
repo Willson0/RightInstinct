@@ -66,7 +66,7 @@ export default {
         },
         async sendMessage () {
             if (this.isLoading) return;
-            if (this.message && this.message.length === 0 && this.attachment.length === 0) return;
+            if (!this.message && this.message.length === 0 && this.attachment.length === 0) return;
             else if (this.message.length === 0) this.message = "";
 
             let attachment = [];

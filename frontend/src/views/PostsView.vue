@@ -2,7 +2,7 @@
 import axios from "axios";
 import config from "@/config.json";
 import PostBlock from "@/components/PostBlock.vue";
-import {hideList, openList} from "@/utils.js";
+import {endLoading, hideList, openList} from "@/utils.js";
 import { ElSlider } from "element-plus";
 import "element-plus/dist/index.css"
 
@@ -32,6 +32,7 @@ export default {
         });
         await axios.get(config.backend + this.$route.query.id).then((response) => {
             this.feed = response.data;
+            endLoading("loading_posts")
         })
 
         window.addEventListener("scroll", (ev) => {
@@ -86,6 +87,7 @@ export default {
 </script>
 
 <template>
+    <div class="loading loading_posts"></div>
     <div ref="filter" style="display:none" class="filter">
         <h2>Фильтровать</h2>
         <div class="filter_container">
@@ -215,7 +217,8 @@ export default {
             </h4>
         </div>
         <div class="posts_main margin-side">
-            <post-block v-for="obj in feed" :object="obj" />
+            <div v-if="!feed?.length" class="posts_main_nothing">Тут пока что ничего нет...</div>
+            <post-block v-else v-for="obj in feed" :type="this.$route.query.id" :object="obj" />
         </div>
     </div>
 </template>

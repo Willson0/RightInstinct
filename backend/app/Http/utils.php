@@ -265,19 +265,11 @@ class utils
         $object = $tables[$type]::find($object);
 
         $title = "";
-        Log::critical($object->toArray());
-
         if ($action == "favourite") {
             $object->get();
 
-            $tit = $object->title;
-            $escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
-            foreach ($escape as $char) {
-                $tit = str_replace($char, '\\' . $char, $tit);
-            }
-
             $title = "Вашу услугу добавили в избранное";
-            $description = "Пользователь " . ($user->fullname) . " добавил услугу {$tit} вашей собаки в избранное";
+            $description = "Пользователь " . ($user->fullname) . " добавил услугу {$object->title} вашей собаки в избранное";
         } else if ($action == "subscribe") {
             $title = "На вас подписались";
             $description = "Пользователь {$object->fullname} подписался на вас";
@@ -297,13 +289,20 @@ class utils
 
 
         $owner = User::find($object->user->id ?? $object->id);
-        if ($owner->notification)
+        if ($owner->notification) {
+            $des = $description;
+            $escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+            foreach ($escape as $char) {
+                $des = str_replace($char, '\\' . $char, $des);
+            }
+
             Telegram::sendMessage([
                 "chat_id" => $owner->telegram_id,
                 "text" => "*🔔 $title*
-> $description",
+> $des",
                 "parse_mode" => "MarkdownV2"
             ]);
+        }
 
         return true;
     }

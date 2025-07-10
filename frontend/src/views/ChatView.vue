@@ -35,7 +35,7 @@ export default {
                     </div>
                     <div class="chat_main_dialog_message">
                         <div class="chat_main_dialog_message_last">
-                            {{ !dialog.from_last_message ? 'Вы: ' : '' }}{{ dialog.last_message }}
+                            {{ !dialog.from_last_message ? 'Вы: ' : '' }}{{ dialog.last_message || 'Фото' }}
                         </div>
                         <img v-if="dialog.checked" src="/checked.svg" alt="" class="chat_main_dialog_message_checked">
                     </div>

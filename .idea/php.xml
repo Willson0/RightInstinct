@@ -239,6 +239,8 @@
       <path value="$PROJECT_DIR$/laravel/vendor/ramsey/uuid" />
       <path value="$PROJECT_DIR$/laravel/vendor/dflydev/dot-access-data" />
       <path value="$PROJECT_DIR$/laravel/vendor/vlucas/phpdotenv" />
+      <path value="$PROJECT_DIR$/backend/vendor/league/event" />
+      <path value="$PROJECT_DIR$/backend/vendor/irazasyed/telegram-bot-sdk" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

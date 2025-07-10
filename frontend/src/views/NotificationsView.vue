@@ -15,12 +15,12 @@ export default {
                 await axios.post(config.backend + "notification/" + this.$route.query.id, {
                     initData: window.Telegram.WebApp.initData,
                 }).then((response) => {
+                    endLoading("loading_notifications");
+
                     this.notification = response.data;
 
                     this.user.notifications.find(el => String(el.id) === this.$route.query.id).readed = 1;
                     this.$store.dispatch("updateUser", this.user);
-
-                    endLoading("loading_notifications");
                 }).catch((error) => {
                     if (error.response)
                         alert (error.message);
@@ -70,11 +70,14 @@ export default {
         <div v-else-if="notification" class="notifications_show">
             <h3 class="notifications_show_title">{{ notification.title }}</h3>
             <div class="notifications_show_description sign">{{ notification.description }}</div>
-            <div class="notifications_show_object">
+            <div class="notifications_show_object" v-if="notification.object">
                 <post-block v-if="['post', 'service'].includes(notification.type)"
                             :object="notification.object" :type="notification.type" :my="true" />
                 <user-block style="width:100%" v-if="['user'].includes(notification.type)" :user="notification.object" />
                 <event-block v-if="['event'].includes(notification.type)" :event="notification.object" />
+            </div>
+            <div v-else class="notifications_show_empty">
+                Объект уведомления удален...
             </div>
         </div>
     </div>

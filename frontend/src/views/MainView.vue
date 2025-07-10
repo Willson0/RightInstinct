@@ -80,7 +80,10 @@ export default {
             console.log(to);
             if (to.backfunction === '1') {
                 this.backFuntion = true;
-                return this.$router.push({ query: { s: this.$route.query.s }});
+
+                let query = {...this.$route.query};
+                delete query.backfunction;
+                return this.$router.push({ query: query});
             }
             if (this.backFuntion === true) {
                 window.Telegram.WebApp.BackButton.offClick();
@@ -89,6 +92,7 @@ export default {
                 return this.backFuntion = false;
             }
 
+            document.body.style.overflow = "";
             if (this.isGoingBack === true) {
                 this.isGoingBack = false;
                 return;
@@ -178,7 +182,6 @@ export default {
         <update-view v-if="$route.query.s === 'update'" />
         <share-view v-if="$route.query.s === 'share'" />
     </nav-component>
-<!--    123-->
 </template>
 
 <style scoped>

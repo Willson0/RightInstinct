@@ -199,6 +199,7 @@ export function complain (type, id) {
 
 export function endLoading (cl = "loading") {
     let loading = document.querySelector("." + cl);
+    console.log(loading);
     loading.style.opacity = 0;
     setTimeout(() => {
         loading.style.display = "none";
