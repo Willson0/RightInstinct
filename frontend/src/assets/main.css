@@ -332,7 +332,6 @@ div {
     width:100%;
     box-sizing: border-box;
     overflow-y:hidden;
-    touch-action: pan-x;
 }
 .home_block_posts_container>.event {
     min-width: 166px;
