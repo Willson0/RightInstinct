@@ -21,10 +21,6 @@
 
 body {
     background-color: #fff;
-    overflow-y: hidden;
-}
-body>div {
-    overflow-y: auto;
 }
 
 .button {
