@@ -21,6 +21,10 @@
 
 body {
     background-color: #fff;
+    overflow-y: hidden;
+}
+body>div {
+    overflow-y: auto;
 }
 
 .button {
@@ -328,8 +332,7 @@ div {
     flex-direction: row;
     column-gap:8px;
     padding: 0 16px;
-    overflow-x: scroll;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
     width:100%;
     box-sizing: border-box;
     overflow-y:hidden;
