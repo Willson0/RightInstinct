@@ -1643,6 +1643,7 @@ div {
     border-radius: 10px;
     cursor: pointer;
     transition: var(--transition);
+    white-space: nowrap;
 }
 .posts_categories>h4.active {
     background-color: #F1EBD8;
