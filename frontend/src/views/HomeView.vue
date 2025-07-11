@@ -10,7 +10,7 @@ export default {
     components: {PhotoSlider, EventBlock, PostBlock},
     async mounted () {
         window.Telegram.WebApp.disableVerticalSwipes();
-        this.popular = this.user.feed.popular;
+        if (this.user.feed) this.feed = this.user.feed;
     },
     computed: {
         user() {
@@ -20,19 +20,19 @@ export default {
     data () {
         return {
             selectedId: null,
-            freezePopular: false,
-            popular: [],
-            newPopular: [],
+            freeze: false,
+            feed: [],
+            newFeed: [],
         }
     },
     watch: {
-        freezePopular () {
-            this.popular = this.newPopular;
+        freeze () {
+            this.feed = this.newFeed;
         },
-        'user.feed.popular' () {
-            this.newPopular = this.user.feed.popular;
-            if (!this.freezePopular) {
-                this.popular = this.newPopular;
+        'user.feed' () {
+            this.newFeed = this.user.feed;
+            if (!this.freeze) {
+                this.feed = this.newFeed;
             }
         }
     }
@@ -51,8 +51,9 @@ export default {
             <div class="home_block_description grey margin-side">
                 Продажа, покупка собак, щенки, предложения вязки, анонсы помёта
             </div>
-            <div v-if="user.feed?.posts?.length !== 0" class="home_block_posts_container">
-                <post-block :object="post" v-for="post in user.feed?.posts"/>
+            <div v-if="feed?.posts?.length !== 0" class="home_block_posts_container">
+                <post-block :object="post" v-for="post in feed?.posts"
+                            @freeze="freeze = true" @unfreeze="freeze = false"/>
             </div>
             <div @click="toLink('store', 'post')" class="home_block_button green-bgc button margin-side">
                 <div>
@@ -68,8 +69,9 @@ export default {
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
-            <div v-if="user.feed?.services?.length !== 0" class="home_block_posts_container">
-                <post-block :object="service" type="service" v-for="service in user.feed?.services"/>
+            <div v-if="feed?.services?.length !== 0" class="home_block_posts_container">
+                <post-block :object="service" type="service" v-for="service in feed?.services"
+                            @freeze="freeze = true" @unfreeze="freeze = false"/>
             </div>
             <div @click="toLink('store', 'service')" class="home_block_button green-bgc button margin-side">
                 <div>
@@ -78,13 +80,13 @@ export default {
                 </div>
             </div>
         </div>
-        <div v-if="user.feed?.popular?.length !== 0 && user.feed?.popular !== null" class="home_block">
+        <div v-if="feed?.popular?.length !== 0 && feed?.popular !== null" class="home_block">
             <div class="home_block_header margin-side">
                 <h1>Популярное</h1>
             </div>
             <div class="home_block_posts_container">
                 <post-block :object="pop" :type="pop.breed ? 'post' : 'service'"
-                            v-for="pop in popular" @freeze="freezePopular = true" @unfreeze="freezePopular = false"/>
+                            v-for="pop in feed.popular" @freeze="freeze = true" @unfreeze="freeze = false"/>
             </div>
         </div>
         <div class="home_block">
@@ -94,8 +96,9 @@ export default {
                     <img src="/arrow.svg" alt="">
                 </div>
             </div>
-            <div v-if="user.feed?.events?.length !== 0" class="home_block_posts_container">
-                <event-block :event="event" v-for="event in user.feed?.events"/>
+            <div v-if="feed?.events?.length !== 0" class="home_block_posts_container">
+                <event-block :event="event" v-for="event in feed?.events"
+                             @freeze="freeze = true" @unfreeze="freeze = false"/>
             </div>
             <div @click="toLink('store', 'event')" class="home_block_button green-bgc button margin-side">
                 <div>

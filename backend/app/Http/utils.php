@@ -299,7 +299,7 @@ class utils
             Telegram::sendMessage([
                 "chat_id" => $owner->telegram_id,
                 "text" => "*🔔 $title*
-> $des",
+>$des",
                 "parse_mode" => "MarkdownV2"
             ]);
         }

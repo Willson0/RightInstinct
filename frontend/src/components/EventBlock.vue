@@ -50,6 +50,7 @@ export default {
         favourite,
         toLink,
         showOverlay (cl) {
+            this.$emit('freeze');
             this.overlay = true;
             requestAnimationFrame(() => {
                 document.body.style.overflow = "hidden";
@@ -69,6 +70,7 @@ export default {
             })
         },
         hideOverlay (cl) {
+            this.$emit('unfreeze');
             let el = document.querySelector(`.overlay.${cl}`);
             el.style.transform = "translateY(100%)";
 

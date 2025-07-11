@@ -14,6 +14,7 @@ export default {
         favourite,
         toLink,
         showOverlay (cl) {
+            this.$emit('freeze');
             this.overlay = true;
             requestAnimationFrame(() => {
                 document.body.style.overflow = "hidden";
@@ -131,7 +132,7 @@ export default {
         <div class="postOverlay_main">
             <div class="postOverlay_main_photos" v-if="object.pictures?.length !== 0">
                 <div>
-                    <rating-block :zid="true" @click.stop="$event.preventDefault()" @freeze="$emit('freeze')"
+                    <rating-block :zid="true" @click.stop="$event.preventDefault()"
                                   :rating="object.rating" :type="type" :id="object.id" />
                     <a target="_blank" :href="object.link">
                         <img @click="object.link ? '' : startIndex = 0" :src="config.storage + object.pictures[0]?.url" alt="">
