@@ -61,7 +61,7 @@ class PostController extends Controller
 
         $post = Post::where("id", $id)->with("pictures")->with("breed")->with("user")
             ->with("city")->with("category")->first();
-        if ($post->user_id !== $user->id) abort (409);
+//        if ($post->user_id !== $user->id) abort (409);
 
         return response()->json($post);
     }
