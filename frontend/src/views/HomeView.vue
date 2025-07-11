@@ -11,13 +11,6 @@ export default {
     async mounted () {
         window.Telegram.WebApp.disableVerticalSwipes();
         if (this.user.feed) this.feed = this.user.feed;
-
-        document.addEventListener("touchmove", function (event) {
-                event.preventDefault();
-            },
-            {
-                passive: false
-            });
     },
     computed: {
         user() {
