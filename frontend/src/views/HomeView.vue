@@ -9,30 +9,8 @@ export default {
     methods: {showOverlay, hideOverlay, toLink},
     components: {PhotoSlider, EventBlock, PostBlock},
     async mounted () {
-        // window.Telegram.WebApp.disableVerticalSwipes();
+        window.Telegram.WebApp.disableVerticalSwipes();
         if (this.user.feed) this.feed = this.user.feed;
-
-        let startX = 0;
-        let startY = 0;
-        let isHorizontal = false;
-
-        document.addEventListener('touchstart', function(e) {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            isHorizontal = false;
-        }, {passive: false});
-
-        document.addEventListener('touchmove', function(e) {
-            const dx = Math.abs(e.touches[0].clientX - startX);
-            const dy = Math.abs(e.touches[0].clientY - startY);
-
-            // Если жест явно горизонтальный — предотвратить вертикальный свайп
-            if(dx > dy && dx > 10) {
-                isHorizontal = true;
-                e.stopPropagation(); // или e.preventDefault(), если скролл не нужен
-            }
-            // Если явно вертикальный, НЕ мешаем
-        }, {passive: false});
     },
     computed: {
         user() {

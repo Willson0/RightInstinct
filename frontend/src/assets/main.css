@@ -328,7 +328,8 @@ div {
     flex-direction: row;
     column-gap:8px;
     padding: 0 16px;
-    overflow-x: auto;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
     width:100%;
     box-sizing: border-box;
     overflow-y:hidden;
