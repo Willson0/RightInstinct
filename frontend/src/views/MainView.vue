@@ -140,7 +140,7 @@ export default {
             }
         },
         hideFooter () {
-            document.querySelectorAll("input", "textarea").forEach((el) => {
+            document.querySelectorAll("input, textarea").forEach((el) => {
                 let footer = document.querySelector(".footer");
                 el.addEventListener("focus", () => {
                     if (this.touch) {
