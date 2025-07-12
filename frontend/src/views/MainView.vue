@@ -140,6 +140,7 @@ export default {
             }
         },
         hideFooter () {
+            console.log("hideFooter function")
             document.querySelectorAll("input").forEach((el) => {
                 let footer = document.querySelector(".footer");
                 el.addEventListener("focus", () => {
@@ -147,8 +148,9 @@ export default {
                     if (this.touch) {
                         console.log("touch input")
                         footer.style.display = "none";
-                        document.querySelector(".dialog").style.height =
-                            "calc(100vh - 10px)";
+
+                        let dialog = document.querySelector(".dialog")
+                        if (dialog) dialog.style.height = "calc(100vh - 10px)";
                         document.querySelector(".nav").style.paddingBottom = "0px"
                     }
                 });
