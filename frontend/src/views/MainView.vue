@@ -76,12 +76,14 @@ export default {
             this.$nextTick(() => this.hideFooter())
         },
         '$route.query' (to, from) {
-            try {
-                document.querySelector(".footer").style.display = "";
-                let dialog = document.querySelector(".dialog")
-                if (dialog) dialog.style.height = "";
-                document.querySelector(".nav").style.paddingBottom = "";
-            } catch (e) {}
+            const footer = document.querySelector('.footer');
+            if (footer) footer.style.display = '';
+
+            const dialog = document.querySelector('.dialog');
+            if (dialog) dialog.style.height = '';
+
+            const nav = document.querySelector('.nav');
+            if (nav) nav.style.paddingBottom = '';
 
             this.$nextTick(() => this.hideFooter())
 
