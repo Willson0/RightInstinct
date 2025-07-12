@@ -43,6 +43,17 @@ export default {
         NotificationsView, DialogView,
     },
     async mounted () {
+        document.addEventListener('touchstart', function(event) {
+            const activeElement = document.activeElement;
+            if ((activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')
+                && !activeElement.contains(event.target)
+                && event.target !== activeElement) {
+                if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
+                    activeElement.blur();
+                }
+            }
+        }, { passive: true });
+
         window.Telegram.WebApp.expand();
         if (window.Telegram.WebApp.initDataUnsafe.start_param) {
             const params = window.Telegram.WebApp.initDataUnsafe.start_param.split("_");
