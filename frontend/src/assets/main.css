@@ -1362,6 +1362,9 @@ div {
     padding: 0;
     border: 0;
 }
+.postOverlay_main_description {
+    word-break: break-all;
+}
 .postOverlay_main_photos {
     display: flex;
     flex-direction: row;

@@ -143,7 +143,9 @@ export default {
             document.querySelectorAll("input").forEach((el) => {
                 let footer = document.querySelector(".footer");
                 el.addEventListener("focus", () => {
+                    console.log("focus input")
                     if (this.touch) {
+                        console.log("touch input")
                         footer.style.display = "none";
                         document.querySelector(".dialog").style.height =
                             "calc(100vh - 10px)";
@@ -151,6 +153,7 @@ export default {
                     }
                 });
                 el.addEventListener("blur", () => {
+                    console.log("blur input")
                     footer.style.display = "";
                     document.querySelector(".dialog").style.height = "";
                     document.querySelector(".nav").style.paddingBottom = "";
