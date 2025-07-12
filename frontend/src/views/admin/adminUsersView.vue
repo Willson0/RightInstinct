@@ -255,6 +255,8 @@ export default {
                         <th>Аватар</th>
                         <th>Город</th>
                         <th>Рейтинг</th>
+                        <th>Номер телефона</th>
+                        <th>Почта</th>
                         <th>Зарегистрировался</th>
                     </tr>
                     </thead>
@@ -266,6 +268,8 @@ export default {
                         <th><a target="_blank" :href="product.avatar">link</a></th>
                         <th>{{ product.city?.name ?? '?'}}</th>
                         <th>{{ product.rating ?? '?'}}</th>
+                        <th>{{ product.phone ?? '?'}}</th>
+                        <th>{{ product.email ?? '?'}}</th>
                         <th>{{ product.created_at ? formatDate(product.created_at) : '-' }}</th>
                     </tr>
                     </tbody>
