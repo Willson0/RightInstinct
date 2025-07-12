@@ -54,8 +54,8 @@ class RatingController extends Controller
             "service" => Service::class,
             "event" => Event::class,
         ];
-        foreach ($reviews as $review) {
-            if ($review->type === "user") unset($review);
+        foreach ($reviews as $key => $review) {
+            if ($review->type === "user") unset($reviews[$key]);
             else {
                 $review->object = $tables[$review->type]::find($review->object_id);
                 if (!$review->object) $review->delete();
