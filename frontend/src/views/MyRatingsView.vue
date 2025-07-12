@@ -66,7 +66,7 @@ export default {
         <div class="myratings_main">
             <div v-for="review in reviews">
                 <div class="block_post_img">
-                    <img :src="config.storage + review.object.pictures[0].url" alt="">
+                    <img :src="config.storage + review.object?.pictures[0]?.url" alt="">
                     <div class="green-bgc">
                         <img src="/star.svg" alt="">
                         <div class="grey-light">{{ review.object.rating }}</div>
