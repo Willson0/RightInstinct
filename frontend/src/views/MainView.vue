@@ -140,13 +140,10 @@ export default {
             }
         },
         hideFooter () {
-            console.log("hideFooter function")
-            document.querySelectorAll("input").forEach((el) => {
+            document.querySelectorAll("input", "textarea").forEach((el) => {
                 let footer = document.querySelector(".footer");
                 el.addEventListener("focus", () => {
-                    console.log("focus input")
                     if (this.touch) {
-                        console.log("touch input")
                         footer.style.display = "none";
 
                         let dialog = document.querySelector(".dialog")
@@ -155,9 +152,11 @@ export default {
                     }
                 });
                 el.addEventListener("blur", () => {
-                    console.log("blur input")
                     footer.style.display = "";
-                    document.querySelector(".dialog").style.height = "";
+
+                    let dialog = document.querySelector(".dialog")
+                    if (dialog) dialog.style.height = "";
+
                     document.querySelector(".nav").style.paddingBottom = "";
                 });
             })
