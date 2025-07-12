@@ -50,10 +50,16 @@ class FavouriteController extends Controller
 
         foreach ($groups as $groupName => &$group) {
             foreach ($group as &$favourite) {
-                if ($groupName === "post") $favourite = Post::where("id", $favourite["object_id"])
-                    ->with("pictures")->with("breed")->with("user")->with("city")->with("category")->firstOrFail();
-                else if ($groupName === "service") $favourite = Service::where("id", $favourite["object_id"])
-                    ->with("pictures")->with("user")->with("city")->with("category")->firstOrFail();
+                if ($groupName === "post") {
+                    if (!$favourite = Post::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite->id);
+                    $favourite = Post::where("id", $favourite["object_id"])
+                        ->with("pictures")->with("breed")->with("user")->with("city")->with("category")->firstOrFail();
+                }
+                else if ($groupName === "service") {
+                    if (!$favourite = Service::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite->id);
+                    $favourite = Service::where("id", $favourite["object_id"])
+                        ->with("pictures")->with("user")->with("city")->with("category")->firstOrFail();
+                }
                 else {
                     $table = [
                         'post' => "posts",
@@ -62,6 +68,7 @@ class FavouriteController extends Controller
                         'user' => "users",
                     ];
                     $favourite = DB::table($table[$favourite["type"]])->find($favourite["object_id"]);
+                    if (!$favourite) Favourite::destroy($favourite->id);
                 }
             }
             unset($favourite);
