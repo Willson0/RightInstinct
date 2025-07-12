@@ -43,6 +43,7 @@ export default {
         NotificationsView, DialogView,
     },
     async mounted () {
+        window.Telegram.WebApp.expand();
         if (window.Telegram.WebApp.initDataUnsafe.start_param) {
             const params = window.Telegram.WebApp.initDataUnsafe.start_param.split("_");
             window.Telegram.WebApp.initDataUnsafe.start_param = undefined;
