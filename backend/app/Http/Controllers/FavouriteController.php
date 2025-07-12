@@ -51,12 +51,12 @@ class FavouriteController extends Controller
         foreach ($groups as $groupName => &$group) {
             foreach ($group as &$favourite) {
                 if ($groupName === "post") {
-                    if (!$favourite = Post::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite->id);
+                    if (!$favourite = Post::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite["object_id"]);
                     $favourite = Post::where("id", $favourite["object_id"])
                         ->with("pictures")->with("breed")->with("user")->with("city")->with("category")->firstOrFail();
                 }
                 else if ($groupName === "service") {
-                    if (!$favourite = Service::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite->id);
+                    if (!$favourite = Service::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite["object_id"]);
                     $favourite = Service::where("id", $favourite["object_id"])
                         ->with("pictures")->with("user")->with("city")->with("category")->firstOrFail();
                 }
