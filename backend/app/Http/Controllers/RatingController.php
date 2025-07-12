@@ -59,9 +59,10 @@ class RatingController extends Controller
             else {
                 $review->object = $tables[$review->type]::find($review->object_id);
                 if (!$review->object) $review->delete();
-
-                $review->object->pictures;
-                $review->object->category;
+                else {
+                    $review->object->pictures;
+                    $review->object->category;
+                }
             }
         }
         return response()->json($reviews);
