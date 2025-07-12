@@ -67,8 +67,9 @@ class FavouriteController extends Controller
                         'event' => "events",
                         'user' => "users",
                     ];
+                    $object_id = $favourite["object_id"];
                     $favourite = DB::table($table[$favourite["type"]])->find($favourite["object_id"]);
-                    if (!$favourite) Favourite::destroy($favourite->id);
+                    if (!$favourite) Favourite::destroy($object_id);
                 }
             }
             unset($favourite);
