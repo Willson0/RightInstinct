@@ -53,6 +53,7 @@ class RatingController extends Controller
             "post" => Post::class,
             "service" => Service::class,
             "event" => Event::class,
+            "user" => User::class,
         ];
         foreach ($reviews as $review) {
             if ($review->type === "user") unset($review);
