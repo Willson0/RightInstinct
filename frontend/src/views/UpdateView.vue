@@ -54,6 +54,7 @@ export default {
                 this.dates[0] = new Date(this.object.start_date);
                 this.dates[1] = new Date(this.object.end_date);
             }
+            this.$nextTick(() => this.$emit("load"));
         }).catch((error) => {
             if (error.response)
                 alert (error.message);

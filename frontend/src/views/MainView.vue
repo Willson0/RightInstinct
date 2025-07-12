@@ -185,7 +185,7 @@ export default {
         <events-view v-if="$route.query.s === 'events'" />
         <user-view v-if="$route.query.s === 'user'" />
         <favourite-view v-if="$route.query.s === 'favourite'" />
-        <update-view v-if="$route.query.s === 'update'" />
+        <update-view @load="hideFooter" v-if="$route.query.s === 'update'" />
         <share-view v-if="$route.query.s === 'share'" />
     </nav-component>
 </template>
