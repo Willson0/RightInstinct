@@ -51,12 +51,12 @@ class FavouriteController extends Controller
         foreach ($groups as $groupName => &$group) {
             foreach ($group as &$favourite) {
                 if ($groupName === "post") {
-                    if (!Post::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite["object_id"]);
+                    if (!Post::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite["id"]);
                     else $favourite = Post::where("id", $favourite["object_id"])
                         ->with("pictures")->with("breed")->with("user")->with("city")->with("category")->firstOrFail();
                 }
                 else if ($groupName === "service") {
-                    if (!Service::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite["object_id"]);
+                    if (!Service::where("id", $favourite["object_id"])->exists()) Favourite::destroy($favourite["id"]);
                     else $favourite = Service::where("id", $favourite["object_id"])
                         ->with("pictures")->with("user")->with("city")->with("category")->firstOrFail();
                 }
@@ -67,9 +67,9 @@ class FavouriteController extends Controller
                         'event' => "events",
                         'user' => "users",
                     ];
-                    $object_id = $favourite["object_id"];
+                    $fav_id = $favourite["id"];
                     $favourite = DB::table($table[$favourite["type"]])->find($favourite["object_id"]);
-                    if (!$favourite) Favourite::destroy($object_id);
+                    if (!$favourite) Favourite::destroy($fav_id);
                 }
             }
             unset($favourite);
