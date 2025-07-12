@@ -76,6 +76,13 @@ export default {
             this.$nextTick(() => this.hideFooter())
         },
         '$route.query' (to, from) {
+            try {
+                document.querySelector(".footer").style.display = "";
+                let dialog = document.querySelector(".dialog")
+                if (dialog) dialog.style.height = "";
+                document.querySelector(".nav").style.paddingBottom = "";
+            } catch (e) {}
+
             this.$nextTick(() => this.hideFooter())
 
             console.log(to);
