@@ -4,6 +4,7 @@ import PostBlock from "@/components/PostBlock.vue";
 import EventBlock from "@/components/EventBlock.vue";
 import config from "@/config.json";
 import axios from "axios";
+import {endLoading} from "@/utils.js";
 
 export default {
     name: "FavouriteView.vue",
@@ -23,6 +24,7 @@ export default {
             initData: window.Telegram.WebApp.initData,
         }).then((response) => {
             this.data = response.data;
+            endLoading ("loading_favourite");
         }).catch((error) => {
             if (error.response) {
                 return alert (`An error occurred: ${error.message}`);
@@ -33,8 +35,11 @@ export default {
 </script>
 
 <template>
+    <div class="loading loading_favourite"></div>
     <div class="favourite">
         <h1>Избранное</h1>
+        <div v-if="!data.user?.length && !data.post?.length && !data.service?.length && !data.event?.length"
+             class="posts_main_nothing">Тут пока что ничего нет...</div>
         <div v-if="data.user?.length" class="favourite_users margin-side">
             <h3>Владельцы</h3>
             <div>

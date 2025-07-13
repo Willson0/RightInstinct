@@ -16,7 +16,7 @@ export default {
         showOverlay (cl) {
             this.$emit('freeze');
             this.overlay = true;
-            requestAnimationFrame(() => {
+            this.$nextTick(() => {
                 document.body.style.overflow = "hidden";
 
                 let el = document.querySelector(`.overlay.${cl}`);

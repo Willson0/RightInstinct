@@ -2,6 +2,7 @@
 import axios from "axios";
 import config from "@/config.json"
 import RatingBlock from "@/components/RatingBlock.vue";
+import {endLoading} from "@/utils.js";
 export default {
     name: "MyRatingsView",
     components: {RatingBlock},
@@ -25,6 +26,7 @@ export default {
                 initData: window.Telegram.WebApp.initData,
             }).then((response) => {
                 this.reviews = response.data;
+                endLoading("loading_myratings");
             }).catch((error) => {
                 if (error.response)
                     alert (error.message);
@@ -61,8 +63,10 @@ export default {
 </script>
 
 <template>
+    <div class="loading loading_myratings"></div>
     <div class="myratings margin-all">
         <h1>Мои оценки</h1>
+        <div v-if="!reviews.length" class="posts_main_nothing">Тут пока что ничего нет...</div>
         <div class="myratings_main">
             <div v-for="review in reviews">
                 <div class="block_post_img">

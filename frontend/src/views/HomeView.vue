@@ -10,7 +10,10 @@ export default {
     components: {PhotoSlider, EventBlock, PostBlock},
     async mounted () {
         window.Telegram.WebApp.disableVerticalSwipes();
-        if (this.user.feed) this.feed = this.user.feed;
+        if (this.user.feed) {
+            this.feed = this.user.feed;
+            this.newFeed = this.user.feed;
+        }
     },
     computed: {
         user() {
@@ -26,8 +29,9 @@ export default {
         }
     },
     watch: {
-        freeze () {
-            this.feed = this.newFeed;
+        freeze (val) {
+            console.log("FREEZE: " + val);
+            if (val === false) this.feed = this.newFeed;
         },
         'user.feed' () {
             this.newFeed = this.user.feed;
