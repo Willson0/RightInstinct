@@ -148,7 +148,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="postOverlay_main_description">
+            <div class="postOverlay_main_description" lang="ru">
                 {{ event.details }}
             </div>
             <div class="postOverlay_main_buttons">

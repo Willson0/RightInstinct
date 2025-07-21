@@ -158,7 +158,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="postOverlay_main_description">
+            <div class="postOverlay_main_description" lang="ru">
                 {{ object.description }}
             </div>
             <div v-if="['post'].includes(type) && object.rewards != null" class="postOverlay_main_rewards">

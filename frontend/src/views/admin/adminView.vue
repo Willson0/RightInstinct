@@ -321,7 +321,7 @@ export default {
                     </div>
                     <div class="admin_main_statistics_el_main_title">
                         <h4>Услуги</h4>
-                        <h3>{{ data.money }} сервисов</h3>
+                        <h3>{{ data.money30 }} сервисов</h3>
                     </div>
                 </div>
                 <div class="admin_main_statistics_el_footer">
