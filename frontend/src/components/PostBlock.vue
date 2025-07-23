@@ -168,7 +168,7 @@ export default {
             <div v-if="!my" @click="toLink('user', object.user.id)" class="postOverlay_main_user">
                 <img :src="object.user.avatar" alt="">
                 <div>
-                    <h4>Хозяин</h4>
+                    <h4>Владелец</h4>
                     <div class="sign">{{ object.user.fullname }}</div>
                 </div>
             </div>
