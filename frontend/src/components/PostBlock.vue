@@ -147,7 +147,7 @@ export default {
                 <div class="postOverlay_main_info">
                     <div v-if="['post'].includes(type)" class="postOverlay_main_info_age">
                         <img :src="object.gender ? '/male.svg' : '/female.svg'" alt="">
-                        <div class="input">{{ object.age }} месяцев</div>
+                        <div class="input">{{ object.age }} {{ object.is_old ? 'лет' : 'месяцев' }}</div>
                     </div>
                     <h4 v-if="['service'].includes(type)" class="postOverlay_main_info_category">
                         {{ object.category.name }}
@@ -164,6 +164,10 @@ export default {
             <div v-if="['post'].includes(type) && object.rewards != null" class="postOverlay_main_rewards">
                 <img src="/star.svg" alt="">
                 <div>{{ object.rewards }}</div>
+            </div>
+            <div v-if="['post'].includes(type) && !object.is_old && object.nursery != null" class="postOverlay_main_rewards">
+                <img src="/dog.svg" alt="">
+                <div>{{ object.nursery }}</div>
             </div>
             <div v-if="!my" @click="toLink('user', object.user.id)" class="postOverlay_main_user">
                 <img :src="object.user.avatar" alt="">

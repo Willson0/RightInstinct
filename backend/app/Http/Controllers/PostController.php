@@ -17,6 +17,10 @@ class PostController extends Controller
         $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $validated = $request->validated();
 
+        if (($validated["is_old"] === 0) and
+            (!isset($validated["mother_breed_id"]) or !isset($validated["father_breed_id"])))
+            abort (409);
+
         $validated["user_id"] = $user->id;
         $validated["rating"] = 0;
 

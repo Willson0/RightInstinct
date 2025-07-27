@@ -570,6 +570,25 @@ div {
     width: 24px;
     height: 24px;
 }
+.store_selector {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+}
+.store_selector>div {
+    padding: 4px 8px;
+    font-weight: 600;
+    font-size: 16px;
+    background-color: var(--grey-light);
+    transition: 0.2s;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.store_selector>div.active {
+    background-color: var(--beige);
+}
 
 /*PROFILE*/
 .profile {

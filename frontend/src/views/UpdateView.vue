@@ -287,6 +287,34 @@ export default {
                 </div>
             </div>
         </div>
+        <div v-if="['post'].includes(type) && !object.is_old" style="z-index:10" class="store_input_select_container">
+            <div ref="mother_breed" @click="openList" class="store_input_select">
+                <div class="store_input_select_main">
+                    <div v-if="!object.mother_breed_id">Родитель сука</div>
+                    <div v-else>{{ data.breeds.find(el => el.id === object.mother_breed_id).name }}</div>
+                    <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                </div>
+            </div>
+            <div class="store_input_select_list">
+                <div v-for="br in data.breeds" @click="object.mother_breed_id = br.id; hideList($event)">
+                    <div>{{ br.name }}</div>
+                </div>
+            </div>
+        </div>
+        <div v-if="['post'].includes(type) && !object.is_old" style="z-index:9" class="store_input_select_container">
+            <div ref="father_breed" @click="openList" class="store_input_select">
+                <div class="store_input_select_main">
+                    <div v-if="!object.father_breed_id">Родитель кобель</div>
+                    <div v-else>{{ data.breeds.find(el => el.id === object.father_breed_id).name }}</div>
+                    <img class="store_input_select_triangle" src="/triangle.svg" alt="">
+                </div>
+            </div>
+            <div class="store_input_select_list">
+                <div v-for="br in data.breeds" @click="object.father_breed_id = br.id; hideList($event)">
+                    <div>{{ br.name }}</div>
+                </div>
+            </div>
+        </div>
         <div style="z-index:8" class="store_input_select_container">
             <div ref="city" @click="openList($event, 'city_string');" class="store_input_select">
                 <div class="store_input_select_main">
@@ -301,6 +329,7 @@ export default {
                 </div>
             </div>
         </div>
+        <input v-if="['post'].includes(type) && !object.is_old" ref="nursery" v-model="object.nursery" placeholder="Питомник">
         <div style="z-index:7" class="store_input_container">
             <input v-if="['post', 'service'].includes(type)" ref="price" v-model="object.price" type="number" placeholder="Цена, ₽">
             <div v-if="['event'].includes(type)" ref="category" class="store_input_select_container">

@@ -34,6 +34,10 @@ class PostStoreRequest extends FormRequest
             "pictures" => "required|array|min:1",
             "pictures.*" => "required|file",
             "link" => "string",
+            "is_old" => "required|boolean",
+            "mother_breed_id" => "integer|exists:breeds,id",
+            "father_breed_id" => "integer|exists:breeds,id",
+            "nursery" => "string",
         ];
     }
 }
