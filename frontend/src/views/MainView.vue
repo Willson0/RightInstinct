@@ -69,7 +69,7 @@ export default {
         this.fetchData();
         setInterval (() => {
             this.fetchData();
-        }, 2000);
+        }, 10000);
 
         window.Telegram.WebApp.BackButton.onClick(this.backByQuery);
         window.backByQueryFunction = this.backByQuery;

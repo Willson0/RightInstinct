@@ -14,12 +14,8 @@ return new class extends Migration
         Schema::table('posts', function (Blueprint $table) {
             $table->boolean("is_old")->default(true)->after("user_id");
 
-            $table->unsignedBigInteger("father_breed_id")->nullable()->after("breed_id");
-            $table->unsignedBigInteger("mother_breed_id")->nullable()->after("breed_id");
-
-            $table->index(["father_breed_id", "mother_breed_id"]);
-            $table->foreign("father_breed_id")->references("id")->on("breeds")->onDelete("cascade");
-            $table->foreign("mother_breed_id")->references("id")->on("breeds")->onDelete("cascade");
+            $table->string("father")->nullable()->after("breed_id");
+            $table->string("mother")->nullable()->after("breed_id");
 
             $table->string("nursery")->nullable()->after("city_id");
         });

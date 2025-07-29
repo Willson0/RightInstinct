@@ -208,7 +208,8 @@ export default {
         },
         rulePost () {
             return this.object.pictures.length !== 0 && this.object.price
-                && this.object.title && this.object.age && this.object.description && !this.isLoading;
+                && this.object.title && this.object.age && this.object.description
+                && !this.isLoading && (this.object.is_old || (this.object.mother && this.object.father));
         },
         ruleService () {
             return this.object.pictures.length !== 0 && this.object.price && this.object.title
@@ -287,34 +288,36 @@ export default {
                 </div>
             </div>
         </div>
-        <div v-if="['post'].includes(type) && !object.is_old" style="z-index:10" class="store_input_select_container">
-            <div ref="mother_breed" @click="openList" class="store_input_select">
-                <div class="store_input_select_main">
-                    <div v-if="!object.mother_breed_id">Родитель сука</div>
-                    <div v-else>{{ data.breeds.find(el => el.id === object.mother_breed_id).name }}</div>
-                    <img class="store_input_select_triangle" src="/triangle.svg" alt="">
-                </div>
-            </div>
-            <div class="store_input_select_list">
-                <div v-for="br in data.breeds" @click="object.mother_breed_id = br.id; hideList($event)">
-                    <div>{{ br.name }}</div>
-                </div>
-            </div>
-        </div>
-        <div v-if="['post'].includes(type) && !object.is_old" style="z-index:9" class="store_input_select_container">
-            <div ref="father_breed" @click="openList" class="store_input_select">
-                <div class="store_input_select_main">
-                    <div v-if="!object.father_breed_id">Родитель кобель</div>
-                    <div v-else>{{ data.breeds.find(el => el.id === object.father_breed_id).name }}</div>
-                    <img class="store_input_select_triangle" src="/triangle.svg" alt="">
-                </div>
-            </div>
-            <div class="store_input_select_list">
-                <div v-for="br in data.breeds" @click="object.father_breed_id = br.id; hideList($event)">
-                    <div>{{ br.name }}</div>
-                </div>
-            </div>
-        </div>
+<!--        <div v-if="['post'].includes(type) && !object.is_old" style="z-index:10" class="store_input_select_container">-->
+<!--            <div ref="mother_breed" @click="openList" class="store_input_select">-->
+<!--                <div class="store_input_select_main">-->
+<!--                    <div v-if="!object.mother_breed_id">Родитель сука</div>-->
+<!--                    <div v-else>{{ data.breeds.find(el => el.id === object.mother_breed_id).name }}</div>-->
+<!--                    <img class="store_input_select_triangle" src="/triangle.svg" alt="">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="store_input_select_list">-->
+<!--                <div v-for="br in data.breeds" @click="object.mother_breed_id = br.id; hideList($event)">-->
+<!--                    <div>{{ br.name }}</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div v-if="['post'].includes(type) && !object.is_old" style="z-index:9" class="store_input_select_container">-->
+<!--            <div ref="father_breed" @click="openList" class="store_input_select">-->
+<!--                <div class="store_input_select_main">-->
+<!--                    <div v-if="!object.father_breed_id">Родитель кобель</div>-->
+<!--                    <div v-else>{{ data.breeds.find(el => el.id === object.father_breed_id).name }}</div>-->
+<!--                    <img class="store_input_select_triangle" src="/triangle.svg" alt="">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="store_input_select_list">-->
+<!--                <div v-for="br in data.breeds" @click="object.father_breed_id = br.id; hideList($event)">-->
+<!--                    <div>{{ br.name }}</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <input v-if="['post'].includes(type) && !object.is_old" ref="mother" v-model="object.mother" placeholder="Родитель сука">
+        <input v-if="['post'].includes(type) && !object.is_old" ref="father" v-model="object.father" placeholder="Родитель кобель">
         <div style="z-index:8" class="store_input_select_container">
             <div ref="city" @click="openList($event, 'city_string');" class="store_input_select">
                 <div class="store_input_select_main">
@@ -412,7 +415,7 @@ export default {
         <input v-if="['post', 'service'].includes(type)" ref="link" v-model="object.link" type="text" placeholder="Ссылка на видео">
         <textarea v-if="['event'].includes(type)" ref="details" placeholder="Подробности" rows="2" v-model="object.details" class="input"></textarea>
         <textarea v-else ref="description" placeholder="Описание" rows="2" v-model="object.description" class="input"></textarea>
-        <input v-if="['post'].includes(type)" ref="rewards" v-model="object.rewards" type="text" placeholder="Титулы и награды">
+        <input v-if="['post'].includes(type)" ref="rewards" v-model="object.rewards" type="text" :placeholder="object.isOld ? 'Титулы и награды' : 'Количество кобелей / сук'">
         <button v-if="['post'].includes(type)"  class="store_button button"
                 :class="rulePost ? 'active' : ''" @click="rulePost ? sendData() : ''">Сохранить</button>
         <button v-if="['service'].includes(type)"  class="store_button button"

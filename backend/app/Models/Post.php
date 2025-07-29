@@ -8,7 +8,7 @@ class Post extends Model
 {
     protected $guarded = false;
     protected $fillable = ["user_id", "title", "age", "gender", "breed_id", "city_id", "price", "category_id",
-        "description", "rewards", "rating", "link", "is_old", "mother_breed_id", "father_breed_id", "nursery"];
+        "description", "rewards", "rating", "link", "is_old", "mother", "father", "nursery"];
 
     public function city () {
         return $this->belongsTo(City::class);

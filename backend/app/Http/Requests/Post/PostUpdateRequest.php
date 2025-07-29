@@ -37,8 +37,8 @@ class PostUpdateRequest extends FormRequest
             "delete_pictures.*" => "integer|exists:pictures,id",
             "number_main_picture" => "integer|min:0",
             "link" => "string",
-            "mother_breed_id" => "integer|exists:breeds,id",
-            "father_breed_id" => "integer|exists:breeds,id",
+            "mother" => "string",
+            "father" => "string",
             "nursery" => "string",
         ];
     }

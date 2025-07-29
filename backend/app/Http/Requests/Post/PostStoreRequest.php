@@ -35,8 +35,8 @@ class PostStoreRequest extends FormRequest
             "pictures.*" => "required|file",
             "link" => "string",
             "is_old" => "required|boolean",
-            "mother_breed_id" => "integer|exists:breeds,id",
-            "father_breed_id" => "integer|exists:breeds,id",
+            "mother" => "string",
+            "father" => "string",
             "nursery" => "string",
         ];
     }
