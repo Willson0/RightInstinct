@@ -26,7 +26,7 @@ class ServiceStoreRequest extends FormRequest
             "description" => "required|string",
             "city_id" => "required|integer|exists:cities,id",
             "type_id" => "required|integer|exists:service_types,id",
-            "price" => "required|integer|min:0",
+            "price" => "required|integer|min:-1",
             "pictures" => "required|array|min:1",
             "pictures.*" => "required|file",
             "link" => "string",

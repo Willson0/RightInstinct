@@ -26,7 +26,7 @@ class ServiceUpdateRequest extends FormRequest
             "description" => "string",
             "city_id" => "integer|exists:cities,id",
             "type_id" => "integer|exists:service_types,id",
-            "price" => "integer|min:0",
+            "price" => "integer|min:-1",
             "pictures" => "array|min:1",
             "pictures.*" => "file",
             "delete_pictures" => "array",

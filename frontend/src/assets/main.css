@@ -2235,7 +2235,7 @@ div {
 .slider-track {
     display: flex;
     height: auto;
-    margin: auto 0;
+    /*margin: auto 0;*/
     transition: transform 0.3s cubic-bezier(.32,.72,.56,1); /* плавно */
     will-change: transform;
 }
@@ -2246,6 +2246,7 @@ div {
     object-fit: contain;
     flex-shrink: 0;
     user-select: none;
+    margin: auto 0;
 }
 .photo_slider_counter {
     position: absolute;
