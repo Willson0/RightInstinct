@@ -21,6 +21,7 @@ export default {
             allPhotos: [],
             deletedPhotos: [],
             cityString: "",
+            contractPrice: false,
         }
     },
     async mounted () {
@@ -42,6 +43,8 @@ export default {
         }).then((response) => {
             this.originalObject = {... response.data};
             this.object = {... response.data};
+
+            if (this.object.price === -1) this.contractPrice = true;
 
             this.allPhotos = response.data.pictures;
             for (let photo in this.allPhotos) {
@@ -89,24 +92,28 @@ export default {
                 });
             }
         },
-        async changeImage (ev) {
+        async changeImage (ev, index) {
             let file = ev.target.files[0];
 
             if (file && file.type.startsWith("image/")) {
-                if (this.allPhotos[0].created_at)
-                    this.deletedPhotos.push(this.allPhotos[0].id);
-
-                this.allPhotos[0] = {
-                    file: file,
-                    url: URL.createObjectURL(file),
-                };
+                if (this.allPhotos[index].created_at)
+                    this.allPhotos[index] = {
+                        id: this.allPhotos[index].id,
+                        file: file,
+                        url: URL.createObjectURL(file),
+                    };
+                else
+                    this.allPhotos[index] = {
+                        file: file,
+                        url: URL.createObjectURL(file),
+                    };
             }
         },
-        async deleteImage (ev) {
-            if (this.allPhotos[0].created_at)
-                this.deletedPhotos.push(this.allPhotos[0].id);
+        async deleteImage (index) {
+            if (this.allPhotos[index].created_at)
+                this.deletedPhotos.push(this.allPhotos[index].id);
 
-            this.allPhotos.shift();
+            this.allPhotos.splice(index, 1);
         },
         isValidUrl(str) {
             try {
@@ -155,6 +162,8 @@ export default {
             if (isError) return;
             if (this.isLoading) return;
 
+            if (this.contractPrice) this.object.price = -1;
+
             let fd = new FormData();
             fd.append("initData", window.Telegram.WebApp.initData);
             for (const key in this.object) {
@@ -168,6 +177,7 @@ export default {
             for (let picture of this.allPhotos) {
                 if (picture.file) {
                     fd.append('pictures[]', picture.file);
+                    fd.append("pictures_meta[]", picture.id ?? -1);
                 }
             }
             if (this.allPhotos[0].file) fd.append("number_main_picture", 0);
@@ -207,13 +217,13 @@ export default {
                             + "." + String(this.dates[1].getFullYear()).padStart(2,"0"))
         },
         rulePost () {
-            return this.object.pictures.length !== 0 && this.object.price
+            return this.object.pictures.length !== 0 && (this.object.price || this.contractPrice)
                 && this.object.title && this.object.age && this.object.description
                 && !this.isLoading && (this.object.is_old || (this.object.mother && this.object.father));
         },
         ruleService () {
-            return this.object.pictures.length !== 0 && this.object.price && this.object.title
-                    && this.object.description && !this.isLoading;
+            return this.object.pictures.length !== 0 && (this.object.price || this.contractPrice)
+                && this.object.title && this.object.description && !this.isLoading;
         },
         ruleEvent () {
             return this.object.pictures.length !== 0 && this.object.title && this.object.details
@@ -222,6 +232,16 @@ export default {
         isInputOpen () {
             return document.getElementById("city_string").isFocused;
         },
+    },
+    watch: {
+        contractPrice () {
+            if (this.contractPrice) {
+                this.object.price = "";
+            } else {
+                if (this.originalObject.price === -1) return this.object.price = "";
+                this.object.price = this.originalObject.price;
+            }
+        }
     }
 }
 </script>
@@ -334,7 +354,7 @@ export default {
         </div>
         <input v-if="['post'].includes(type) && !object.is_old" ref="nursery" v-model="object.nursery" placeholder="Питомник">
         <div style="z-index:7" class="store_input_container">
-            <input v-if="['post', 'service'].includes(type)" ref="price" v-model="object.price" type="number" placeholder="Цена, ₽">
+            <input v-if="['post', 'service'].includes(type)" ref="price" v-model="object.price" type="number" :disabled="contractPrice" :placeholder="contractPrice ? 'Договорная' : 'Цена, ₽'">
             <div v-if="['event'].includes(type)" ref="category" class="store_input_select_container">
                 <div @click="showOverlay('dateSelect')" class="store_input_select">
                     <div class="store_input_select_main">
@@ -382,6 +402,12 @@ export default {
                 </div>
             </div>
         </div>
+        <div v-if="['post', 'service'].includes(type)" class="filter_checkbox_container">
+            <div @click="contractPrice = !contractPrice ?? true"  class="filter_checkbox">
+                <img v-if="contractPrice" src="/check.svg" alt="">
+            </div>
+            <div @click="contractPrice = !contractPrice ?? true" class="filter_checkbox_text">Договорная цена</div>
+        </div>
         <label v-if="allPhotos.length === 0" for="image" class="store_photo_container">
             <div class="store_photo_empty">
                 <div>
@@ -391,25 +417,58 @@ export default {
                 </div>
             </div>
         </label>
+<!--        <div v-else class="store_photos">-->
+<!--            <div>-->
+<!--                <img :src="allPhotos[0].url" alt="">-->
+<!--                <div class="store_photo_first_number">Главное</div>-->
+<!--                <div class="store_photo_first_buttons">-->
+<!--                    <label for="firstImage">-->
+<!--                        <img src="/edit.svg" alt="">-->
+<!--                    </label>-->
+<!--                    <input id="firstImage" type="file" @input="changeImage" accept="image/*" style="display:none">-->
+<!--                    <button @click="deleteImage">-->
+<!--                        <img src="/trash.svg" alt="">-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <img :src="photo.url" alt="" v-for="photo in allPhotos.slice(1)">-->
+<!--            <label for="image">-->
+<!--                <img src="/camera.svg" alt="">-->
+<!--                <div class="store_photo_title">Загрузить</div>-->
+<!--            </label>-->
+<!--        </div>-->
         <div v-else class="store_photos">
-            <div>
+            <div class="store_photo_first">
                 <img :src="allPhotos[0].url" alt="">
                 <div class="store_photo_first_number">Главное</div>
                 <div class="store_photo_first_buttons">
                     <label for="firstImage">
                         <img src="/edit.svg" alt="">
                     </label>
-                    <input id="firstImage" type="file" @input="changeImage" accept="image/*" style="display:none">
-                    <button @click="deleteImage">
+                    <input id="firstImage" type="file" @input="changeImage($event, 0)" accept="image/*" style="display:none">
+                    <button @click="deleteImage(0)">
                         <img src="/trash.svg" alt="">
                     </button>
                 </div>
             </div>
-            <img :src="photo.url" alt="" v-for="photo in allPhotos.slice(1)">
-            <label for="image">
-                <img src="/camera.svg" alt="">
-                <div class="store_photo_title">Загрузить</div>
-            </label>
+            <div class="store_photos_other_container">
+                <div class="store_photos_other" v-for="(photo, key) in allPhotos.slice(1)">
+                    <img :src="photo.url" alt="">
+                    <div class="store_photo_first_buttons">
+                        <label>
+                            <img src="/edit.svg" alt="">
+                            <input type="file" @input="changeImage($event, key+1)" accept="image/*" style="display:none">
+                        </label>
+                        <button @click="deleteImage(key+1)">
+                            <img src="/trash.svg" alt="">
+                        </button>
+                    </div>
+                </div>
+                <label for="image">
+                    <img src="/camera.svg" alt="">
+                    <div class="store_photo_title">Загрузить</div>
+                </label>
+            </div>
         </div>
         <input @input="addImage" id="image" type="file" style="display:none;" accept="image/*">
         <input v-if="['post', 'service'].includes(type)" ref="link" v-model="object.link" type="text" placeholder="Ссылка на видео">

@@ -319,40 +319,66 @@ class utils
         $time = time();
         $index = 0;
         $pictures = $request->file('pictures', []);
+        $pictures_meta = $request->input('pictures_meta');
 
         foreach ($pictures as &$picture) {
             Storage::disk("public")->putFileAs($type, $picture, "image_$time" . $index . "." . $picture->extension());
-            $picture = "$type/image_$time" . $index . "." . $picture->extension();
-            $index++;
-        }
+            $path = "$type/image_$time" . $index . "." . $picture->extension();
 
-        if ($request->has("number_main_picture") AND $request->number_main_picture < sizeof($pictures)) {
-            $oldPictures = Picture::where("type", $type)->where("object_id", $post->id)->get();
-            Picture::where("type", $type)->where("object_id", $post->id)->delete();
+            if ($pictures_meta[$index] !== "-1") {
+                $oldPicture = Picture::find($pictures_meta[$index]);
+                if ($oldPicture->object_id !== $post->id) abort (409, "ACCESS DENIED. PLEASE, DONT TRY TO HACK US");
 
-            Picture::create([
-                "type" => $type,
-                "object_id" => $post->id,
-                "url" => $pictures[$request->number_main_picture],
-            ]);
-            unset($pictures[$request->number_main_picture]);
-
-            foreach ($oldPictures as $oldPicture) {
+                $oldPicture->url = $path;
+                $oldPicture->save();
+            } else
                 Picture::create([
                     "type" => $type,
                     "object_id" => $post->id,
-                    "url" => $oldPicture->url,
+                    "url" => $path,
                 ]);
-            }
+            $index++;
         }
 
-        foreach ($pictures as $picture) {
-            Picture::create([
-                "type" => $type,
-                "object_id" => $post->id,
-                "url" => $picture,
-            ]);
-        }
+//        if ($request->has("number_main_picture") AND $request->number_main_picture < sizeof($pictures)) {
+//            $oldPictures = Picture::where("type", $type)->where("object_id", $post->id)->get();
+//            Picture::where("type", $type)->where("object_id", $post->id)->delete();
+//
+////            Picture::create([
+////                "type" => $type,
+////                "object_id" => $post->id,
+////                "url" => $pictures[$request->number_main_picture],
+////            ]);
+////            unset($pictures[$request->number_main_picture]);
+//
+//            foreach ($oldPictures as $oldPicture) {
+//                if (array_key_exists("id", $oldPicture))
+//                    Picture::create([
+//                        "id" => $oldPicture->id,
+//                        "type" => $type,
+//                        "object_id" => $post->id,
+//                        "url" => $oldPicture->url,
+//                    ]);
+//                else
+//                    Picture::create([
+//                        "type" => $type,
+//                        "object_id" => $post->id,
+//                        "url" => $oldPicture->url,
+//                    ]);
+//            }
+//        }
+
+//        foreach ($pictures as $picture) {
+//            if (array_key_exists("id", $picture)) {
+//                $oldPicture = Picture::find($picture["id"]);
+//
+//            }
+//            Picture::create([
+//                "type" => $type,
+//                "object_id" => $post->id,
+//                "url" => $picture,
+//            ]);
+//        }
 
         return response()->json($post);
     }

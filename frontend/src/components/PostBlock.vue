@@ -112,7 +112,8 @@ export default {
     },
     computed: {
         beautifullyPrice () {
-            return this.object.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            if (this.object.price === -1) return "Договорная";
+            return this.object.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + " ₽";
         },
         user () {
             return this.$store.state.user;
@@ -177,7 +178,7 @@ export default {
                 </div>
             </div>
             <div v-if="!my" class="postOverlay_main_buttons">
-                <div class="button"><h3>{{ beautifullyPrice }} ₽</h3></div>
+                <div class="button"><h3>{{ beautifullyPrice }}</h3></div>
 <!--                <button><img src="/press.svg" alt=""></button>-->
                 <button @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">
                     <img v-if="user?.favourites[type]?.includes(object.id)"
@@ -187,7 +188,7 @@ export default {
                 <button @click.stop="copy(type, object.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
             </div>
             <div v-if="my" class="postOverlay_main_buttons">
-                <div class="button"><h3>{{ beautifullyPrice }} ₽</h3></div>
+                <div class="button"><h3>{{ beautifullyPrice }}</h3></div>
                 <button @click="copy(type, object.id)"><img style="width: 24px; height: 24px;" src="/share.svg" alt=""></button>
                 <button @click="toLink('update', object.id, type)">
                     <img style="width: 24px; height: 24px;" src="/edit.svg" alt="">
@@ -225,7 +226,7 @@ export default {
         <div v-else class="block_post_footer">
             <div class="block_post_price h3">
                 <div>
-                    {{ beautifullyPrice }} ₽
+                    {{ beautifullyPrice }}
                 </div>
             </div>
             <div v-if="user && user.favourites" class="button" @click.stop="favourite(!user?.favourites[type]?.includes(object.id), type, object.id, isLoading, user)">

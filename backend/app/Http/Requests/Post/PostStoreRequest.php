@@ -27,7 +27,7 @@ class PostStoreRequest extends FormRequest
             "gender" => "required|boolean",
             "breed_id" => "required|integer|exists:breeds,id",
             "city_id" => "required|integer|exists:cities,id",
-            "price" => "required|integer|min:0",
+            "price" => "required|integer|min:-1",
             "category_id" => "required|integer|exists:categories,id",
             "description" => "required|string",
             "rewards" => "nullable|string",
