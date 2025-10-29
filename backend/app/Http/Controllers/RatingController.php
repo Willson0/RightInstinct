@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\DB;
 class RatingController extends Controller
 {
     public function rate (RatingRateRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $tables = [
             "post" => "posts",
@@ -46,7 +47,8 @@ class RatingController extends Controller
     }
 
     public function index (Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $reviews = Review::where("user_id", $user->id)->get();
 
         $tables = [

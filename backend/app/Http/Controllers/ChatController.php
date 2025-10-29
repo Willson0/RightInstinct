@@ -13,7 +13,8 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 class ChatController extends Controller
 {
     public function show (User $companion, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $dialog = Message::where(function($q) use($user, $companion) {
             $q->where("sender_id", $user->id)
                 ->where("recipient_id", $companion->id);
@@ -35,7 +36,8 @@ class ChatController extends Controller
         if (!$request["message"] AND !$request["attachments"]) abort(400);
         if (!$request["message"]) $request["message"] = "";
 
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $message = Message::create([
             "sender_id" => $user->id,
             "recipient_id" => $companion->id,

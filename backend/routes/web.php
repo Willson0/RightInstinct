@@ -11,6 +11,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Site\SiteAuthController;
+use App\Http\Controllers\Site\SiteDocumentsController;
+use App\Http\Controllers\Site\SiteFeedController;
+use App\Http\Controllers\Site\SiteNotificationsController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
@@ -20,32 +24,56 @@ use App\Http\Middleware\CheckTelegram;
 use Illuminate\Support\Facades\Route;
 
 Route::group(["prefix" => "api"], function () {
+    Route::group(["prefix" => "site"], function () {
+        Route::group(["prefix" => "auth"], function () {
+            Route::post("register", [SiteAuthController::class, "register"]);
+            Route::post("verify", [SiteAuthController::class, 'verify']);
+            Route::post("login", [SiteAuthController::class, "login"]);
+
+            Route::group(["prefix" => "recovery"], function () {
+                Route::post("send", [SiteAuthController::class, "recoverySend"]);
+                Route::post("check", [SiteAuthController::class, "recoveryCheck"]);
+            });
+
+            Route::post("notifications", [SiteNotificationsController::class, 'store'])->middleware(CheckTelegram::class);
+
+            Route::post("settings", [SiteAuthController::class, 'settings'])->middleware(CheckTelegram::class);
+            Route::post("change", [SiteAuthController::class, 'change'])->middleware(CheckTelegram::class);
+        });
+        Route::group(["prefix" => "document", "middleware" => CheckTelegram::class], function () {
+            Route::post("/", [SiteDocumentsController::class, "store"]);
+            Route::post("/change", [SiteDocumentsController::class, "change"]);
+        });
+        Route::post("/test", [SiteAuthController::class, 'test']);
+        Route::get("/feed", [SiteFeedController::class, 'index']);
+    });
+
     Route::group(["prefix" => "auth", "middleware" => CheckTelegram::class], function () {
         Route::post("profile", [AuthController::class, 'profile']);
         Route::post("update", [AuthController::class, 'update']);
     });
 
-    Route::get("/post", [PostController::class, 'index']);
+    Route::get("/post", [PostController::class, 'index'])->middleware(CheckTelegram::class);;
+    Route::any("/post/{id}", [PostController::class, 'show']);
     Route::group(["prefix" => "post", "middleware" => CheckTelegram::class], function () {
         Route::post("/", [PostController::class, 'store']);
         Route::post("/{post}/delete", [PostController::class, 'destroy']);
-        Route::post("/{id}", [PostController::class, 'show']);
         Route::post("/{post}/update", [PostController::class, 'update']);
     });
 
-    Route::get("/service", [ServiceController::class, 'index']);
+    Route::get("/service", [ServiceController::class, 'index'])->middleware(CheckTelegram::class);;
+    Route::any("/service/{id}", [ServiceController::class, 'show']);
     Route::group(["prefix" => "service", "middleware" => CheckTelegram::class], function () {
         Route::post("/", [ServiceController::class, 'store']);
         Route::post("/{service}/delete", [ServiceController::class, 'destroy']);
-        Route::post("/{id}", [ServiceController::class, 'show']);
         Route::post("/{service}/update", [ServiceController::class, 'update']);
     });
 
-    Route::get("/event", [EventController::class, 'index']);
+    Route::get("/event", [EventController::class, 'index'])->middleware(CheckTelegram::class);;
+    Route::any("/event/{id}", [EventController::class, 'show']);
     Route::group(["prefix" => "event", "middleware" => CheckTelegram::class], function () {
         Route::post("/", [EventController::class, 'store']);
         Route::post("/{event}/delete", [EventController::class, 'destroy']);
-        Route::post("/{id}", [EventController::class, 'show']);
         Route::post("/{event}/update", [EventController::class, 'update']);
     });
 

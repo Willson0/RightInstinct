@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Models\Picture;
 use App\Models\Post;
 use App\Models\Service;
+use App\Models\Site\UserCookie;
 use App\Models\User;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
 use Illuminate\Support\Facades\Cookie;
@@ -143,7 +144,7 @@ class utils
     }
     static function gen_cookie ($user, $isadmin = false) {
         if ($isadmin) $cookieclass = AdminCookie::class;
-        else $cookieclass = Cookie::class;
+        else $cookieclass = UserCookie::class;
 
         do $cookie = self::gen_str(32);
         while ($cookieclass::where("cookie", $cookie)->exists());
@@ -178,6 +179,11 @@ class utils
             ->with("pictures")->with("user")->with("city")->with("category");
         else if ($class === User::class) $query = User::limit($limit)->with('city');
 
+        if ($request->has("my")) {
+            $user = $request->get('user');
+            if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"] ?? '')->firstOrFail();
+            if ($user) $query->where("user_id", $user->id);
+        }
         if ($request->has("sort")) $query->orderby("id", $request->sort);
         if ($request->has('datesort')) $query->orderby('id', $request->datesort);
         if ($request->has('offset')) $query->offset($request->offset);
@@ -289,20 +295,20 @@ class utils
 
 
         $owner = User::find($object->user->id ?? $object->id);
-        if ($owner->notification) {
-            $des = $description;
-            $escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
-            foreach ($escape as $char) {
-                $des = str_replace($char, '\\' . $char, $des);
-            }
-
-            Telegram::sendMessage([
-                "chat_id" => $owner->telegram_id,
-                "text" => "*🔔 $title*
->$des",
-                "parse_mode" => "MarkdownV2"
-            ]);
-        }
+//        if ($owner->notification AND $owner->telegram_id != 0) {
+//            $des = $description;
+//            $escape = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+//            foreach ($escape as $char) {
+//                $des = str_replace($char, '\\' . $char, $des);
+//            }
+//
+//            Telegram::sendMessage([
+//                "chat_id" => $owner->telegram_id,
+//                "text" => "*🔔 $title*
+//>$des",
+//                "parse_mode" => "MarkdownV2"
+//            ]);
+//        } TODO: BACK LATER
 
         return true;
     }

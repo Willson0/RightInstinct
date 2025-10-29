@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
     public function store (PostStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+
         $validated = $request->validated();
 
         if (($validated["is_old"] === 0) and
@@ -47,7 +49,8 @@ class PostController extends Controller
     }
 
     public function destroy (Post $post, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         if ($post->user_id !== $user->id) abort (409);
 
@@ -61,7 +64,8 @@ class PostController extends Controller
     }
 
     public function show ($id, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+//        $user = $request->get('user');
+//        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $post = Post::where("id", $id)->with("pictures")->with("breed")->with("user")
             ->with("city")->with("category")->first();
@@ -71,7 +75,8 @@ class PostController extends Controller
     }
 
     public function update (Post $post, PostUpdateRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         return utils::update($post, $user, $request);
     }
 }

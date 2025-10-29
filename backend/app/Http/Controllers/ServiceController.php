@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Storage;
 class ServiceController extends Controller
 {
     public function store (ServiceStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+
         $validated = $request->validated();
 
         $validated["user_id"] = $user->id;
@@ -43,7 +45,8 @@ class ServiceController extends Controller
     }
 
     public function destroy (Service $service, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         if ($service->user_id !== $user->id) abort (409);
 
@@ -57,16 +60,18 @@ class ServiceController extends Controller
     }
 
     public function show ($id, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+//        $user = $request->get('user');
+//        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $post = Service::where("id", $id)->with("pictures")->with("user")->with("city")->with("category")->first();
-        if ($post->user_id !== $user->id) abort (409);
+//        if ($post->user_id !== $user->id) abort (409);
 
         return response()->json($post);
     }
 
     public function update (Service $service, ServiceUpdateRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         return utils::update($service, $user, $request, "service");
     }
 }

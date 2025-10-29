@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\DB;
 class FavouriteController extends Controller
 {
     public function store (FavouriteStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $data = $request->validated();
         $data["user_id"] = $user->id;
@@ -31,7 +32,8 @@ class FavouriteController extends Controller
     }
 
     public function destroy (FavouriteStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $data = $request->validated();
         $favourite = Favourite::where("user_id", $user->id)->where("type", $data["type"])
@@ -43,7 +45,8 @@ class FavouriteController extends Controller
     }
 
     public function index (Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $favouritesIds = Favourite::where("user_id", $user->id)->get();
         $groups = $favouritesIds->groupBy("type")->toArray();

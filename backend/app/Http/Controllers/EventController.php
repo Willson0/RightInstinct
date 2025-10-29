@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Storage;
 class EventController extends Controller
 {
     public function store (EventStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $validated = $request->validated();
 
         $validated["user_id"] = $user->id;
@@ -48,7 +49,8 @@ class EventController extends Controller
     }
 
     public function destroy (Event $event, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         if ($event->user_id !== $user->id) abort (409);
 
@@ -62,16 +64,18 @@ class EventController extends Controller
     }
 
     public function show ($id, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+//        $user = $request->get('user');
+//        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $post = Event::where("id", $id)->with("pictures")->with("user")->with("city")->with("category")->first();
-        if ($post->user_id !== $user->id) abort (409);
+//        if ($post->user_id !== $user->id) abort (409);
 
         return response()->json($post);
     }
 
     public function update (Event $event, EventUpdateRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         return utils::update($event, $user, $request, "event");
     }
 }

@@ -15,8 +15,10 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     public function profile (Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->first();
-        if (!$user) {
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->first();
+
+        if (!$user && isset($request["initData"])) {
             $user = User::create([
                 "telegram_id" => $request["initData"]["user"]["id"],
                 "fullname" => $request["initData"]["user"]["first_name"] . " " . $request["initData"]["user"]["last_name"],
@@ -25,10 +27,12 @@ class AuthController extends Controller
                 "rating" => 0,
                 "avatar" => $request["initData"]["user"]["photo_url"],
             ]);
-        }
+        } else if (!$user) abort (401);
         $user->city;
         $user->notifications;
         $user->subscriptions = $user->subscriptions()->with("user_subscription")->get();
+        $user->documents = json_decode($user->documents, 1);
+        $user->notifications_settings = json_decode($user->notifications_settings, 1);
         $user->reviews = $user->reviews()->get()->groupBy("type")->map(function ($group) {
             return $group->map(function ($review) {
                 return [
@@ -119,7 +123,8 @@ class AuthController extends Controller
     }
 
     public function update (AuthStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $data = $request->validated();
 
         $user->update($data);
@@ -127,15 +132,19 @@ class AuthController extends Controller
     }
 
      public function show (User $user, Request $request) {
-        $sender = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $sender = $request->get('user');
+        if (!$sender) $sender = User::where("telegram_id", $request["initData"]["user"]["id"])->first();
 
         $user->city;
         $user->posts = $user->posts()->with("pictures")->with("breed")->with("city")->with("category")->get();
         $user->services = $user->services()->with("pictures")->with("user")->with("city")->with("category")->get();
+        $user->events = $user->events()->where("moderated", "1")->with("pictures")->with("user")->with("city")->with("category")->get();
 
-        if (Subscription::where("user_id", $sender->id)->where("user_subscription_id", $user->id)->exists())
-            $user->isSubscribe = true;
-        else $user->isSubscribe = false;
+        if ($sender) {
+            if (Subscription::where("user_id", $sender->id)->where("user_subscription_id", $user->id)->exists())
+                $user->isSubscribe = true;
+            else $user->isSubscribe = false;
+        }
 
         return response()->json($user);
     }

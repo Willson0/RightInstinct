@@ -29,7 +29,8 @@ class ComplainController extends Controller
     }
 
     public function store (ComplainStoreRequest $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
 
         $data = $request->validated();
         $data["user_id"] = $user->id;

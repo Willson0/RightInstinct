@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 class NotificationController extends Controller
 {
     public function show (Notification $notification, Request $request) {
-        $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
+        $user = $request->get('user');
+        if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         if ($notification->user_id !== $user->id) abort (409);
 
         $notification->readed = true;
