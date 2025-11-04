@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Favourite;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FavouriteStoreRequest extends FormRequest
+class WallStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,10 @@ class FavouriteStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "type" => "required|string|in:post,service,event,user,wall",
-            "object_id" => "required|integer",
+            "title" => "required|string",
+            "text" => "required|string",
+            "pictures" => "required|array|min:1",
+            "pictures.*" => "required|file"
         ];
     }
 }

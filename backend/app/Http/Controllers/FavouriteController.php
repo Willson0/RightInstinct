@@ -8,6 +8,7 @@ use App\Models\Favourite;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\User;
+use App\Models\Wall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +25,14 @@ class FavouriteController extends Controller
 
         $favourite = Favourite::create($data);
 
+        if ($data["type"] === "wall") {
+            try {
+                $wall = Wall::find($data["object_id"]);
+                $wall->likes = $wall->likes + 1;
+                $wall->save();
+            } catch (\Exception $e) {}
+        }
+
 //        try {
             utils::addNotification($user, "favourite", $data["type"], $data["object_id"]);
 //        } catch (\Exception $e) {}
@@ -39,6 +48,16 @@ class FavouriteController extends Controller
         $favourite = Favourite::where("user_id", $user->id)->where("type", $data["type"])
             ->where("object_id", $data["object_id"])->first();
         if (!$favourite) abort(409, "Not Exists");
+
+        if ($data["type"] === "wall") {
+            try {
+                $wall = Wall::find($data["object_id"]);
+                if ($wall->likes > 0) {
+                    $wall->likes = $wall->likes - 1;
+                    $wall->save();
+                }
+            } catch (\Exception $e) {}
+        }
 
         $favourite->delete();
         return response()->json(["ok" => "true"]);

@@ -21,6 +21,9 @@ class User extends Model
     public function events () {
         return $this->hasMany(Event::class);
     }
+    public function walls () {
+        return $this->hasMany(Wall::class);
+    }
     public function notifications () {
         return $this->hasMany(Notification::class);
     }

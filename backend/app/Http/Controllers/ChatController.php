@@ -62,7 +62,7 @@ class ChatController extends Controller
             }
         }
 
-        if ($companion->notification)
+        if ($companion->notification AND $companion->telegram_id != 0)
             Telegram::sendMessage([
                 "chat_id" => $companion->telegram_id,
                 "text" => "*🔔 Вам пришло новое сообщение*",

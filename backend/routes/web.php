@@ -18,6 +18,7 @@ use App\Http\Controllers\Site\SiteNotificationsController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WallController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Middleware\CheckAdminMiddleware;
 use App\Http\Middleware\CheckTelegram;
@@ -29,6 +30,7 @@ Route::group(["prefix" => "api"], function () {
             Route::post("register", [SiteAuthController::class, "register"]);
             Route::post("verify", [SiteAuthController::class, 'verify']);
             Route::post("login", [SiteAuthController::class, "login"]);
+            Route::post("telegram", [SiteAuthController::class, 'telegram']);
 
             Route::group(["prefix" => "recovery"], function () {
                 Route::post("send", [SiteAuthController::class, "recoverySend"]);
@@ -75,6 +77,15 @@ Route::group(["prefix" => "api"], function () {
         Route::post("/", [EventController::class, 'store']);
         Route::post("/{event}/delete", [EventController::class, 'destroy']);
         Route::post("/{event}/update", [EventController::class, 'update']);
+    });
+
+    Route::get("/wall", [WallController::class, 'index'])->middleware(CheckTelegram::class);;
+    Route::any("/wall/{id}", [WallController::class, 'show']);
+    Route::group(["prefix" => "wall", "middleware" => CheckTelegram::class], function () {
+        Route::post("/", [WallController::class, 'store']);
+        Route::post("/{wall}/delete", [WallController::class, 'destroy']);
+        Route::post("/{wall}/update", [WallController::class, 'update']);
+        Route::post("/{wall}/share", [WallController::class, 'share']);
     });
 
     Route::group(["prefix" => "data"], function () {

@@ -12,6 +12,7 @@ use App\Models\Post;
 use App\Models\Service;
 use App\Models\Site\UserCookie;
 use App\Models\User;
+use App\Models\Wall;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
@@ -267,6 +268,7 @@ class utils
             "service" => Service::class,
             "event" => Event::class,
             "user" => User::class,
+            "wall" => Wall::class,
         ];
         $object = $tables[$type]::find($object);
 
@@ -308,7 +310,7 @@ class utils
 //>$des",
 //                "parse_mode" => "MarkdownV2"
 //            ]);
-//        } TODO: BACK LATER
+//        } // TODO: BACK LATER
 
         return true;
     }

@@ -8,8 +8,10 @@ use App\Models\Favourite;
 use App\Models\Message;
 use App\Models\Post;
 use App\Models\Service;
+use App\Models\Site\UserEmail;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Models\Wall;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -116,6 +118,7 @@ class AuthController extends Controller
         $my["posts"] = $user->posts()->with("pictures")->with("breed")->with("user")->with("city")->with("category")->get();
         $my["services"] = $user->services()->with("pictures")->with("user")->with("city")->with("category")->get();
         $my["events"] = $user->events()->with("pictures")->with("user")->with("city")->with("category")->get();;
+        $my["walls"] = $user->walls()->with("pictures")->with("user")->get();
 
         $user["my"] = $my;
 
@@ -127,18 +130,24 @@ class AuthController extends Controller
         if (!$user) $user = User::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail();
         $data = $request->validated();
 
+        if ($request->has("email"))
+            if ((User::where('email', $data['email'])->exists())
+            OR (UserEmail::where('email', $data['email'])->exists()))
+                unset ($data['email']);
+
         $user->update($data);
         return $this->profile($request);
     }
 
      public function show (User $user, Request $request) {
         $sender = $request->get('user');
-        if (!$sender) $sender = User::where("telegram_id", $request["initData"]["user"]["id"])->first();
+        if (!$sender) $sender = User::where("telegram_id", $request["initData"]["user"]["id"] ?? null)->first();
 
         $user->city;
         $user->posts = $user->posts()->with("pictures")->with("breed")->with("city")->with("category")->get();
         $user->services = $user->services()->with("pictures")->with("user")->with("city")->with("category")->get();
         $user->events = $user->events()->where("moderated", "1")->with("pictures")->with("user")->with("city")->with("category")->get();
+        $user->walls = $user->walls()->with("pictures")->with("user")->get();
 
         if ($sender) {
             if (Subscription::where("user_id", $sender->id)->where("user_subscription_id", $user->id)->exists())

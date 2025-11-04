@@ -16,6 +16,7 @@ use App\Models\Site\UserEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SiteAuthController extends Controller
@@ -147,5 +148,38 @@ class SiteAuthController extends Controller
         return response()
             ->json(["Message" => "Успешная авторизация!", "cookie" => 1234])
             ->withCookie($respcookie);
+    }
+
+    public function telegram (Request $request) {
+        $data = $request->all();
+        $hash = $data["hash"];
+        unset($data["hash"]);
+
+        ksort($data);
+        $dataString = collect($data)->map(function ($value, $key) {
+            return "$key=$value";
+        })->implode("\n");
+
+        $secretKey = hash('sha256', env("TELEGRAM_BOT_TOKEN"), true);
+        $calcHash = hash_hmac('sha256', $dataString, $secretKey);
+        if (!hash_equals($calcHash, $hash))
+            return response()->json(["message" => "Недействительные данные"], 403);
+
+        $user = User::where("telegram_id", $data["id"])->first();
+        if (!$user) {
+            $user = User::create([
+                "telegram_id" => $data["id"],
+                "fullname" => $data["first_name"] . " " . $data["last_name"],
+                "username" => $data["username"] ?? null,
+                "notification" => true,
+                "rating" => 0,
+                "avatar" => $data["photo_url"],
+            ]);
+        }
+
+        $cookie = utils::gen_cookie($user);
+        $respcookie = Cookie::forever("user", $cookie);
+
+        return response()->json(["message" => "Успешная авторизация", "cookie" => $cookie])->withCookie($respcookie);
     }
 }
