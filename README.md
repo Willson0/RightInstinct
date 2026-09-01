@@ -60,8 +60,8 @@
 ## Скриншоты
 
 <p align="center">
-  <img width="752" height="1280" alt="image" src="https://github.com/user-attachments/assets/27aa2aad-aade-42c8-b225-4958c44af934" />
-  <img width="752" height="1280" alt="image" src="https://github.com/user-attachments/assets/c2684d09-1146-43aa-a9a5-943170df3d82" />
+  <img width="48%" height="1280" alt="image" src="https://github.com/user-attachments/assets/27aa2aad-aade-42c8-b225-4958c44af934" />
+  <img width="48%" height="1280" alt="image" src="https://github.com/user-attachments/assets/c2684d09-1146-43aa-a9a5-943170df3d82" />
 </p>
 
 ---
